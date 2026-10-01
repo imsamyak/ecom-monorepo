@@ -35,7 +35,7 @@ Entry format for `HISTORY.md`:
 ## Rules
 1. Code change and its context/history update go in **the same commit**. A change under a module's `src/` or `pom.xml` requires that module's `HISTORY.md` to change; a change anywhere else requires the root `HISTORY.md`. `scripts/check-context-sync.sh` enforces this (git hook + review).
 2. If a decision or invariant changed, update that module's `CONTEXT.md` too. A stale `CONTEXT.md` is a review rejection.
-3. Commit at the end of every task, on a feature branch, never on `main`. Do not commit build output (`target/` is ignored). No pull requests unless the owner asks.
+3. Commit at the end of every task, never on `main`. **All work goes on ONE work branch** (currently `confess-module`); do not create a new branch per task. Push it after every commit. The owner reviews and merges it whenever ready. **Never open pull requests**: the owner opens them. Do not commit build output (`target/` is ignored).
 4. Keep tasks small so diffs are cheap to review. Do not refactor beyond the task.
 5. Tests must pass before committing; record the command and result in `HISTORY.md`.
 6. Enable the hook once per clone: `git config core.hooksPath .githooks`.
@@ -43,7 +43,7 @@ Entry format for `HISTORY.md`:
 ## Test-driven development (owner's policy)
 7. **Tests first.** For any new behavior or bug fix, write or change the tests first, watch them fail for the right reason, then change production code until they pass. Existing behavior is protected by tests; a change that breaks an old test is a regression unless the owner approves changing that test.
 8. **Owner reviews tests only.** The owner reviews the added or changed test files on a branch, not the production diff. So: keep test-only changes in their own commit where possible, name tests as sentences describing behavior, and never weaken or delete an existing test to make a change pass without saying so explicitly in the history entry.
-9. **Merge gate.** Only after the owner has approved the tests on a branch may the reviewer merge that branch to `main` on its own. The owner saying "merge" (for one branch, or "merge all") or "approved" is itself the approval and the go-ahead: it means the tests on those branches are approved and merging is authorized. On merging, change that branch's `Review: pending` lines in the `HISTORY.md` files to `Review: approved (owner said <merge|approved>, <date>)`. Without one of those words, never merge. Approval covers the named branches only; it is not a standing approval for later branches.
+9. **Merge gate.** The owner merges the work branch to `main` himself. The reviewer merges only if the owner explicitly asks, and only after the owner has approved the tests on that branch. The owner saying "merge" (for one branch, or "merge all") or "approved" is itself the approval and the go-ahead: it means the tests on those branches are approved and merging is authorized. On merging, change that branch's `Review: pending` lines in the `HISTORY.md` files to `Review: approved (owner said <merge|approved>, <date>)`. Without one of those words, never merge. Approval covers the named branches only; it is not a standing approval for later branches.
 10. **Known bugs.** A test that exposes a production bug is written for the *correct* behavior and marked `@Disabled("BUG: <what is wrong>")` so the build stays green. Never encode wrong behavior as expected. List disabled tests in the history entry for the owner to decide on.
 
 ## Architecture, comments and teaching (owner's policy)

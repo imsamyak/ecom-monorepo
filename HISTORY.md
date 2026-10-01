@@ -49,3 +49,10 @@
 - Why: owner asked for the name OutboxAwareUseCase (no behavior change)
 - Tests: cd service; mvn test -> all pass (116, no test changed except the renamed type)
 - Review: pending
+
+## 2026-10-01 one-work-branch - owner's branch and PR policy
+- By: claude
+- Changed: AGENTS.md rules 3 and 9
+- Why: owner: always keep one branch for work, the owner reviews and merges it, Claude opens no PRs
+- Tests: n/a (docs only)
+- Review: pending
