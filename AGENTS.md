@@ -2,29 +2,45 @@
 
 `CLAUDE.md` and `GEMINI.md` only import this file. Edit rules here, nowhere else.
 
+## START HERE (any new session, any agent)
+1. Read this file completely.
+2. Read `docs/PROGRESS.md`: it is the resume point. Continue from the first unticked box. If it is empty or all ticked, ask the owner for the next task.
+3. Read `TASKS.md` (the queue and what each task means), then `service/<module>/CONTEXT.md` of every module you will touch, then the last entries of its `HISTORY.md`.
+4. If you will use the Executor (`agy`), read `docs/AGY.md` (how to launch it, what breaks, scripts).
+5. If a technology is unfamiliar, `docs/LEARNING.md` explains what this repo already uses.
+6. Work only as the rules below say. When in doubt, ask the owner; the owner is the only one who can approve tests and merge.
+
+## What this repo is
+An e-commerce backend, Java 17 / Spring Boot 3.2.4, Maven multi-module under `service/`:
+- `service/platform/shared` - common base types (UseCase, exceptions, JWT filter, validation)
+- `service/platform/outbox` - transactional outbox module (auto-configured, pluggable)
+- `service/product` - product service (hexagonal: `port/in`, `port/out`, `adapter`, `service`, `domain`)
+
+Build and test everything: `cd service && mvn test`.
+
+## Environment facts (Windows machine, 2026-10-01)
+- Shell: Git Bash and PowerShell. Maven (3.9.16) and `JAVA_HOME` (JDK 21) are set in the Windows USER environment, so a NEW terminal has `mvn`. A session started before that change does not; refresh with `$env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User")`.
+- `gh` (GitHub CLI) is NOT installed: push with `git push`, and give the owner the compare URL `https://github.com/imsamyak/ecom-monorepo/pull/new/<branch>` to open the PR.
+- Hook (once per clone): `git config core.hooksPath .githooks` (runs `scripts/check-context-sync.sh`).
+- Files may have CRLF endings (git warns "LF will be replaced by CRLF"); that is harmless. Root `HISTORY.md` is Windows-1252 encoded: keep new text ASCII (use `-`, not an en dash).
+
 ## Roles
-- **Owner** writes tasks in `TASKS.md` (spec + acceptance criteria).
-- **Executor** (Gemini, once set up) implements a task on branch `gemini/<task-id>`, runs the tests, updates context, commits.
-- **Reviewer** (Claude) reads the diff and test output, then approves or requests changes in the module's `HISTORY.md`.
-- Until the owner says the executor is live, Claude does both roles and still follows every rule below.
-
-## Project
-Java 17, Spring Boot 3.2.4, Maven multi-module under `service/`:
-- `service/platform/shared` – common base types (UseCase, exceptions, JWT filter, validation)
-- `service/platform/outbox` – transactional outbox module (auto-configured, pluggable)
-- `service/product` – product service (hexagonal: `port/in`, `port/out`, `adapter`, `service`, `domain`)
-
-Build and test everything: `cd service && mvn test` (needs network for first dependency download).
+- **Owner** (the human) writes tasks, reviews the TESTS on a branch, and says "merge" or "approved". Nobody else merges.
+- **Reviewer** (Claude) splits tasks into chunks, writes the checklist, reviews diffs and tests, runs the build, commits, pushes, and prepares the PR.
+- **Executor** (`agy`, the Antigravity CLI, a Gemini model) writes the tests and the production code for each chunk and does the CONTEXT/HISTORY paperwork. It cannot commit or run arbitrary commands (see `docs/AGY.md`).
+- If the Executor is unavailable, Claude does both roles and still follows every rule.
 
 ## Context files (every module and the repo root)
-- `CONTEXT.md` – what the module is and its current invariants and decisions. Short. **Rewrite** it when the truth changes; never let it describe old behavior. (Root context is this file.)
-- `HISTORY.md` – append-only log, newest entry at the bottom, one entry per task. Never edit old entries except to add a review verdict.
-- `TASKS.md` (root only) – the task queue.
+- `CONTEXT.md` - what the module is and its current invariants and decisions. Short. **Rewrite** it when the truth changes; never let it describe old behavior. (Root context is this file.)
+- `HISTORY.md` - append-only log, newest entry at the bottom, one entry per task or chunk. Never edit old entries except to add or update a review verdict (or fill a `Tests:` line that said pending).
+- `TASKS.md` (root only) - the task queue with specs and statuses.
+- `docs/PROGRESS.md` - the live checklist / resume point (rule 16).
+- `docs/AGY.md` - everything known about running the Executor. `docs/LEARNING.md` - tech explanations (rule 13).
 
 Entry format for `HISTORY.md`:
 ```
-## YYYY-MM-DD <task-id> – <title>
-- By: claude | gemini
+## YYYY-MM-DD <task-id> - <title>
+- By: claude | gemini (agy)
 - Changed: <files or areas>
 - Why: <one line>
 - Tests: <command> -> <result>
@@ -34,7 +50,7 @@ Entry format for `HISTORY.md`:
 ## Rules
 1. Code change and its context/history update go in **the same commit**. A change under a module's `src/` or `pom.xml` requires that module's `HISTORY.md` to change; a change anywhere else requires the root `HISTORY.md`. `scripts/check-context-sync.sh` enforces this (git hook + review).
 2. If a decision or invariant changed, update that module's `CONTEXT.md` too. A stale `CONTEXT.md` is a review rejection.
-3. Commit at the end of every task, on a feature branch, never on `main`. Do not commit build output (`target/` is ignored). No pull requests unless the owner asks.
+3. Commit at the end of every task, on a feature branch, never on `main`. Do not commit build output (`target/` is ignored). Pull requests are opened as described in rule 15.
 4. Keep tasks small so diffs are cheap to review. Do not refactor beyond the task.
 5. Tests must pass before committing; record the command and result in `HISTORY.md`.
 6. Enable the hook once per clone: `git config core.hooksPath .githooks`.
@@ -61,5 +77,4 @@ Entry format for `HISTORY.md`:
 ## Executor start-up and workflow (owner's policy)
 14. **Read before you touch code.** Before any task the Executor reads, in order: this file, `docs/PROGRESS.md`, `docs/LEARNING.md`, `TASKS.md` (its task), then for every module it will change: that module's `CONTEXT.md` and the last entries of its `HISTORY.md`. It follows rules 1-13 without being reminded. When done it rewrites any `CONTEXT.md` that became stale and appends its `HISTORY.md` entry (rules 1-2).
 15. **Task flow.** The Reviewer (Claude) splits an owner task into chunks; each chunk leaves the build green and the code stable if merged alone. All chunks of a task go on ONE branch, one commit group per chunk, and the owner merges that branch once. For each chunk: the Executor writes tests only; the Reviewer reads the test diff and has wrong tests corrected; the Executor then implements and runs the tests, fixing the code and retrying with **no retry limit** until they pass (a test is changed only if it was wrong, and that is said in the history entry). The Reviewer reads the final code, then pushes the branch and opens one pull request (the owner has asked for PRs for this flow). The Reviewer never merges (rule 9).
-
 16. **Progress checklist.** At the start of every task or chunk the Reviewer writes its checklist in `docs/PROGRESS.md` before doing any work, ticks each box as the step is finished, and commits the ticks with the work. A new session or a crashed machine resumes from the first unticked box. Read `docs/PROGRESS.md` right after `AGENTS.md`.

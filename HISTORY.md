@@ -49,3 +49,10 @@
 - Why: owner wants a checkbox list kept from the start of each task so work resumes from the first unticked box
 - Tests: n/a (docs and helper scripts; scripts syntax-checked)
 - Review: pending
+
+## 2026-10-01 docs-rewrite - make the .md files self-explanatory for a new session
+- By: claude
+- Changed: AGENTS.md (START HERE, environment facts, roles), docs/AGY.md, docs/PROGRESS.md, service/product/CONTEXT.md, TASKS.md (template status bug fixed)
+- Why: owner wants any new session to understand the project, the workflow and where work stopped; rule numbers 1-16 unchanged
+- Tests: n/a (docs only)
+- Review: pending

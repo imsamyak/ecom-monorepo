@@ -1,19 +1,21 @@
 # Task queue
 
-Owner adds tasks here. Executor takes the first `open` task, sets it to `in progress`, then `review` when committed.
-Reviewer sets `done` (approved) or back to `in progress` with notes in the module `HISTORY.md`.
+How it works: the owner adds a task below (spec + acceptance). The Reviewer (Claude) splits it into chunks that are each stable if merged alone, writes the checklist in `docs/PROGRESS.md`, and runs the chunks through the Executor (`agy`) on ONE branch (AGENTS.md rules 7-16).
 
-Statuses: `open` | `in progress` | `review` | `done`
+Statuses: `open` (not started) | `in progress` | `review` (committed and pushed, waiting for the owner to review the tests and merge) | `done` (merged and Review lines set to approved).
 
 ## Template
 ```
-### T-000 <title>   [review]
+### T-000 <title>   [open]
 Module(s): <paths>
 Spec: <what to change and why>
 Acceptance: <observable checks; tests that must exist or pass>
 ```
 
-## Tasks
+## Open tasks
+(none - ask the owner)
+
+## Tasks in review (branch claude/gemini-cli-setup-check-8bda3d, not merged yet)
 ### T-001 Trim product title and description before saving   [review]
 Module(s): service/product
 Spec: `Product` must strip leading/trailing whitespace from `title` and `description` before it is persisted (insert and update), in the domain `sanitize()` step. A description that is blank after trimming is still stored as null. Chunk is self-contained: no API or schema change.
