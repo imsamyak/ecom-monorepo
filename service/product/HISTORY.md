@@ -37,3 +37,10 @@
 - Why: Added the active flag and its domain methods as per T-002.1 spec.
 - Tests: `cd service && mvn test` -> all pass (product 35 tests)
 - Review: pending
+
+## 2026-10-01 T-002.2 tests – set product active use case (tests first)
+- By: gemini (agy) wrote the tests, claude reviewed them and sent back two fixes (tautological assertions on a stubbed result, mapper only tested for the default)
+- Changed: tests: SetProductActiveServiceTest (new); no production code yet
+- Why: tests first for T-002.2; they do not compile until the use case, command, service and ProductResult.active exist
+- Tests: not run yet (compile fails by design)
+- Review: pending
