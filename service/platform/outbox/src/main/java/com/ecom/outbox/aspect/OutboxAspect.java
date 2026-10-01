@@ -1,5 +1,6 @@
 package com.ecom.outbox.aspect;
 
+import com.ecom.contract.DomainEvent;
 import com.ecom.outbox.Outbox;
 import com.ecom.outbox.OutboxUseCase;
 import com.ecom.outbox.entity.OutboxEntity;
@@ -59,9 +60,11 @@ public class OutboxAspect {
 
         Object command = joinPoint.getArgs().length > 0 ? joinPoint.getArgs()[0] : null;
         OutboxUseCase<Object, Object> useCase = (OutboxUseCase<Object, Object>) joinPoint.getTarget();
-        Outbox outbox = useCase.buildOutbox(command, result);
+        // The use case only describes what happened; everything else is derived from the event
+        DomainEvent event = useCase.buildEvent(command, result);
 
-        if (outbox != null) {
+        if (event != null) {
+            Outbox outbox = Outbox.of(event);
             validate(outbox);
             String payload = objectMapper.writeValueAsString(outbox.getPayload());
             if (payload.length() > maxPayloadLength) {

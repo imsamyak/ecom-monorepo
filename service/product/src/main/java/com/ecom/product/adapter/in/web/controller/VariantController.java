@@ -41,7 +41,7 @@ public class VariantController {
                 .properties(request.properties())
                 .build();
                 
-        VariantResult result = addVariantUseCase.addVariant(command);
+        VariantResult result = addVariantUseCase.execute(command);
         return new ResponseEntity<>(variantWebMapper.toResponse(result), HttpStatus.CREATED);
     }
 
@@ -57,7 +57,7 @@ public class VariantController {
                 .sellerId(principal.userId())
                 .build();
                 
-        removeVariantUseCase.removeVariant(command);
+        removeVariantUseCase.execute(command);
         return ResponseEntity.noContent().build();
     }
 }

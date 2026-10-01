@@ -22,10 +22,10 @@
 - Tests: `cd service && mvn test` -> all pass (no behavior change)
 - Review: pending
 
-## 2026-10-01 events-envelope – sealed events, envelope payload, buildEvent (tests first, red)
+## 2026-10-01 events-envelope – use cases return only a DomainEvent
 - By: claude
-- Changed: tests only so far: OutboxOfDomainEventTest (rewritten for nested events and the envelope), new aspect/OutboxAspectTest
-- Why: owner design: sealed Product/Variant event interfaces with nested action records, {aggregate, action, data} envelope payload, use cases return only a DomainEvent
-- Tests: written first; modules do not compile yet (red on purpose)
-- Removed tests (replaced by the contract-module event tests): none
+- Changed: OutboxUseCase.buildOutbox(...) -> DomainEvent buildEvent(...); Outbox.of now reads the aggregate type from the enclosing interface, the action from the record name, and wraps the event in an EventEnvelope; OutboxAspect builds the row from the event
+- Why: owner asked that use cases only return the event record and the framework does the rest
+- Tests: `cd service && mvn test` -> all pass; OutboxOfDomainEventTest rewritten (10 tests) and new OutboxAspectTest (9 tests). Adjusted one of my own new aspect tests: JDK proxies wrap undeclared checked exceptions, so it looks through UndeclaredThrowableException
+- Behavior change: every outbox payload is now the envelope {aggregate, action, data} instead of the bare object
 - Review: pending

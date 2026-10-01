@@ -1,11 +1,10 @@
 package com.ecom.product.port.in.usecase.variant;
 
-import jakarta.validation.Valid;
-
+import com.ecom.outbox.OutboxUseCase;
 import com.ecom.product.port.in.usecase.variant.dto.command.RemoveVariantCommand;
+import com.ecom.product.port.in.usecase.variant.dto.result.VariantResult;
 
-public interface RemoveVariantUseCase {
-    void removeVariant(@Valid RemoveVariantCommand command);
+// The result is the data of the variant that was removed, so the Removed event can carry it
+public interface RemoveVariantUseCase extends OutboxUseCase<RemoveVariantCommand, VariantResult> {
+
 }
-
-

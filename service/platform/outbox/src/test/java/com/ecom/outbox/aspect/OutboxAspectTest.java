@@ -16,10 +16,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -200,13 +202,19 @@ class OutboxAspectTest {
     }
 
     @Test
-    void aCheckedExceptionFromTheUseCasePropagatesUnwrapped() {
+    void aCheckedExceptionFromTheUseCaseIsNotSwallowedAndRollsBack() {
         // The use case throws a checked exception
         target.checkedFailure = new IOException("disk");
 
-        // The caller sees the original exception, not a wrapper
-        assertThrows(IOException.class, () -> proxy.execute("x"));
+        // The aspect rethrows the original exception; the JDK proxy may wrap an undeclared checked exception,
+        // so look through that wrapper
+        Throwable thrown = assertThrows(Throwable.class, () -> proxy.execute("x"));
+        Throwable root = thrown instanceof UndeclaredThrowableException u ? u.getUndeclaredThrowable() : thrown;
+        assertInstanceOf(IOException.class, root);
+
+        // Nothing is saved and the transaction is rolled back
         verify(repository, never()).save(any());
+        verify(transactionManager).rollback(any());
     }
 
     @Test

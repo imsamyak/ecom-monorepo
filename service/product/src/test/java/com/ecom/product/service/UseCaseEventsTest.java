@@ -23,6 +23,8 @@ import com.ecom.product.service.product.mapper.ProductMapper;
 import com.ecom.product.service.variant.AddVariantService;
 import com.ecom.product.service.variant.RemoveVariantService;
 import com.ecom.product.service.variant.mapper.VariantMapper;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
@@ -38,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UseCaseEventsTest {
 
+    // A real validator, as the two services validate their own command
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     private final UUID productId = UUID.randomUUID();
     private final UUID sellerId = UUID.randomUUID();
     private final LocalDateTime now = LocalDateTime.of(2026, 1, 1, 12, 0);
@@ -75,7 +79,7 @@ class UseCaseEventsTest {
     void deleteProductDescribesTheProductAsADeletedEventFromTheCommandAlone() {
         // The service under test, with its ports mocked
         DeleteProductService service = new DeleteProductService(
-                Mockito.mock(LoadProductPort.class), Mockito.mock(DeleteProductPort.class));
+                Mockito.mock(LoadProductPort.class), Mockito.mock(DeleteProductPort.class), validator);
 
         // Delete has no result, so the event comes from the command
         DomainEvent event = service.buildEvent(new DeleteProductCommand(productId, sellerId), null);
@@ -103,7 +107,7 @@ class UseCaseEventsTest {
     void removeVariantDescribesTheVariantAsARemovedEventFromTheRemovedVariantData() {
         // The service under test, with its ports mocked
         RemoveVariantService service = new RemoveVariantService(Mockito.mock(LoadVariantPort.class),
-                Mockito.mock(DeleteVariantPort.class), Mockito.mock(VariantMapper.class));
+                Mockito.mock(DeleteVariantPort.class), Mockito.mock(VariantMapper.class), validator);
 
         // The result of a remove is the data of the variant that was removed
         DomainEvent event = service.buildEvent(new RemoveVariantCommand(productId, 7L, sellerId), variantResult);
@@ -122,7 +126,7 @@ class UseCaseEventsTest {
         LoadVariantPort load = Mockito.mock(LoadVariantPort.class);
         DeleteVariantPort delete = Mockito.mock(DeleteVariantPort.class);
         Mockito.when(load.loadVariant(7L)).thenReturn(Optional.of(variant));
-        RemoveVariantService service = new RemoveVariantService(load, delete, Mappers.getMapper(VariantMapper.class));
+        RemoveVariantService service = new RemoveVariantService(load, delete, Mappers.getMapper(VariantMapper.class), validator);
 
         // Remove it
         VariantResult result = service.execute(new RemoveVariantCommand(productId, 7L, sellerId));
@@ -142,7 +146,7 @@ class UseCaseEventsTest {
         LoadProductPort load = Mockito.mock(LoadProductPort.class);
         DeleteProductPort delete = Mockito.mock(DeleteProductPort.class);
         Mockito.when(load.loadProduct(productId)).thenReturn(Optional.of(product));
-        DeleteProductService service = new DeleteProductService(load, delete);
+        DeleteProductService service = new DeleteProductService(load, delete, validator);
 
         // Delete it
         Void result = service.execute(new DeleteProductCommand(productId, sellerId));

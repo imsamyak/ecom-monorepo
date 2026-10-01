@@ -3,12 +3,18 @@
 The contract for events published through the outbox. Dependency free on purpose.
 
 ## `DomainEvent`
-One abstract method, `String aggregateId()`. An event is a record that implements it:
-- the **record name is the aggregate type** (a record named `Product` describes the Product aggregate); nothing to configure;
-- the record chooses which attribute identifies the aggregate and **converts it to a String itself** (`id.toString()`, `String.valueOf(number)`, or a composite such as `customerId + ":" + region`), so the compiler enforces the type;
-- the aggregate id is the partition key: events with the same id must be consumed in order. Pick the entity whose events must stay ordered relative to each other (for product events, the product id).
+One abstract method, `String aggregateId()`: the partition key. Events with the same aggregate id are consumed in order.
 
-`Outbox.of(DomainEvent)` in the outbox module builds the outbox row from it and rejects a null or blank id, anonymous classes and lambdas.
+## Sealed event interfaces (`com.ecom.contract.event`)
+- The **interface name is the aggregate type** (`Product`, `Variant`); each **nested record is an action** (`Created`, `Updated`, `Deleted` / `Added`, `Removed`). The set of actions is closed (sealed).
+- One aggregate id rule per aggregate, as a default method: `Product` events use the product id; `Variant` events also use the **owning product id** so variant events stay ordered with that product's events.
+- Event records carry the data a consumer needs (full snapshot for Created/Updated/Added, identifiers or removed data for Deleted/Removed).
+
+## `EventEnvelope(aggregate, action, data)`
+The JSON shape of every outbox payload: `{"aggregate": "Product", "action": "Created", "data": {...event record components...}}`. Consumers parse the envelope first, then `data` by (aggregate, action).
+
+## Rules for new events
+Declare a record nested in an aggregate sealed interface; top-level records, anonymous classes and lambdas are rejected by `Outbox.of`.
 
 ## Test
-`cd service && mvn test` (DomainEventTest pins the one-method, String-returning contract).
+`cd service && mvn test`.

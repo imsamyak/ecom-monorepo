@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import com.ecom.product.domain.entity.Product;
 import com.ecom.product.service.product.mapper.ProductMapper;
-import com.ecom.outbox.Outbox;
+import com.ecom.contract.DomainEvent;
+// Nested event record imported directly because the Product entity is already imported in this class
+import com.ecom.contract.event.Product.Created;
 
 @Service
 @Validated
@@ -34,16 +36,15 @@ public class CreateProductService implements CreateProductUseCase {
     }
 
     @Override
-    public Outbox buildOutbox(CreateProductCommand command, ProductResult result) {
-        // Describe the created product as a domain event; the outbox derives type and id from it
-        // (fully qualified because the Product entity is already imported here)
-        return Outbox.of(new com.ecom.product.domain.event.Product(
+    public DomainEvent buildEvent(CreateProductCommand command, ProductResult result) {
+        // Describe the created product as a Created event; the outbox derives type, action and id from it
+        return new Created(
                 result.id(),
                 result.sellerId(),
                 result.title(),
                 result.description(),
                 result.price(),
                 result.createdAt(),
-                result.updatedAt()));
+                result.updatedAt());
     }
 }

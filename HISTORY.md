@@ -35,3 +35,10 @@
 - Why: owner asked for the module to be called contract
 - Tests: `cd service && mvn test` -> all pass (no behavior change)
 - Review: pending
+
+## 2026-10-01 events-envelope – sealed domain events used by all state-changing use cases
+- By: claude
+- Changed: docs/LEARNING.md; see the contract, outbox and product HISTORY.md files
+- Why: owner design: sealed events per aggregate, {aggregate, action, data} envelope, use cases return only an event
+- Tests: `cd service && mvn test` -> all pass (116 tests)
+- Review: pending

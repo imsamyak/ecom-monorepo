@@ -15,10 +15,10 @@
 - Tests: `cd service && mvn test` -> all pass (no behavior change)
 - Review: pending
 
-## 2026-10-01 events-envelope – sealed events, envelope payload, buildEvent (tests first, red)
+## 2026-10-01 events-envelope – sealed events and envelope
 - By: claude
-- Changed: tests only so far: EventEnvelopeTest, event/ProductEventsTest, event/VariantEventsTest
-- Why: owner design: sealed Product/Variant event interfaces with nested action records, {aggregate, action, data} envelope payload, use cases return only a DomainEvent
-- Tests: written first; modules do not compile yet (red on purpose)
-- Removed tests (replaced by the contract-module event tests): none
+- Changed: new EventEnvelope record; new event/Product (Created, Updated, Deleted) and event/Variant (Added, Removed) sealed interfaces; tests: EventEnvelopeTest, ProductEventsTest, VariantEventsTest (written first, commit cb8c9f6)
+- Why: owner design: the interface name is the aggregate type, the nested record name is the action, one aggregate id rule per aggregate (product id; variant events also use the product id), payload is {aggregate, action, data}
+- Tests: `cd service && mvn test` -> all pass (13 new here)
+- New tech: docs/LEARNING.md "Domain events as sealed interfaces and records"
 - Review: pending

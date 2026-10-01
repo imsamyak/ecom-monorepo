@@ -32,10 +32,11 @@
 - Tests: `cd service && mvn test` -> all pass (no behavior change)
 - Review: pending
 
-## 2026-10-01 events-envelope – sealed events, envelope payload, buildEvent (tests first, red)
+## 2026-10-01 events-envelope – every state-changing use case emits a sealed event
 - By: claude
-- Changed: tests only so far: UseCaseEventsTest, ProductEventsOutboxIntegrationTest, ProductApiOutboxTest
-- Why: owner design: sealed Product/Variant event interfaces with nested action records, {aggregate, action, data} envelope payload, use cases return only a DomainEvent
-- Tests: written first; modules do not compile yet (red on purpose)
-- Removed tests (replaced by the contract-module event tests): ProductEventTest, VariantEventTest, CreateProductServiceOutboxTest (they tested the old domain/event records that move to the contract module)
+- Changed: Create/Update/Delete product and Add/Remove variant use cases now extend OutboxUseCase, method renamed to execute, each implements buildEvent (Product.Created/Updated/Deleted, Variant.Added/Removed); RemoveVariant now returns the removed variant's data; Delete returns Void; controllers call execute; removed the old domain/event Product and Variant records; Delete and RemoveVariant services validate their command with an injected Validator
+- Why: owner asked to emit events from all use cases. Validation moved into the services because Hibernate Validator forbids redeclaring @Valid on an override (HV000151); behavior is unchanged (ConstraintViolationException for an invalid command), and tests pin it
+- Tests: `cd service && mvn test` -> all pass (UseCaseEventsTest 7, ProductEventsOutboxIntegrationTest 9, ProductApiOutboxTest 2; OutboxIntegrationTest unchanged and passing)
+- Removed tests, replaced by the contract-module event tests: ProductEventTest, VariantEventTest, CreateProductServiceOutboxTest
+- Behavior changes: adding/removing a variant and updating/deleting a product now write outbox rows; payloads are envelopes
 - Review: pending

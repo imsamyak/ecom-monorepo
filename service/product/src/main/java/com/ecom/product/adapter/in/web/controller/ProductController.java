@@ -54,7 +54,7 @@ public class ProductController {
             @RequestBody UpdateProductRequest request) {
 
         UpdateProductCommand command = productWebMapper.toCommand(request, principal.userId(), productId);
-        ProductResult result = updateProductUseCase.updateProduct(command);
+        ProductResult result = updateProductUseCase.execute(command);
         return ResponseEntity.ok(productWebMapper.toResponse(result));
     }
 
@@ -65,7 +65,7 @@ public class ProductController {
 
         DeleteProductCommand command = productWebMapper.toCommand(principal.userId(), productId);
 
-        deleteProductUseCase.deleteProduct(command);
+        deleteProductUseCase.execute(command);
         return ResponseEntity.noContent().build();
     }
 }

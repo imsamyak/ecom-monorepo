@@ -1,6 +1,7 @@
 package com.ecom.outbox;
 
 import com.ecom.contract.DomainEvent;
+import com.ecom.contract.EventEnvelope;
 import com.ecom.outbox.entity.OutboxEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,33 +31,39 @@ public class Outbox {
     Object payload;
 
     /**
-     * Builds the outbox row from a domain event so use cases never spell out type and id by hand. The aggregate type
-     * is the event record's simple name; the aggregate id is whatever string the event returns.
+     * Builds the outbox row from a domain event so use cases never spell out type and id by hand. The event must be a
+     * record nested in its aggregate interface (for example {@code Product.Created}): the interface name is the
+     * aggregate type, the record name is the action, and the aggregate id is the string the event returns. The payload
+     * is an {@link EventEnvelope} {aggregate, action, data}.
      */
     public static Outbox of(DomainEvent event) {
         // Refuse a missing event up front
         Objects.requireNonNull(event, "event must not be null");
 
-        // Anonymous classes and lambdas have no usable name, so they cannot supply an aggregate type
+        // The aggregate type is the interface the record is nested in; anonymous classes, lambdas and top-level
+        // records have no such interface, so they cannot say what they belong to
         Class<?> type = event.getClass();
-        if (type.isAnonymousClass() || type.isSynthetic()) {
-            throw new IllegalArgumentException("DomainEvent must be a named class or record: " + type.getName());
+        Class<?> aggregate = type.getDeclaringClass();
+        if (type.isAnonymousClass() || type.isSynthetic() || aggregate == null) {
+            throw new IllegalArgumentException("DomainEvent must be a record nested in its aggregate interface "
+                    + "(for example Product.Created): " + type.getName());
         }
+        String aggregateType = aggregate.getSimpleName();
 
-        // The record's own name is the aggregate type
-        String aggregateType = type.getSimpleName();
+        // The record's own name is the action
+        String action = type.getSimpleName();
 
-        // The record already converted its id to a string; only reject an empty one
+        // The event already converted its id to a string; only reject an empty one
         String aggregateId = event.aggregateId();
         if (aggregateId == null || aggregateId.isBlank()) {
-            throw new IllegalArgumentException(aggregateType + ".aggregateId() must not be null or blank");
+            throw new IllegalArgumentException(aggregateType + "." + action + ".aggregateId() must not be null or blank");
         }
 
-        // The event itself is the payload, so Jackson serializes the record's components
+        // The payload is the envelope; the event itself is its data, so Jackson serializes the record's components
         return Outbox.builder()
                 .aggregateType(aggregateType)
                 .aggregateId(aggregateId)
-                .payload(event)
+                .payload(new EventEnvelope(aggregateType, action, event))
                 .build();
     }
 }

@@ -11,6 +11,9 @@ import com.ecom.product.service.variant.mapper.VariantMapper;
 import com.ecom.product.domain.exception.ProductNotFoundException;
 import com.ecom.product.domain.exception.ProductNotOwnedException;
 
+import com.ecom.contract.DomainEvent;
+// Nested event record imported directly because the Variant entity is already imported in this class
+import com.ecom.contract.event.Variant.Added;
 import lombok.RequiredArgsConstructor;
 
 import java.util.TreeMap;
@@ -30,7 +33,7 @@ public class AddVariantService implements AddVariantUseCase {
 
     @Override
     @Transactional
-    public VariantResult addVariant(AddVariantCommand command) {
+    public VariantResult execute(AddVariantCommand command) {
 
         Product product = loadProductPort.loadProduct(command.productId())
                 .orElseThrow(() -> new ProductNotFoundException(command.productId()));
@@ -48,8 +51,15 @@ public class AddVariantService implements AddVariantUseCase {
 
         return variantMapper.toResult(savedVariant);
     }
+
+    @Override
+    public DomainEvent buildEvent(AddVariantCommand command, VariantResult result) {
+        // Describe the new variant as an Added event; its aggregate id is the owning product id
+        return new Added(
+                result.id(),
+                result.productId(),
+                result.properties(),
+                result.createdAt(),
+                result.updatedAt());
+    }
 }
-
-
-
-

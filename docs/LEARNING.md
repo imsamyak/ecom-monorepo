@@ -50,12 +50,15 @@ Every section: what it is, where it lives here, how it works, gotchas. New tech 
 - **Java gotcha, `String.join`:** its signature is `join(delimiter, elements...)`. Passing one already-joined string makes it the *delimiter* with nothing to join, which returns `""` and compiles without warning. That was the converter bug. Defence in depth: the converter is unit tested, and the `sku` column has a DB `@Check` so an empty value can never be stored even if code regresses.
 - **`@Modifying @Query`:** bulk update/delete in one statement, needs a transaction.
 
-## Domain events as records
-- **Java records:** a short way to declare an immutable data class (`record Product(UUID id, ...)`). The compiler generates the constructor, accessors, `equals`, `hashCode` and `toString`. Jackson serializes a record's components, which is why the event record is also the outbox payload.
-- **`DomainEvent` (contract module):** an interface with one method, `String aggregateId()`. Each event record picks the attribute that identifies its aggregate and converts it to a string itself. The record's simple name (`getClass().getSimpleName()`) is the aggregate type, so there is nothing to configure.
-- **Why the aggregate id matters:** it becomes the broker partition key. Events with the same key land on the same partition and are consumed in order, so choose the entity whose events must stay ordered (for product events, the product id).
-- **Static factory:** `Outbox.of(event)` is a named constructor-like method, clearer than a long builder chain at every call site.
-- **Gotchas:** lambdas and anonymous classes have generated names, so `Outbox.of` rejects them; a record named like an entity (`Product`) needs fully qualified names where both are in scope.
+## Domain events as sealed interfaces and records
+- **Java records:** a short way to declare an immutable data class (`record Created(UUID productId, ...)`). The compiler generates the constructor, accessors, `equals`, `hashCode` and `toString`. Jackson serializes a record's components.
+- **Sealed interfaces (Java 17):** `sealed interface Product extends DomainEvent` limits which types may implement it. When the implementations are nested records in the same file the `permits` list is inferred. The set of actions (`Created`, `Updated`, `Deleted`) is therefore closed and `Product.class.getPermittedSubclasses()` lists it. (An exhaustive `switch` over a sealed type needs Java 21; on 17 use `instanceof` patterns.)
+- **Where the names come from (reflection):** `event.getClass().getSimpleName()` is the action (`Created`) and `event.getClass().getDeclaringClass().getSimpleName()` is the aggregate type (`Product`). Lambdas, anonymous classes and top-level records have no declaring class, so `Outbox.of` rejects them.
+- **Default interface methods:** `aggregateId()` is written once in `Product` (the product id as a string) and inherited by every action. `Variant` events deliberately return the owning product id, so they share the product's partition key and stay ordered with its events.
+- **Aggregate id = partition key:** events with the same key land on the same partition and are consumed in order. Choose the entity whose events must stay ordered relative to each other.
+- **Envelope:** every outbox payload is `{aggregate, action, data}` (`EventEnvelope`). Consumers parse that first, then `data` by (aggregate, action).
+- **Use cases return only an event:** `OutboxUseCase.buildEvent(command, result)` describes what happened; the `OutboxAspect` does the rest (type, action, envelope, JSON, size limit, saving in the same transaction).
+- **Gotchas:** a record named like an entity (`Product`) needs nested-type imports or full names where both are in scope; Hibernate Validator rejects `@Valid` redeclared on an overriding method (HV000151), so the delete and remove services validate with an injected `Validator`; JDK proxies wrap undeclared checked exceptions in `UndeclaredThrowableException`.
 
 ## Exponential backoff
 After each failure wait twice as long (1 s, 2 s, 4 s ... capped at 5 min) so a down broker is not hammered. State lives in memory in `RetryBackoff`; a restart retries from 1 s again.
