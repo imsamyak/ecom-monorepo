@@ -4,6 +4,12 @@ How it works: the owner adds a task below (spec + acceptance). The Reviewer (Cla
 
 Statuses: `open` (not started) | `in progress` | `review` (committed and pushed, waiting for the owner to review the tests and merge) | `done` (merged and Review lines set to approved).
 
+## Queue (go ahead given, run in this order)
+Written by the design chat only; the execution chat takes the first item not ticked as done in docs/PROGRESS.md (rule 25).
+1. T-009.2 JWT verification auto-configuration in shared
+2. T-009.3 Product uses the shared JWT; remove the simulated token
+3. .agent/ move (design in .agent/notes/decisions.md, Way of working). Needs the owner's three .agent/scripts permission rules first. Moves files of both chats, so run it only while the design chat is idle; it may update paths in every file, including .agent/chats/*.md.
+
 ## Template
 ```
 ### T-000 <title>   [open]

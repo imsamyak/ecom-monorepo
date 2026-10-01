@@ -399,3 +399,12 @@
 - Rollback: git revert the commit found by git log --grep "one git writer"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 rule - two chats with separate areas of work
+- By: claude
+- Changed: AGENTS.md (rule 25), .agent/chats/design.md, .agent/chats/execution.md, .agent/notes/questions.md, TASKS.md (Queue), docs/PROGRESS.md (start line), .agent/notes/decisions.md
+- Why: owner: the design chat and the execution chat must not conflict
+- Depends on: rule - one git writer at a time: the lock
+- Rollback: git revert the commit found by git log --grep "separate areas of work"
+- Tests: n/a (docs only)
+- Review: pending

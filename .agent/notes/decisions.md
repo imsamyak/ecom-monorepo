@@ -71,3 +71,9 @@ Every design discussion with the owner is recorded here when it happens: the con
 ## 2026-10-01 One git writer at a time: the lock (rule 24)
 - Owner asked whether only the design chat could commit, using a flag the execution chat sets. Rejected: every commit would run on Opus (more cost), the owner would have to relay each chunk, and the design chat would have to trust or redo the build.
 - Chosen (owner: implement b): both chats may commit, never at the same time. Shared file .agent/lock (gitignored) with one line: who, date, time, task. Check before any git change; if held by the other chat, report waiting for lock to the owner; release after push. Execution chat holds it for a whole chunk; design chat only for doc commits. A lock older than 2 hours is not removed by a chat; the owner decides.
+
+## 2026-10-01 Two chats with separate areas of work (rule 25)
+- Owner: give each chat its own area so they never conflict; put each chat's instructions in a file and start each chat with a message that points to it.
+- Files: .agent/chats/design.md and .agent/chats/execution.md list each chat's job, the files only it may edit, the lock, and when to compact (design) or switch (execution).
+- Design chat owns AGENTS.md, TASKS.md (specs, statuses, Queue), SWGT.md, decisions.md, .agent/chats. Execution chat owns service, scripts, .githooks, docs/PROGRESS.md, docs/AGY.md, docs/LEARNING.md, module HISTORY and CONTEXT files, logs, .agent/notes/questions.md. Root HISTORY.md and .gitignore are shared, edited only while holding the lock.
+- The Queue at the top of TASKS.md replaces the start-here instructions in PROGRESS.md; task status lives in PROGRESS.md. Both chats stage only their own paths (never git add -A).
