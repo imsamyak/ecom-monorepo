@@ -53,7 +53,7 @@ class UseCaseEventsTest {
     void createProductDescribesTheProductAsACreatedEvent() {
         // The service under test, with its ports mocked
         CreateProductService service = new CreateProductService(
-                Mockito.mock(SaveProductPort.class), Mockito.mock(ProductMapper.class));
+                Mockito.mock(SaveProductPort.class), Mappers.getMapper(ProductMapper.class));
 
         // Ask it what happened
         DomainEvent event = service.buildEvent(new CreateProductCommand(sellerId, "Phone", "desc", 10.5), productResult);
@@ -66,7 +66,7 @@ class UseCaseEventsTest {
     void updateProductDescribesTheProductAsAnUpdatedEvent() {
         // The service under test, with its ports mocked
         UpdateProductService service = new UpdateProductService(Mockito.mock(LoadProductPort.class),
-                Mockito.mock(SaveProductPort.class), Mockito.mock(ProductMapper.class));
+                Mockito.mock(SaveProductPort.class), Mappers.getMapper(ProductMapper.class));
 
         // Ask it what happened
         DomainEvent event = service.buildEvent(
@@ -80,7 +80,7 @@ class UseCaseEventsTest {
     void deleteProductDescribesTheProductAsADeletedEventFromTheCommandAlone() {
         // The service under test, with its ports mocked
         DeleteProductService service = new DeleteProductService(
-                Mockito.mock(LoadProductPort.class), Mockito.mock(DeleteProductPort.class), validator);
+                Mockito.mock(LoadProductPort.class), Mockito.mock(DeleteProductPort.class), Mappers.getMapper(ProductMapper.class), validator);
 
         // Delete has no result, so the event comes from the command
         DomainEvent event = service.buildEvent(new DeleteProductCommand(productId, sellerId), null);
@@ -93,7 +93,7 @@ class UseCaseEventsTest {
     void addVariantDescribesTheVariantAsAnAddedEventKeyedByProduct() {
         // The service under test, with its ports mocked
         AddVariantService service = new AddVariantService(Mockito.mock(LoadProductPort.class),
-                Mockito.mock(SaveVariantPort.class), Mockito.mock(VariantMapper.class));
+                Mockito.mock(SaveVariantPort.class), Mappers.getMapper(VariantMapper.class));
 
         // Ask it what happened
         DomainEvent event = service.buildEvent(
@@ -108,7 +108,7 @@ class UseCaseEventsTest {
     void removeVariantDescribesTheVariantAsARemovedEventFromTheRemovedVariantData() {
         // The service under test, with its ports mocked
         RemoveVariantService service = new RemoveVariantService(Mockito.mock(LoadVariantPort.class),
-                Mockito.mock(DeleteVariantPort.class), Mockito.mock(VariantMapper.class), validator);
+                Mockito.mock(DeleteVariantPort.class), Mappers.getMapper(VariantMapper.class), validator);
 
         // The result of a remove is the data of the variant that was removed
         DomainEvent event = service.buildEvent(new RemoveVariantCommand(productId, 7L, sellerId), variantResult);
@@ -147,7 +147,7 @@ class UseCaseEventsTest {
         LoadProductPort load = Mockito.mock(LoadProductPort.class);
         DeleteProductPort delete = Mockito.mock(DeleteProductPort.class);
         Mockito.when(load.loadProduct(productId)).thenReturn(Optional.of(product));
-        DeleteProductService service = new DeleteProductService(load, delete, validator);
+        DeleteProductService service = new DeleteProductService(load, delete, Mappers.getMapper(ProductMapper.class), validator);
 
         // Delete it
         Void result = service.execute(new DeleteProductCommand(productId, sellerId));

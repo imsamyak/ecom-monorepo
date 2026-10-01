@@ -181,5 +181,22 @@
 - Rollback: git revert the commits found by git log --grep T-003.3 (newest first)
 - Tests: cd service; mvn test -> all pass (product 73), green after 1 fix round. SetProductActiveUseCase, SetProductActiveService, SetProductActiveCommand and SetProductActiveRequest removed by Claude with git rm (agy cannot delete files); build green without them
 - Test change (rule 8): ProductEventsOutboxIntegrationTest passed Optional.empty() for status in three places where it meant not sent; under the agreed merge-patch rules Optional.empty() means set to null (a 400), and not sent is a Java null. The test was provably wrong; agy changed only that argument, reviewed by Claude
-- Review: pending
 - New tech: docs/LEARNING.md "JSON Merge Patch and Jackson Optional"
+
+## 2026-10-01 T-005 tests - MapStruct mappers for events
+- By: gemini (agy)
+- Changed: ProductMapperTest.java (new), VariantMapperTest.java (new), UseCaseEventsTest.java
+- Why: Tests for T-005 where MapStruct mappers build all five events
+- Depends on: T-006, T-003.3
+- Rollback: git revert the commits found by git log --grep T-005 (newest first)
+- Tests: pending
+- Review: pending
+
+## 2026-10-01 T-005 impl - Every event is built by a MapStruct mapper
+- By: gemini (agy)
+- Changed: ProductMapper.java, VariantMapper.java, CreateProductService.java, UpdateProductService.java, DeleteProductService.java, AddVariantService.java, RemoveVariantService.java
+- Why: Use MapStruct to map ProductResult, VariantResult, and DeleteProductCommand directly to their respective domain events instead of manual instantiation.
+- Depends on: T-006, T-003.3
+- Rollback: git revert the commits found by git log --grep T-005, newest first
+- Tests: pending
+- Review: pending
