@@ -12,8 +12,6 @@ $env:JAVA_HOME = [System.Environment]::GetEnvironmentVariable("JAVA_HOME","User"
 
 # Set the working directory to the repository root
 $repo = Split-Path $PSScriptRoot -Parent
-$agy = "$env:LOCALAPPDATA\agy\bin\agy.exe"
-$extra = @("--mode","accept-edits","--model","gemini-3.1-pro-high","--print-timeout","25m")
 Set-Location $repo
 
 # Create the logs folder if it does not exist
@@ -71,7 +69,7 @@ $job = Start-Job -ScriptBlock $jobScript -ArgumentList $repo, $startTime
 
 try {
     # First call: the implementation prompt
-    $out = & $agy -p (Get-Content -Raw $PromptFile) @extra 2>&1 | Out-String
+    $out = & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-run.ps1 $PromptFile 2>&1 | Out-String
     Write-Output ("agy round 0 done: " + ($out.Trim().Split("`n")[0]))
     $last = ""; $same = 0; $round = 0
     
@@ -107,9 +105,14 @@ try {
         $round.ToString() | Out-File -FilePath "$repo\logs\agy-round.txt" -Encoding ASCII
         
         # Send the failures back to agy; tests are fixed unless they are truly wrong
-        $fb = "The test run failed. Fix the PRODUCTION code so the committed tests pass. Do not edit tests unless a test is provably wrong (then say so explicitly). Keep following AGENTS.md. NEVER call the run-command tool, use only file tools, do not commit. Failures:`n$fail`nReply with one line."
-        $o = & $agy -p $fb --continue @extra 2>&1 | Out-String
+        $fb = "The test run failed. Fix the PRODUCTION code so the committed tests pass. Do not edit tests unless a test is provably wrong (then say so explicitly). Keep following AGENTS.md. NEVER call the run-command tool, use only file tools, do not commit. Failures:`n$fail`nYour final answer must be one JSON object that matches scripts/prompts/report.schema.json."
+        # Use a prompt file name that contains implement so agy-run applies the JSON schema
+        $fbFile = "logs/agy-prompt-implement-fix.txt"
+        $fb | Out-File -FilePath "$repo\$fbFile" -Encoding ASCII
+        $o = & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-run.ps1 "$repo\$fbFile" --continue 2>&1 | Out-String
         Write-Output ("round ${round}: " + ($o.Trim().Split("`n")[0]))
+        # We also need to preserve the JSON output to $out so agy-chunk can parse it at the end
+        $out = $o
     }
 } finally {
     # Stop and remove the background job

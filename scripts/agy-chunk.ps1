@@ -78,15 +78,52 @@ if ($null -ne $statusLines) {
 # Record start time for step 1
 $step1Start = Get-Date
 
+# Stall guard script
+$stallGuardScript = {
+    param($repoPath, $promptBaseName)
+    $timeoutMins = 10
+    while ($true) {
+        Start-Sleep -Seconds 30
+        $files = Get-ChildItem -Path "$repoPath\logs\agy" -Filter "*$promptBaseName.jsonl" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
+        if ($files.Count -gt 0) {
+            $latest = $files[0]
+            if ((Get-Date) - $latest.LastWriteTime -gt [timespan]::FromMinutes($timeoutMins)) {
+                Get-Process -Name "agy" -ErrorAction SilentlyContinue | Stop-Process -Force
+                "STALLED_FLAG" | Out-File -FilePath "$repoPath\logs\agy-stall.flag" -Encoding ASCII
+                return
+            }
+        }
+    }
+}
+
+if (Test-Path "logs\agy-stall.flag") { Remove-Item "logs\agy-stall.flag" -ErrorAction SilentlyContinue }
+$guardJob1 = Start-Job -ScriptBlock $stallGuardScript -ArgumentList $repo, "agy-prompt-tests"
+
 # Run step 1 (tests)
 $testsOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-run.ps1 "logs/agy-prompt-tests.txt" 2>&1 | Out-String
+
+Stop-Job -Job $guardJob1
+Remove-Job -Job $guardJob1
+
+$flags = @()
+if (Test-Path "logs\agy-stall.flag") {
+    $flags += "stalled"
+    Remove-Item "logs\agy-stall.flag" -ErrorAction SilentlyContinue
+}
 
 # Retry if headless command abort occurs
 $retries = 0
 if ($testsOutput -match "no output produced") {
     $retries = 1
     $testsOutput += "`n--- RETRY ---`n"
+    $guardJob1Retry = Start-Job -ScriptBlock $stallGuardScript -ArgumentList $repo, "agy-prompt-tests"
     $testsOutput += & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-run.ps1 "logs/agy-prompt-tests.txt" 2>&1 | Out-String
+    Stop-Job -Job $guardJob1Retry
+    Remove-Job -Job $guardJob1Retry
+    if (Test-Path "logs\agy-stall.flag") {
+        if ($flags -notcontains "stalled") { $flags += "stalled" }
+        Remove-Item "logs\agy-stall.flag" -ErrorAction SilentlyContinue
+    }
 }
 
 # Calculate step 1 duration
@@ -118,7 +155,6 @@ foreach ($f in $step1Files) {
 }
 
 # Check if production code changed in tests step
-$flags = @()
 $prodChangedInTests = $false
 foreach ($f in $step1Files) {
     if ($f -match "src/main") {
@@ -128,13 +164,28 @@ foreach ($f in $step1Files) {
     }
 }
 
-# Collect agy reply lines mentioning remove from tests step
+# Parse JSON final answer for tests step
 $filesToRemove = @()
-$testsOutputLines = $testsOutput -split "`r?`n"
-foreach ($line in $testsOutputLines) {
-    if ($line -match "remove" -and $line -notmatch "agy-run") {
-        $filesToRemove += $line
+$testsChangedAfterWriting = @()
+$testsOutputTrimmed = $testsOutput.Trim()
+# Find the JSON part
+$jsonStart = $testsOutputTrimmed.IndexOf("{")
+$jsonEnd = $testsOutputTrimmed.LastIndexOf("}")
+if ($jsonStart -ge 0 -and $jsonEnd -gt $jsonStart) {
+    $jsonString = $testsOutputTrimmed.Substring($jsonStart, $jsonEnd - $jsonStart + 1)
+    try {
+        $jsonObj = $jsonString | ConvertFrom-Json
+        if ($null -ne $jsonObj.filesToRemove) { $filesToRemove += $jsonObj.filesToRemove }
+        if ($null -ne $jsonObj.testsChangedAfterWriting) {
+            foreach ($t in $jsonObj.testsChangedAfterWriting) {
+                $testsChangedAfterWriting += $t.path
+            }
+        }
+    } catch {
+        $flags += "final answer not JSON"
     }
+} else {
+    $flags += "final answer not JSON"
 }
 
 # Stop and report if production code changed in tests step
@@ -163,8 +214,19 @@ if ($prodChangedInTests) {
 # Record start time for step 2
 $step2Start = Get-Date
 
+if (Test-Path "logs\agy-stall.flag") { Remove-Item "logs\agy-stall.flag" -ErrorAction SilentlyContinue }
+$guardJob2 = Start-Job -ScriptBlock $stallGuardScript -ArgumentList $repo, "agy-prompt"
+
 # Run step 2 (implement)
 $implOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-impl-loop.ps1 "logs/agy-prompt-implement.txt" 2>&1 | Out-String
+
+Stop-Job -Job $guardJob2
+Remove-Job -Job $guardJob2
+
+if (Test-Path "logs\agy-stall.flag") {
+    if ($flags -notcontains "stalled") { $flags += "stalled" }
+    Remove-Item "logs\agy-stall.flag" -ErrorAction SilentlyContinue
+}
 
 # Calculate step 2 duration
 $step2End = Get-Date
@@ -215,13 +277,15 @@ foreach ($f in $step2Files) {
 # Compare hashes to find tests changed during implement
 $testsChangedInImpl = @()
 foreach ($f in $step1Files) {
-    if (Test-Path $f -PathType Leaf) {
-        $newHash = (Get-FileHash -Path $f -Algorithm SHA256).Hash
-        if ($step1Hashes.ContainsKey($f) -and $step1Hashes[$f] -ne $newHash) {
+    if ($f -match "src/test") {
+        if (Test-Path $f -PathType Leaf) {
+            $newHash = (Get-FileHash -Path $f -Algorithm SHA256).Hash
+            if ($step1Hashes.ContainsKey($f) -and $step1Hashes[$f] -ne $newHash) {
+                $testsChangedInImpl += $f
+            }
+        } elseif ($step1Hashes.ContainsKey($f)) {
             $testsChangedInImpl += $f
         }
-    } elseif ($step1Hashes.ContainsKey($f)) {
-        $testsChangedInImpl += $f
     }
 }
 
@@ -244,12 +308,32 @@ if ($implOutput -match "after (\d+) fix round") {
     $fixRounds = $matches[1]
 }
 
-# Collect agy reply lines mentioning remove from implement step
+# Parse JSON final answer for implement step
 $implOutputLines = $implOutput -split "`r?`n"
-foreach ($line in $implOutputLines) {
-    if ($line -match "remove" -and $line -notmatch "agy-impl-loop") {
-        $filesToRemove += $line
+$implOutputTrimmed = $implOutput.Trim()
+$jsonStart = $implOutputTrimmed.IndexOf("{")
+$jsonEnd = $implOutputTrimmed.LastIndexOf("}")
+if ($jsonStart -ge 0 -and $jsonEnd -gt $jsonStart) {
+    $jsonString = $implOutputTrimmed.Substring($jsonStart, $jsonEnd - $jsonStart + 1)
+    try {
+        $jsonObj = $jsonString | ConvertFrom-Json
+        if ($null -ne $jsonObj.filesToRemove) {
+            foreach ($f in $jsonObj.filesToRemove) {
+                if ($filesToRemove -notcontains $f) { $filesToRemove += $f }
+            }
+        }
+        if ($null -ne $jsonObj.testsChangedAfterWriting) {
+            foreach ($t in $jsonObj.testsChangedAfterWriting) {
+                if ($testsChangedAfterWriting -notcontains $t.path) {
+                    $testsChangedAfterWriting += $t.path
+                }
+            }
+        }
+    } catch {
+        $flags += "final answer not JSON"
     }
+} else {
+    $flags += "final answer not JSON"
 }
 
 # Extract last Tests run summary line per module

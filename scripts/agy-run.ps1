@@ -11,6 +11,10 @@ Set-Location $repo
 
 # Create the logs folder if it does not exist
 if (-not (Test-Path "$repo\logs")) { New-Item -ItemType Directory -Path "$repo\logs" | Out-Null }
+if (-not (Test-Path "$repo\logs\agy")) { New-Item -ItemType Directory -Path "$repo\logs\agy" | Out-Null }
+
+# Build the run name from the current time and the prompt file name (without extension)
+$runName = (Get-Date).ToString("yyyyMMdd-HHmmss") + "-" + [System.IO.Path]::GetFileNameWithoutExtension($PromptFile)
 
 # Write a start line to the progress log
 $startTime = Get-Date
@@ -57,8 +61,43 @@ try {
     # Read the prompt from the file
     $p = Get-Content -Raw $PromptFile
     
+    $extraArgs = @("--log-file", "logs/agy/$runName.log", "--output-format", "stream-json")
+    if ($PromptFile -match "tests" -or $PromptFile -match "implement") {
+        $extraArgs += "--json-schema"
+        $extraArgs += "scripts/prompts/report.schema.json"
+    }
+    
     # Run the executor headless with the specified arguments
-    & "$env:LOCALAPPDATA\agy\bin\agy.exe" -p $p --mode accept-edits --model gemini-3.1-pro-high --print-timeout 25m @Rest
+    & "$env:LOCALAPPDATA\agy\bin\agy.exe" -p $p --mode accept-edits --model gemini-3.1-pro-high --print-timeout 25m @extraArgs @Rest | Out-File -FilePath "$repo\logs\agy\$runName.jsonl" -Encoding UTF8
+
+    $jsonlPath = "$repo\logs\agy\$runName.jsonl"
+    if (Test-Path $jsonlPath) {
+        # Track whether a result event was found in the stream
+        $foundResult = $false
+        $resultObj = $null
+        $lines = Get-Content $jsonlPath
+        foreach ($line in $lines) {
+            try {
+                $evt = $line | ConvertFrom-Json
+                # Extract the result payload when the event is result
+                if ($evt.event -eq "result") {
+                    $foundResult = $true
+                    $resultObj = $evt.result
+                }
+            } catch { }
+        }
+        # Print the final response and check for failure status
+        if ($foundResult) {
+            Write-Output $resultObj.response
+            if ($resultObj.status -ne "SUCCESS") {
+                Write-Output "agy-run: status $($resultObj.status)"
+            }
+        } else {
+            Write-Output "agy-run: no final result"
+        }
+    } else {
+        Write-Output "agy-run: no final result"
+    }
 } finally {
     # Stop and remove the background job
     Stop-Job -Job $job

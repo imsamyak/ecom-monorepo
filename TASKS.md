@@ -104,7 +104,7 @@ Acceptance: EventCatalog resolves Product/CREATE to ProductEvent.CREATE and Vari
 #### T-008.3 InboxReceiver: dedupe, dispatch, transaction   [open]
 Acceptance (test-only listeners): a new message reaches an @EventListener for its record type and one for its sealed parent; the same message again is skipped and no listener runs; a listener that throws rolls back (no stored eventId, exception propagates, a redelivery is processed); an event with no listener is stored and acknowledged; an unknown action is logged, stored, acknowledged and not dispatched; the dedupe row is written in the same transaction as the listener's work.
 
-### T-010 agy tooling: kept logs, live step stream, JSON report   [in progress]
+### T-010 agy tooling: kept logs, live step stream, JSON report   [review]
 Module(s): scripts/ (no Java code)
 Spec (owner go ahead 2026-10-01: persist agy logs, use the CLI's features, optimize):
 - Root cause found (docs/AGY.md): agy runs a slow command (Maven) as a background task, goes idle, and when woken tries another command to read the result; headless mode denies it and the run ends with no answer. Rule: agy never runs builds or tests; the scripts do.

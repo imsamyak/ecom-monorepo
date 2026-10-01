@@ -1,4 +1,5 @@
 Use only file view, search and write tools. Never use the run-command tool for anything, any command aborts the run.
+Never run builds, tests or any other command; the scripts run Maven for you.
 To find or list files use the search and view tools, never a command.
 No subagents.
 No commit or git.
@@ -13,4 +14,4 @@ Task: {TASK_ID}
 Spec: {TASK_SPEC}
 
 This is the tests step: tests only, no production code. Tests describe the new behavior and may be red.
-Reply with one short line listing the files you changed and the files Claude must remove.
+Your final answer must be one JSON object that matches scripts/prompts/report.schema.json.

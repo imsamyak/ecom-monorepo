@@ -335,3 +335,13 @@
 - Rollback: git revert the commits found by git log --grep T-010 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-010 impl - agy tooling: kept logs, stream-json, JSON report, stall guard
+- By: gemini (agy)
+- Changed: scripts/agy-run.ps1, scripts/agy-impl-loop.ps1, scripts/agy-chunk.ps1, scripts/prompts/report.schema.json, scripts/prompts/tests.txt, scripts/prompts/implement.txt
+- Why: Keep logs, use stream-json, structured output, and stall guard
+- Depends on: T-007
+- Rollback: git revert the commits found by git log --grep T-010 (newest first)
+- Tests: check runs by Claude on Windows PowerShell 5.1: parse check clean; schema valid JSON; a run keeps logs/agy/<time>-<prompt>.log and .jsonl and prints agy's final reply from the stream result event. Three bugs found by the first check run and fixed by agy (PowerShell 5.1 Split-Path, stream result parsing, fix-round prompt name)
+- Notes: these three fixes came from Claude's check run.
+- Review: pending

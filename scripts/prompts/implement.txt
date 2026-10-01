@@ -1,4 +1,5 @@
 Use only file view, search and write tools. Never use the run-command tool for anything, any command aborts the run.
+Never run builds, tests or any other command; the scripts run Maven for you.
 To find or list files use the search and view tools, never a command.
 No subagents.
 No commit or git.
@@ -14,4 +15,4 @@ Spec: {TASK_SPEC}
 
 This is the implement step: production code only. The committed tests define the behavior, change a test only if provably wrong and say so in HISTORY. Update stale CONTEXT.md and docs/LEARNING.md for new tech.
 Rewrite any CONTEXT.md that became stale; if you use a technology, library or pattern not yet in docs/LEARNING.md, add a short section there and a New tech line in the HISTORY entry.
-Reply with one short line listing the files you changed and the files Claude must remove.
+Your final answer must be one JSON object that matches scripts/prompts/report.schema.json.
