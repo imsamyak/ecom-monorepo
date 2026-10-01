@@ -21,7 +21,7 @@ Module(s): service/product, service/platform/outbox
 Spec: comments in the five product services and RemoveVariantUseCase, and the javadoc and error message of Outbox.of, still name the old event records (Created, Updated, Deleted, Added, Removed). Rename them to CREATE, UPDATE, DELETE, ADD, REMOVE. Comment and message text only; no behavior change; no tests.
 Acceptance: no old event record names left in service main code; `cd service && mvn test` passes.
 
-#### T-003.2 Product status enum replaces the active boolean   [in progress]
+#### T-003.2 Product status enum replaces the active boolean   [review]
 Module(s): service/platform/contract, service/product
 Spec (owner agreed 2026-10-01):
 - New enum `ProductStatus` with `ACTIVE` and `INACTIVE` in `service/product/.../domain/enums/ProductStatus.java`. (ARCHIVED is parked in SWGT.md.)
@@ -32,7 +32,7 @@ Spec (owner agreed 2026-10-01):
 - The existing `PATCH /products/{id}/active` keeps working until T-003.3 removes it (it calls activate/deactivate); its response shows `status`.
 Acceptance: a new product is INACTIVE; activate/deactivate switch it; the `status` column holds the text ACTIVE or INACTIVE (read back with a native query); responses carry `"status"`; the CREATE outbox row has data.status INACTIVE; the UPDATE row has data.status; `cd service && mvn test` passes. Existing tests about the active boolean or the old default change on purpose (say so in HISTORY).
 
-#### T-003.3 PATCH /products/{id} partial update replaces PUT and PATCH /active   [open]
+#### T-003.3 PATCH /products/{id} partial update replaces PUT and PATCH /active   [review]
 Module(s): service/product
 Spec (owner agreed 2026-10-01, JSON Merge Patch, RFC 7396):
 - `PATCH /products/{productId}` with a JSON body holding any of `title`, `description`, `price`, `status`. A field that is not sent is left unchanged. `"description": null` clears the description. `title`, `price` and `status` must not be null: sending null for them is a 400. An unknown status value is a 400.

@@ -87,3 +87,9 @@ Parent `service/pom.xml` lists modules (`platform/shared`, `platform/outbox`, `p
 ## Not used yet, but relevant
 - **Spring Boot Actuator:** a starter (`spring-boot-starter-actuator`) that exposes health and metrics endpoints (`/actuator/health`, `/actuator/metrics`) and supports custom metrics via Micrometer. Natural next step here: a gauge for "age of oldest PENDING outbox row" to detect a stuck relay, which is the visibility gap noted in `service/platform/outbox/CONTEXT.md`. Not added yet.
 - **CDC (Debezium) / sequence column:** the standard fixes for the outbox ordering limitation.
+
+## JSON Merge Patch and Jackson Optional
+- **What:** JSON Merge Patch (RFC 7396) allows clients to send only the fields they want to change. A missing field means "leave unchanged"; a field sent as `null` means "clear this field".
+- **Here:** `PATCH /products/{productId}` implements this using `Optional` fields in the request DTO. 
+- **How:** With Jackson's `Jdk8Module` (auto-configured by Spring Boot), an omitted field in JSON deserializes to a Java `null`. A field explicitly sent as `null` deserializes to `Optional.empty()`. A present value is `Optional.of(value)`.
+- **Gotcha:** Bean Validation annotations on `Optional` fields (like `@Size`) validate the unwrapped value (if present) because Hibernate Validator has a built-in `ValueExtractor` for `Optional`. However, if the client explicitly sends `null` (which becomes `Optional.empty()`), validators like `@Size` consider it valid (since they ignore nulls). To enforce that a field is not cleared, you must manually check `optionalField.isEmpty()` or use a custom validator.

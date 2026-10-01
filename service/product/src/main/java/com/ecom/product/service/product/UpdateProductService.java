@@ -16,6 +16,8 @@ import com.ecom.product.service.product.mapper.ProductMapper;
 import org.springframework.validation.annotation.Validated;
 import com.ecom.product.domain.entity.Product;
 
+import com.ecom.shared.exception.InvalidRequestException;
+
 @Service
 @Validated
 @RequiredArgsConstructor
@@ -27,6 +29,22 @@ public class UpdateProductService implements UpdateProductUseCase {
 
     @Override
     public ProductResult execute(UpdateProductCommand command) {
+        // empty body check
+        if (command.title() == null && command.description() == null && command.price() == null && command.status() == null) {
+            throw new InvalidRequestException("Empty request body");
+        }
+
+        // null checks for title, price, status
+        if (command.title() != null && command.title().isEmpty()) {
+            throw new InvalidRequestException("Title cannot be null");
+        }
+        if (command.price() != null && command.price().isEmpty()) {
+            throw new InvalidRequestException("Price cannot be null");
+        }
+        if (command.status() != null && command.status().isEmpty()) {
+            throw new InvalidRequestException("Status cannot be null");
+        }
+
         // Load the product or throw an exception if it does not exist
         Product product = loadProductPort.loadProduct(command.productId())
                 .orElseThrow(() -> new ProductNotFoundException(command.productId()));
@@ -34,10 +52,23 @@ public class UpdateProductService implements UpdateProductUseCase {
         // Reject the request if the seller does not own this product
         product.verifyOwnership(command.sellerId());
 
-        // Update the product properties
-        product.setTitle(command.title());
-        product.setDescription(command.description());
-        product.setPrice(command.price());
+        // Update the product properties if present
+        if (command.title() != null) {
+            product.setTitle(command.title().get());
+        }
+        if (command.description() != null) {
+            product.setDescription(command.description().orElse(null));
+        }
+        if (command.price() != null) {
+            product.setPrice(command.price().get());
+        }
+        if (command.status() != null) {
+            if (command.status().get() == com.ecom.product.domain.enums.ProductStatus.ACTIVE) {
+                product.activate();
+            } else {
+                product.deactivate();
+            }
+        }
 
         // Save the updated product
         Product savedProduct = saveProductPort.saveProduct(product);

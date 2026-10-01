@@ -11,8 +11,8 @@ Spring Boot app (port 8081, H2). Hexagonal layout under `com.ecom.product` (rule
 - `status` is a non-null `ProductStatus` enum, `INACTIVE` by default (also via the builder). `activate()` / `deactivate()` on the entity change it. Ownership is checked with `Product.verifyOwnership(sellerId)` (throws `ProductNotOwnedException`).
 
 ## Set product active / inactive
-- Use case `SetProductActiveUseCase.setProductActive(SetProductActiveCommand(productId, sellerId, active))` implemented by `SetProductActiveService`: load (`ProductNotFoundException`), verify ownership (nothing saved on failure), activate or deactivate, save, return `ProductResult` (which carries `status`).
-- Endpoint `PATCH /products/{productId}/active` with body `{"active": true|false}`; the seller id comes from the JWT principal; returns `ProductResponse` (carries `status`). 404 if missing, 403 if another seller owns it (mapped by the shared `GlobalExceptionHandler`).
+- `UpdateProductUseCase` handles partial updates, including `status`. Status changes go through the entity's `activate()` / `deactivate()`.
+- Endpoint `PATCH /products/{productId}` with JSON Merge Patch semantics. Fields not sent are left unchanged; a field sent as `null` clears it (e.g., description), except for `title`, `price`, and `status` which cannot be null. An empty body is rejected (400). The seller id comes from the JWT principal; returns `ProductResponse` (carries `status`). 404 if missing, 403 if another seller owns it.
 - Nothing else reads `status` yet (listing and get do not filter on it).
 
 ## Variant sku

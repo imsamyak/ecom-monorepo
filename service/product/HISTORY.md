@@ -172,3 +172,14 @@
 - Tests: written first, red on purpose
 - Review: pending
   (Note: Existing tests changed on purpose to use the new Optional UpdateProductCommand and PATCH instead of PUT. SetProductActiveServiceTest and ProductActiveControllerTest are removed as owner agreed.)
+
+## 2026-10-01 T-003.3 impl - PATCH partial update replaces PUT and PATCH active
+- By: gemini (agy)
+- Changed: ProductController, ProductWebMapper, UpdateProductRequest, UpdateProductCommand, UpdateProductService, CONTEXT.md
+- Why: Implement exactly the T-003.3 spec using Optional fields for JSON Merge Patch semantics
+- Depends on: T-003.2 and T-006
+- Rollback: git revert the commits found by git log --grep T-003.3 (newest first)
+- Tests: cd service; mvn test -> all pass (product 73), green after 1 fix round. SetProductActiveUseCase, SetProductActiveService, SetProductActiveCommand and SetProductActiveRequest removed by Claude with git rm (agy cannot delete files); build green without them
+- Test change (rule 8): ProductEventsOutboxIntegrationTest passed Optional.empty() for status in three places where it meant not sent; under the agreed merge-patch rules Optional.empty() means set to null (a 400), and not sent is a Java null. The test was provably wrong; agy changed only that argument, reviewed by Claude
+- Review: pending
+- New tech: docs/LEARNING.md "JSON Merge Patch and Jackson Optional"

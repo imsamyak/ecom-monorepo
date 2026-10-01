@@ -105,7 +105,7 @@ class ProductEventsOutboxIntegrationTest {
         // An existing product, then an update
         ProductResult product = newProduct();
         updateProduct.execute(new UpdateProductCommand(product.id(), sellerId, 
-                Optional.of("Phone 2"), Optional.of("new"), Optional.of(20.0), Optional.empty()));
+                Optional.of("Phone 2"), Optional.of("new"), Optional.of(20.0), null));
 
         // One UPDATE row with the values after the change
         OutboxEntity row = onlyRow();
@@ -181,7 +181,7 @@ class ProductEventsOutboxIntegrationTest {
         // The product does not exist
         assertThrows(ProductNotFoundException.class,
                 () -> updateProduct.execute(new UpdateProductCommand(UUID.randomUUID(), sellerId, 
-                        Optional.of("Phone"), Optional.of("d"), Optional.of(1.0), Optional.empty())));
+                        Optional.of("Phone"), Optional.of("d"), Optional.of(1.0), null)));
 
         // The business rule failed, so no event was recorded
         assertEquals(0, outboxRepository.count());
@@ -195,7 +195,7 @@ class ProductEventsOutboxIntegrationTest {
         // The update is refused and no event is recorded
         assertThrows(ProductNotOwnedException.class,
                 () -> updateProduct.execute(new UpdateProductCommand(product.id(), UUID.randomUUID(), 
-                        Optional.of("Hacked"), Optional.of("d"), Optional.of(1.0), Optional.empty())));
+                        Optional.of("Hacked"), Optional.of("d"), Optional.of(1.0), null)));
         assertEquals(0, outboxRepository.count());
     }
 
