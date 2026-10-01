@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -84,7 +86,9 @@ class OutboxIntegrationTest {
 
         assertEquals(1, PUBLISHED.size());
         assertTrue(PUBLISHED.get(0).payload().contains("Phone"));
-        assertEquals(OutboxStatus.PROCESSED, outboxRepository.findAll().get(0).getStatus());
+        assertEquals(result.id().toString(), PUBLISHED.get(0).aggregateId());
+        // the published row is deleted asynchronously right after the publish
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertEquals(0, outboxRepository.count()));
     }
 
     @Test
@@ -110,17 +114,30 @@ class OutboxIntegrationTest {
     }
 
     @Test
-    void purgesOnlyOldProcessedEvents() {
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-        outboxRepository.save(processedRow(now.minusDays(30)));
-        outboxRepository.save(processedRow(now.minusHours(1)));
+    void sweepRemovesLeftoverProcessedRowsButNotPending() {
+        outboxRepository.save(processedRow(LocalDateTime.now(ZoneOffset.UTC)));
         create("Pending stays");
 
         cleaner.purge();
 
-        assertEquals(2, outboxRepository.count());   // recent processed + pending
-        assertEquals(0, outboxRepository.findAll().stream()
-                .filter(e -> e.getProcessedAt() != null && e.getProcessedAt().isBefore(now.minusDays(7))).count());
+        List<OutboxEntity> rows = outboxRepository.findAll();
+        assertEquals(1, rows.size());
+        assertEquals(OutboxStatus.PENDING, rows.get(0).getStatus());
+    }
+
+    @Test
+    void cleanupDeletesOnlyProcessedRowsAndKeepsPending() {
+        create("First");
+        create("Second");
+        BROKER_DOWN.set(false);
+        relay.processOutboxEvents();   // publishes both, each followed by an async cleanup
+        create("Third");               // stays pending: the relay is not run again
+
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
+            List<OutboxEntity> rows = outboxRepository.findAll();
+            assertEquals(1, rows.size());
+            assertEquals(OutboxStatus.PENDING, rows.get(0).getStatus());
+        });
     }
 
     private static OutboxEntity processedRow(LocalDateTime processedAt) {

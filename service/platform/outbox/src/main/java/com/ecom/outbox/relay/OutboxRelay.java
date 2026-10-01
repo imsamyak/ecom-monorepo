@@ -22,6 +22,7 @@ import java.util.List;
  * same row on later polls, so events are never published out of order. A row that can never be published
  * therefore blocks the outbox until it is fixed; watch the error log. Retries back off exponentially
  * (initial, 2x, 4x, ... capped); that state is kept in memory, so a restart retries again from the initial delay.
+ * Each published row is deleted right after its transaction commits, by an async {@link OutboxCleaner} run.
  * Run it on one instance only ({@code outbox.relay.enabled}).
  */
 @Slf4j
@@ -31,14 +32,16 @@ public class OutboxRelay {
     private final ObjectProvider<OutboxPublisher> publisherProvider;
     private final TransactionTemplate transactionTemplate;
     private final int maxEventsPerRun;
+    private final OutboxCleaner cleaner;
     private final RetryBackoff backoff;
 
     public OutboxRelay(OutboxRepository outboxRepository, ObjectProvider<OutboxPublisher> publisherProvider,
-                       TransactionTemplate transactionTemplate, int maxEventsPerRun,
+                       TransactionTemplate transactionTemplate, OutboxCleaner cleaner, int maxEventsPerRun,
                        long initialBackoffMs, long maxBackoffMs) {
         this.outboxRepository = outboxRepository;
         this.publisherProvider = publisherProvider;
         this.transactionTemplate = transactionTemplate;
+        this.cleaner = cleaner;
         this.maxEventsPerRun = maxEventsPerRun;
         this.backoff = new RetryBackoff(initialBackoffMs, maxBackoffMs);
     }
@@ -53,6 +56,7 @@ public class OutboxRelay {
             if (!Boolean.TRUE.equals(transactionTemplate.execute(status -> publishNext(publisher)))) {
                 return;
             }
+            cleaner.cleanup();   // after commit; async, so a slow or failed delete never touches publishing
         }
     }
 
