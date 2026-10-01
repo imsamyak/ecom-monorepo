@@ -43,3 +43,9 @@
 - Tests: `cd service && mvn test` -> all pass (product 44, shared 31, outbox 5)
 - Review: pending
 
+## 2026-10-01 progress-checklist - resume point for crashes and new sessions
+- By: claude
+- Changed: docs/PROGRESS.md (new), AGENTS.md rule 16 (+ rule 14 reads it), scripts/agy-run.ps1, scripts/agy-impl-loop.ps1
+- Why: owner wants a checkbox list kept from the start of each task so work resumes from the first unticked box
+- Tests: n/a (docs and helper scripts; scripts syntax-checked)
+- Review: pending
