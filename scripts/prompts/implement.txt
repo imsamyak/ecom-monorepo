@@ -1,0 +1,17 @@
+Use only file view, search and write tools. Never use the run-command tool for anything, any command aborts the run.
+To find or list files use the search and view tools, never a command.
+No subagents.
+No commit or git.
+Never delete, move or rename files, list files that must go away in the reply instead.
+Never touch the logs folder.
+Read AGENTS.md, docs/PROGRESS.md, docs/LEARNING.md, the task in TASKS.md and the CONTEXT.md and last HISTORY.md entries of every module the task changes.
+Write a short comment before every step (rule 12).
+Append one HISTORY.md entry to every module you change, in the AGENTS.md format, heading date {TASK_ID} impl - short title, By: gemini (agy), Changed, Why, Depends on, Rollback (git revert the commits found by git log --grep {TASK_ID}, newest first), Tests: pending, Review: pending.
+ASCII only.
+
+Task: {TASK_ID}
+Spec: {TASK_SPEC}
+
+This is the implement step: production code only. The committed tests define the behavior, change a test only if provably wrong and say so in HISTORY. Update stale CONTEXT.md and docs/LEARNING.md for new tech.
+Rewrite any CONTEXT.md that became stale; if you use a technology, library or pattern not yet in docs/LEARNING.md, add a short section there and a New tech line in the HISTORY entry.
+Reply with one short line listing the files you changed and the files Claude must remove.

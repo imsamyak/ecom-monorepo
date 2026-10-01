@@ -219,3 +219,11 @@
 - Rollback: git revert the commits found by git log --grep T-007 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+## 2026-10-01 T-007 impl - agy chunk driver and prompt templates (pilot A)
+- By: gemini (agy)
+- Changed: scripts/prompts/tests.txt, scripts/prompts/implement.txt, scripts/agy-chunk.ps1
+- Why: build pilot A chunk driver and templates
+- Depends on: T-004
+- Rollback: git revert the commits found by git log --grep T-007 (newest first)
+- Tests: syntax check (0 parse errors); reviewed by Claude (fixed: git status -uall so new files in new folders are seen; templates gained the search rule, the HISTORY heading format and the CONTEXT/LEARNING duty); known gap: no stall/time-limit guard yet (agy calls keep their 25 min timeout, the loop stops after 5 identical failures); real check is the T-005 pilot run
+- Review: pending
