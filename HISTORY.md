@@ -90,3 +90,10 @@
 - Why: owner wants any new session to understand the project, the workflow and where work stopped; rule numbers 1-16 unchanged
 - Tests: n/a (docs only)
 - Review: approved (owner said merge all, 2026-10-01)
+
+## 2026-10-01 rule-18 - discuss first, build only after go ahead
+- By: claude
+- Changed: AGENTS.md rule 18
+- Why: owner: always discuss anything new first, implement only after the owner says go ahead
+- Tests: n/a (docs only)
+- Review: pending
