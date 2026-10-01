@@ -18,3 +18,22 @@
 - Review notes by Claude: three fix rounds after review. (1) Claude asked for two missing tests: the inbox.dedupe.ttl property (default 7 days, override) and different aggregates being independent. (2) Bug found by Claude's full build: inboxRepository was registered twice; fixed by registering the module root package with @AutoConfigurationPackage(basePackages = com.ecom.inbox), like the outbox. (3) Adapter and cleaner are created only by the auto-configuration (no component scan).
 - Test change (rule 8): agy changed its own new tests after writing them: InboxJpaAdapterTest uses separate isDuplicate and saveEvent calls (for the lock-then-dispatch flow of T-008.3); InboxJpaAdapterTest and InboxCleanerTest create the adapter and cleaner directly instead of @Import; InboxAutoConfigurationTest uses @SpringBootTest instead of ApplicationContextRunner. Assertions unchanged.
 - Tests (Claude, full build): cd service; mvn test -> all green (contract 18, shared 31, outbox 26, inbox 7, product 78)
+
+## 2026-10-01 T-008.3 tests - InboxReceiver dedupe, dispatch, transaction
+- By: gemini (agy)
+- Changed: service/platform/inbox/src/test/java/com/ecom/inbox/InboxReceiverTest.java
+- Why: Test-driven development for InboxReceiver deduplication, dispatching to @EventListener, and transaction rollback on listener failure.
+- Depends on: T-008.1, T-008.2
+- Rollback: git revert the commits found by git log --grep T-008.3 (newest first)
+- Tests: pending
+- Review: pending
+- Review notes: Renamed tests to descriptive sentences and added new scenarios (listener stops throwing, unknown aggregate) after Claude's review.
+
+## 2026-10-01 T-008.3 impl - InboxReceiver dedupe, dispatch, transaction
+- By: gemini (agy)
+- Changed: service/platform/inbox/src/main/java/com/ecom/inbox/InboxMessage.java, service/platform/inbox/src/main/java/com/ecom/inbox/InboxReceiver.java, service/platform/inbox/CONTEXT.md
+- Why: Implement the inbox receiver with deduplication using InboxStore, transaction management, envelope decoding via EventCatalog, and dispatch using ApplicationEventPublisher.
+- Depends on: T-008.1, T-008.2
+- Rollback: git revert the commits found by git log --grep T-008.3 (newest first)
+- Tests: pending
+- Review: pending
