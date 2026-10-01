@@ -129,3 +129,12 @@
 - Rollback: git revert the commits found by git log --grep T-004 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-004 impl - progress log watcher for agy scripts
+- By: gemini (agy)
+- Changed: .gitignore, scripts/agy-run.ps1, scripts/agy-impl-loop.ps1
+- Why: track agy execution progress in background to detect stuck runs
+- Depends on: none
+- Rollback: git revert the commits found by git log --grep T-004 (newest first)
+- Tests: manual check run (agy-run.ps1, 28s): start line, agy step note and end line written to logs/agy-progress.log; logs/ ignored by git; the 30 s watcher line is confirmed on the next run longer than 30 s
+- Review: pending
