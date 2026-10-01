@@ -24,3 +24,10 @@
 - Tests: `cd service && mvn test` -> all pass (4 new)
 - Not done on purpose: AddVariantService/RemoveVariantService do not emit it yet (would add outbox rows for variant changes; needs the owner's decision)
 - Review: pending
+
+## 2026-10-01 rename-contract – module renamed confess -> contract
+- By: claude
+- Changed: pom dependency and imports now use contract / com.ecom.contract
+- Why: owner asked for the module to be called contract
+- Tests: `cd service && mvn test` -> all pass (no behavior change)
+- Review: pending

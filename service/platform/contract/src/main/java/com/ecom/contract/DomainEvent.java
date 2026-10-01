@@ -1,4 +1,4 @@
-package com.ecom.confess;
+package com.ecom.contract;
 
 /**
  * Contract for events published through the outbox. The implementing record's own simple name is the aggregate type

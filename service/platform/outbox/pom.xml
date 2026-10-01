@@ -30,7 +30,7 @@
         <!-- DomainEvent contract used by Outbox.of -->
         <dependency>
             <groupId>com.ecom</groupId>
-            <artifactId>confess</artifactId>
+            <artifactId>contract</artifactId>
             <version>${project.version}</version>
         </dependency>
 

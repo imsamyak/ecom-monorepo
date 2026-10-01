@@ -1,4 +1,4 @@
-package com.ecom.confess;
+package com.ecom.contract;
 
 import org.junit.jupiter.api.Test;
 

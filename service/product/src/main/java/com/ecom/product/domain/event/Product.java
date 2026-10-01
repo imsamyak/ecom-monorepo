@@ -1,6 +1,6 @@
 package com.ecom.product.domain.event;
 
-import com.ecom.confess.DomainEvent;
+import com.ecom.contract.DomainEvent;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

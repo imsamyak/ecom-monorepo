@@ -14,3 +14,10 @@
 - Why: build an outbox row from a DomainEvent: type = record name, id = the string the record returns
 - Tests: `cd service && mvn test` -> all pass (12 new here)
 - Review: pending
+
+## 2026-10-01 rename-contract – module renamed confess -> contract
+- By: claude
+- Changed: pom dependency and imports now use contract / com.ecom.contract
+- Why: owner asked for the module to be called contract
+- Tests: `cd service && mvn test` -> all pass (no behavior change)
+- Review: pending

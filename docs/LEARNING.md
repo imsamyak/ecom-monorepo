@@ -52,7 +52,7 @@ Every section: what it is, where it lives here, how it works, gotchas. New tech 
 
 ## Domain events as records
 - **Java records:** a short way to declare an immutable data class (`record Product(UUID id, ...)`). The compiler generates the constructor, accessors, `equals`, `hashCode` and `toString`. Jackson serializes a record's components, which is why the event record is also the outbox payload.
-- **`DomainEvent` (confess module):** an interface with one method, `String aggregateId()`. Each event record picks the attribute that identifies its aggregate and converts it to a string itself. The record's simple name (`getClass().getSimpleName()`) is the aggregate type, so there is nothing to configure.
+- **`DomainEvent` (contract module):** an interface with one method, `String aggregateId()`. Each event record picks the attribute that identifies its aggregate and converts it to a string itself. The record's simple name (`getClass().getSimpleName()`) is the aggregate type, so there is nothing to configure.
 - **Why the aggregate id matters:** it becomes the broker partition key. Events with the same key land on the same partition and are consumed in order, so choose the entity whose events must stay ordered (for product events, the product id).
 - **Static factory:** `Outbox.of(event)` is a named constructor-like method, clearer than a long builder chain at every call site.
 - **Gotchas:** lambdas and anonymous classes have generated names, so `Outbox.of` rejects them; a record named like an entity (`Product`) needs fully qualified names where both are in scope.

@@ -11,7 +11,7 @@ Transactional outbox, plug-and-play: adding the dependency auto-configures it (`
 - Relay and cleaner run only when `outbox.relay.enabled` is true (default). Run on **one instance only**.
 
 ## Building events
-`Outbox.of(DomainEvent)` (from the `confess` module) builds the row: aggregate type = the event record's simple name, aggregate id = the string the record returns, payload = the event itself. It throws `IllegalArgumentException` for a null/blank id, anonymous classes and lambdas. Use cases can still build `Outbox` by hand with the builder.
+`Outbox.of(DomainEvent)` (from the `contract` module) builds the row: aggregate type = the event record's simple name, aggregate id = the string the record returns, payload = the event itself. It throws `IllegalArgumentException` for a null/blank id, anonymous classes and lambdas. Use cases can still build `Outbox` by hand with the builder.
 
 ## Invariants / known limits
 - Order can break if concurrent transactions commit out of `createdAt` order (would need a sequence column or CDC).

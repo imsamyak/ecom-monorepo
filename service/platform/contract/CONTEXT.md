@@ -1,4 +1,4 @@
-# confess module
+# contract module
 
 The contract for events published through the outbox. Dependency free on purpose.
 

@@ -28,3 +28,10 @@
 - Why: new DomainEvent contract module, see service/platform/confess/HISTORY.md
 - Tests: `cd service && mvn test` -> all pass
 - Review: pending
+
+## 2026-10-01 rename-contract – module renamed confess -> contract
+- By: claude
+- Changed: service/pom.xml module name; AGENTS.md and docs/LEARNING.md references
+- Why: owner asked for the module to be called contract
+- Tests: `cd service && mvn test` -> all pass (no behavior change)
+- Review: pending

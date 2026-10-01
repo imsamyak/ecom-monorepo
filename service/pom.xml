@@ -19,7 +19,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>platform/confess</module>
+        <module>platform/contract</module>
         <module>platform/outbox</module>
         <module>product</module>
         <module>platform/shared</module>

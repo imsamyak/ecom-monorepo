@@ -1,6 +1,6 @@
 package com.ecom.outbox;
 
-import com.ecom.confess.DomainEvent;
+import com.ecom.contract.DomainEvent;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;

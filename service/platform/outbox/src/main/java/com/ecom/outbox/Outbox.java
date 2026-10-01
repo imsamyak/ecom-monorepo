@@ -1,6 +1,6 @@
 package com.ecom.outbox;
 
-import com.ecom.confess.DomainEvent;
+import com.ecom.contract.DomainEvent;
 import com.ecom.outbox.entity.OutboxEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

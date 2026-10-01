@@ -1,6 +1,6 @@
 package com.ecom.product.domain.event;
 
-import com.ecom.confess.DomainEvent;
+import com.ecom.contract.DomainEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
