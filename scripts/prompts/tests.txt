@@ -1,6 +1,6 @@
 Use only file view, search and write tools. Never use the run-command tool for anything, any command aborts the run.
 Never run builds, tests or any other command; the scripts run Maven for you.
-To find or list files use the search and view tools, never a command.
+The repository file list is included below; use it instead of listing folders, and never run a command to list or find files.
 No subagents.
 No commit or git.
 Never delete, move or rename files, list files that must go away in the reply instead.

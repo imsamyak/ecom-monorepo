@@ -344,6 +344,7 @@
 - Rollback: git revert the commits found by git log --grep T-010 (newest first)
 - Tests: check runs by Claude on Windows PowerShell 5.1: parse check clean; schema valid JSON; a run keeps logs/agy/<time>-<prompt>.log and .jsonl and prints agy's final reply from the stream result event. Three bugs found by the first check run and fixed by agy (PowerShell 5.1 Split-Path, stream result parsing, fix-round prompt name)
 - Notes: these three fixes came from Claude's check run.
+- Notes: these three fixes came from Claude's experiment run.
 - Review: pending
 
 ## 2026-10-01 rule - rule 23 and the decision log

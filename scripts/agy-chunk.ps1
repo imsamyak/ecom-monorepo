@@ -7,6 +7,16 @@ $ErrorActionPreference = "Continue"
 $repo = Split-Path $PSScriptRoot -Parent
 Set-Location $repo
 
+# Create logs directory if missing
+if (-not (Test-Path "logs")) {
+    New-Item -ItemType Directory -Path "logs" | Out-Null
+}
+
+# Create logs/agy directory if missing
+if (-not (Test-Path "logs/agy")) {
+    New-Item -ItemType Directory -Path "logs/agy" | Out-Null
+}
+
 # Read TASKS.md content
 $tasksMd = Get-Content -Raw "TASKS.md"
 
@@ -52,6 +62,21 @@ $taskSpec = $taskSpecLines -join "`r`n"
 
 # Replace double quotes with single quotes
 $taskSpec = $taskSpec.Replace('"', "'")
+
+# Collect repository file list to prevent agy from running listing commands
+$repoFilesOutput = git ls-files
+$filteredFiles = @()
+if ($null -ne $repoFilesOutput) {
+    foreach ($f in $repoFilesOutput) {
+        if ($f.StartsWith("service/") -or $f.StartsWith("docs/") -or $f.StartsWith("scripts/") -or ($f.EndsWith(".md") -and -not $f.Contains("/"))) {
+            $filteredFiles += $f
+        }
+    }
+}
+$repoFileList = $filteredFiles -join "`r`n"
+
+# Insert the file list after the task spec
+$taskSpec = $taskSpec + "`r`n`r`nREPOSITORY FILES:`r`n" + $repoFileList
 
 # Build and write the tests prompt
 $testsTemplate = Get-Content -Raw "scripts/prompts/tests.txt"
@@ -154,14 +179,24 @@ foreach ($f in $step1Files) {
     }
 }
 
-# Check if production code changed in tests step
+# Check if production code changed in tests step, and if test files were written
 $prodChangedInTests = $false
+$testFilesWrittenInTests = $false
 foreach ($f in $step1Files) {
     if ($f -match "src/main") {
         $prodChangedInTests = $true
-        $flags += "production code changed in tests step"
-        break
+        if ($flags -notcontains "production code changed in tests step") {
+            $flags += "production code changed in tests step"
+        }
     }
+    if ($f -match "src/test") {
+        $testFilesWrittenInTests = $true
+    }
+}
+
+# Add flag if no test files written
+if (-not $testFilesWrittenInTests) {
+    $flags += "no test files written"
 }
 
 # Parse JSON final answer for tests step
@@ -263,15 +298,24 @@ foreach ($f in $finalFiles) {
     }
 }
 
-# Split step 2 files into production and tests
+# Split step 2 files into production and tests, and check if src/main changed
 $step2ProdFiles = @()
 $step2TestFiles = @()
+$prodFilesWrittenInImpl = $false
 foreach ($f in $step2Files) {
     if ($f -match "src/test") {
         $step2TestFiles += $f
     } else {
         $step2ProdFiles += $f
+        if ($f -match "src/main") {
+            $prodFilesWrittenInImpl = $true
+        }
     }
+}
+
+# Add flag if no production files written
+if (-not $prodFilesWrittenInImpl) {
+    $flags += "no production files written"
 }
 
 # Compare hashes to find tests changed during implement
