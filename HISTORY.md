@@ -192,3 +192,12 @@
 - Rollback: git revert the commits found by git log --grep T-007 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-007 docs - add pilot B (one large self-checking agy run)
+- By: claude
+- Changed: TASKS.md (T-007)
+- Why: owner: use agy's large context, let agy take whole tasks, delegate, test itself and reduce overhead
+- Depends on: T-004
+- Rollback: git revert the commits found by git log --grep T-007 (newest first)
+- Tests: n/a (docs only)
+- Review: pending
