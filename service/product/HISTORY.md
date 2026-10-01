@@ -52,3 +52,10 @@
 - Tests: `cd service && mvn test` -> all pass (product 41 tests); run by the driver loop (claude side)
 - Test change (rule 8): the two mapper tests in SetProductActiveServiceTest were changed by agy to add `.sellerId(UUID.randomUUID())` to the Product builder, because Product.sellerId is @NonNull and the builder threw an NPE. The tests were wrong (missed in review); assertions are unchanged.
 - Review: pending
+
+## 2026-10-01 T-002.3 tests – PATCH /products/{id}/active (tests first)
+- By: gemini (agy) wrote the tests, claude reviewed them and sent back one fix (wrong use case method name)
+- Changed: tests: ProductActiveControllerTest (new, @WebMvcTest); no production code yet
+- Why: tests first for T-002.3; they do not compile until SetProductActiveRequest, the web mapper methods, the endpoint and ProductResponse.active exist
+- Tests: not run yet (compile fails by design)
+- Review: pending
