@@ -9,3 +9,10 @@
 - Tests: `cd service && mvn -pl product -am test` -> all pass (19 new in this task, 6 existing integration, outbox and shared suites green)
 - New tech: docs/LEARNING.md "JPA / Hibernate features used" (AttributeConverter, @Check) and the String.join gotcha
 - Review: approved (owner said "merge all branches to main", 2026-10-01)
+
+## 2026-10-01 confess-module – product publishes a Product domain event (tests only so far)
+- By: claude
+- Changed: tests only: ProductEventTest, CreateProductServiceOutboxTest
+- Why: CreateProductService should emit the outbox row through a DomainEvent record named Product, keeping the same JSON payload fields
+- Tests: not runnable yet (red on purpose, implementation not written)
+- Review: pending; waiting for the owner's explicit go ahead

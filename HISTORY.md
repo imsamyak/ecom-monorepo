@@ -21,3 +21,10 @@
 - Why: owner clarified that saying "merge" means the tests are approved and merging is authorized
 - Tests: n/a (docs only)
 - Review: approved (owner said "approved", 2026-10-01)
+
+## 2026-10-01 confess-module – DomainEvent contract module (tests and skeleton only so far)
+- By: claude
+- Changed: new module service/platform/confess (pom, DomainEventTest); module registered in service/pom.xml. No production code yet.
+- Why: events decide their own aggregate id; the record name is the aggregate type (owner design)
+- Tests: written first; the branch does not compile yet because DomainEvent and Outbox.of do not exist (red on purpose)
+- Review: pending; waiting for the owner's explicit go ahead before implementing
