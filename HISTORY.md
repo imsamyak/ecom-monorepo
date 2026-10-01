@@ -174,3 +174,12 @@
 - Rollback: git revert the commit found by git log --grep "park token-cost"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 docs - clean up docs/PROGRESS.md
+- By: claude
+- Changed: docs/PROGRESS.md (removed a duplicated block and a false merged-to-main line, ticked finished steps)
+- Why: owner asked for the pending status; the checklist had drifted
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "clean up docs/PROGRESS.md"
+- Tests: n/a (docs only)
+- Review: pending
