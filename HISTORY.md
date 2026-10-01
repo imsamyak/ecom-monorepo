@@ -210,3 +210,12 @@
 - Rollback: git revert the commits found by git log --grep T-005 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-007 docs - record the T-003.3 baseline cost
+- By: claude
+- Changed: docs/AGY.md section 8, docs/PROGRESS.md
+- Why: rule 22: measure the old process before piloting the new one
+- Depends on: T-003.3
+- Rollback: git revert the commits found by git log --grep T-007 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

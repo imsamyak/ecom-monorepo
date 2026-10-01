@@ -9,7 +9,7 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 - [x] T-006 (event interfaces end in Event): agy implements until green, Claude reviews, commits, pushes
 - [x] T-003.3 (PATCH /products/{id} partial update): agy writes tests only, Claude reviews, commits red tests
 - [x] T-003.3: agy implements until green, Claude reviews, commits, pushes
-- [ ] Baseline: count Claude's cost for T-003.3 on the old process (tool calls, prompt size, diff lines read, retries, time)
+- [x] Baseline: count Claude's cost for T-003.3 on the old process (tool calls, prompt size, diff lines read, retries, time)
 - [ ] T-007 (agy chunk driver): agy builds scripts/agy-chunk.ps1, templates and report; Claude updates rule 15 and docs/AGY.md; separate commits
 - [ ] Pilot: next chunk on the new process, compare with the baseline, keep / adjust / roll back, record in docs/AGY.md
 - [ ] T-005 (all five events built by MapStruct mappers; owner said go ahead): runs as pilot A on the T-007 chunk driver

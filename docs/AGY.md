@@ -45,3 +45,16 @@ Everything known about running `agy` as the Executor. Verified 2026-10-01 (T-001
 - Both scripts write to `logs/agy-progress.log` (git-ignored): a start line, a watcher line every 30 seconds (elapsed minutes, last step and last file written, read from `cli.log`; the loop also shows its round), and an end line with exit code and duration.
 - Prompt rule: every prompt asks agy to append one plain-English line per step to `logs/agy-progress.log` (what it is doing, or what blocks it).
 - Claude checks a running task with `Get-Content logs/agy-progress.log -Tail 10` and treats it as stuck or on a wrong path when: a tests-only step runs well over ~15 minutes or an implement loop over ~30 minutes without new progress; no new step appears for several minutes; the same file is rewritten again and again; files outside the step are touched (production code in a tests step); or the loop repeats the same failure (the loop itself stops after 5 identical rounds). Then Claude stops the run, discards its partial changes and resends a corrected prompt.
+
+## 8. Cost pilots (rule 22)
+Measures of Claude's own work per chunk, compared between processes. Counts are from the session transcript; "lines read" is the diff and file output Claude looked at during review.
+
+### Baseline: T-003.3 on the old process (2026-10-01)
+- Process: Claude writes a tests prompt, runs agy-run.ps1, reviews the test diff, commits; writes an implement prompt, runs agy-impl-loop.ps1, reviews the code diff, removes files agy cannot delete, rebuilds, commits.
+- Claude tool calls: about 22 (2 prompts, 4 runs incl. retries, 3 progress checks, 6 review reads, 1 review-fix round trip, 1 rm+rebuild, 5 commit steps incl. 2 blocked by a tool safety check).
+- Prompt text written by Claude: about 6,500 characters (tests prompt about 3,500, implement prompt about 3,000) plus a 600-character fix prompt.
+- Lines read in review: about 200 (test names and expected statuses, outbox checks, the agy test change, the patch logic, history).
+- Retries and incidents: 1 agy abort on a headless command, 1 run killed for low memory, 1 wrong test API caught in review (orExpect).
+- Elapsed: about 40 minutes wall time for tests and implementation, mostly agy and Maven.
+- Result: correct, green (product 73), two commits (5395aa3 tests, 840013b impl).
+
