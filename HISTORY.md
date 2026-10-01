@@ -364,3 +364,11 @@
 - Rollback: git revert the commits found by git log --grep "strategy experiment result"
 - Tests: n/a (docs only)
 - Review: pending
+## 2026-10-01 T-010 impl - driver resumes the same agy conversation after a command abort
+- By: gemini (agy)
+- Changed: scripts/agy-chunk.ps1
+- Why: resume the same conversation after a command abort instead of starting from scratch
+- Depends on: T-010
+- Rollback: git revert the commit found by git log --grep "resumes the same agy conversation"
+- Tests: pending (checked by the next chunk run)
+- Review: pending

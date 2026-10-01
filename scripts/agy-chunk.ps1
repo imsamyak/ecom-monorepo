@@ -136,15 +136,20 @@ if (Test-Path "logs\agy-stall.flag") {
     Remove-Item "logs\agy-stall.flag" -ErrorAction SilentlyContinue
 }
 
-# Retry if headless command abort occurs
-$retries = 0
-if ($testsOutput -match "no output produced") {
-    $retries = 1
-    $testsOutput += "`n--- RETRY ---`n"
-    $guardJob1Retry = Start-Job -ScriptBlock $stallGuardScript -ArgumentList $repo, "agy-prompt-tests"
-    $testsOutput += & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-run.ps1 "logs/agy-prompt-tests.txt" 2>&1 | Out-String
-    Stop-Job -Job $guardJob1Retry
-    Remove-Job -Job $guardJob1Retry
+# Resume if headless command abort occurs
+$resumes = 0
+$lastOutput = $testsOutput
+while ($resumes -lt 3 -and $lastOutput -match "no output produced") {
+    $resumes++
+    $testsOutput += "`n--- RESUME $resumes ---`n"
+    # Write the resume prompt
+    "You were stopped because you tried to run a shell command, which is never allowed. Continue the same task from where you stopped, using only the file view, search and write tools; use the repository file list in the task instead of listing or searching with commands. Your final answer must be the JSON object described in the task." | Out-File -FilePath "logs/agy-prompt-tests-resume.txt" -Encoding ASCII
+    $guardJob1Resume = Start-Job -ScriptBlock $stallGuardScript -ArgumentList $repo, "agy-prompt-tests-resume"
+    # Run agy with --continue
+    $lastOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-run.ps1 "logs/agy-prompt-tests-resume.txt" --continue 2>&1 | Out-String
+    $testsOutput += $lastOutput
+    Stop-Job -Job $guardJob1Resume
+    Remove-Job -Job $guardJob1Resume
     if (Test-Path "logs\agy-stall.flag") {
         if ($flags -notcontains "stalled") { $flags += "stalled" }
         Remove-Item "logs\agy-stall.flag" -ErrorAction SilentlyContinue
@@ -229,7 +234,7 @@ if ($prodChangedInTests) {
     $reportLines += "Task: $TaskId"
     $reportLines += "Start: $($startTime.ToString('yyyy-MM-dd HH:mm:ss'))"
     $reportLines += "Step 1 duration: ${step1Duration}s"
-    $reportLines += "Retries: $retries"
+    $reportLines += "Resumes: $resumes"
     $reportLines += "Step 1 files (tests):"
     foreach ($f in $step1Files) { $reportLines += "- $f" }
     $reportLines += "Step 2 files (production):"
@@ -394,7 +399,7 @@ $reportLines += "Task: $TaskId"
 $reportLines += "Start: $($startTime.ToString('yyyy-MM-dd HH:mm:ss'))"
 $reportLines += "Step 1 duration: ${step1Duration}s"
 $reportLines += "Step 2 duration: ${step2Duration}s"
-$reportLines += "Retries: $retries"
+$reportLines += "Resumes: $resumes"
 $reportLines += "Step 1 files (tests):"
 foreach ($f in $step1Files) { $reportLines += "- $f" }
 $reportLines += "Step 2 files (production):"
