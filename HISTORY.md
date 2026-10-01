@@ -245,3 +245,12 @@
 - Rollback: git revert the commit found by git log --grep "rule 3: push only"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-007 docs - document the chunk driver (docs/AGY.md section 9, rule 15)
+- By: claude
+- Changed: docs/AGY.md section 9, AGENTS.md rule 15
+- Why: how to run a chunk with one command and review once from the report
+- Depends on: T-007 impl
+- Rollback: git revert the commits found by git log --grep T-007 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

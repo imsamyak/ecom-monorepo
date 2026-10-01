@@ -58,3 +58,8 @@ Measures of Claude's own work per chunk, compared between processes. Counts are 
 - Elapsed: about 40 minutes wall time for tests and implementation, mostly agy and Maven.
 - Result: correct, green (product 73), two commits (5395aa3 tests, 840013b impl).
 
+## 9. Chunk driver (T-007, pilot A)
+- Run one chunk with one command from the repo root: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-chunk.ps1 T-005`.
+- It reads the task's section from TASKS.md, builds the prompts from `scripts/prompts/tests.txt` and `implement.txt` (all standing rules live there; fix a lesson once in the template), runs the tests step (retries once on the headless command abort), stops if production code changed in the tests step, runs the implement-until-green loop, and writes `logs/agy-report.md`: step files split into tests and production, tests changed during implement, GREEN or STUCK, test summaries, fix rounds, files agy asks to remove, flags. Exit code 0 only when green with no flags.
+- Claude then: reads the report, reads the test files in full (the owner reviews them), spot-checks flagged items, removes listed files with git, runs `cd service && mvn test`, commits tests first and implementation second (rule 20), pushes both only when green (rule 3).
+- Known gap: no stall or overall time-limit guard yet; each agy call keeps its 25 minute timeout and the loop stops after 5 identical failures.
