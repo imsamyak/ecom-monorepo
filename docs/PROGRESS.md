@@ -15,6 +15,11 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 - [x] T-005 (all five events built by MapStruct mappers; owner said go ahead): runs as pilot A on the T-007 chunk driver
 - [ ] Owner reviews the tests of T-003.2, T-003.3, T-006 (and the agy-changed tests listed in service/product/HISTORY.md) and merges work when ready
 
+- [ ] T-008.1 inbox module, store port, JPA adapter, TTL cleaner (pilot B run), Claude reviews, commits tests and impl, pushes when green
+- [ ] T-008.2 EventCatalog and envelope decoding (pilot B run), same
+- [ ] T-008.3 InboxReceiver dedupe and dispatch (pilot B run), same
+- [ ] Pilot B result recorded in docs/AGY.md section 8 (compare with pilot A)
+
 ## Done on branch work (not on main until the owner merges work)
 - [x] Folded claude/gemini-cli-setup-check-8bda3d (T-001, T-002) and confess-module into work (8a67544)
 - [x] T-003.1 stale event names in comments and messages (57c8995)

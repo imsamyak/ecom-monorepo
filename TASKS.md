@@ -83,6 +83,27 @@ Spec (owner: use mappers for all events or none; go ahead 2026-10-01):
 Acceptance: new unit tests for each of the five mapper methods (written first, using the generated mappers via `Mappers.getMapper`); the existing UseCaseEventsTest and integration tests pass unchanged except for service constructors that gain a mapper; `cd service && mvn test` passes.
 Runs as pilot A of T-007 (the chunk driver), measured against the T-003.3 baseline.
 
+### T-008 Inbox module: receive broker events, dedupe, dispatch to @EventListener   [in progress]
+Module(s): service/platform/inbox (new), service/platform/contract, service/pom.xml
+Agreed with the owner 2026-10-01 (go ahead given). Three chunks, in order, each green alone. Built as pilot B (one agy run per chunk: tests, implementation, agy runs the build itself).
+Design:
+- New module `service/platform/inbox`, auto-configured like the outbox (AutoConfiguration.imports), depends on `contract`, Spring Data JPA and Jackson.
+- Delivery rules it relies on (write them into the inbox and outbox CONTEXT.md): only one outbox relay runs; the publisher never reorders or repeats on its own; the inbox processes and acknowledges one message at a time. Under these rules a duplicate is always the immediate repeat of the last event of that aggregate.
+- Broker-agnostic: the entry point is `InboxReceiver.receive(InboxMessage)`; `InboxMessage(String eventId, String aggregateType, String aggregateId, String payload)` where payload is the outbox envelope JSON {aggregate, action, data} and eventId is the outbox row id. Returning normally means: acknowledge. Throwing means: do not acknowledge (the broker redelivers). Real broker adapters are a later task.
+- Storage behind a port `InboxStore` (so a DynamoDB adapter can be added later); the first adapter is JPA in the service's own database: table `inbox_last_event` with one row per (aggregate_type, aggregate_id): last_event_id, processed_at. Overwritten on each new event. TTL: an hourly cleaner deletes rows whose processed_at is older than `inbox.dedupe.ttl` (default 7 days).
+- One transaction per message: read the aggregate's row with a lock; if last_event_id equals the message's eventId it is a duplicate: skip and return; otherwise decode the envelope into its record, publish it with ApplicationEventPublisher (plain synchronous @EventListener methods run in this transaction), store the new eventId and processed_at, commit. A failing listener rolls everything back and the exception propagates (no acknowledge).
+- Decoding: `contract` gets an `EventCatalog` that lists the sealed event interfaces (ProductEvent, VariantEvent) and maps (aggregate, action) to the record class, using the same naming rule as Outbox.of (interface name without the Event suffix is the aggregate type, record name is the action). Jackson reads `data` into that record.
+- An event no listener handles: stored and acknowledged. An unknown aggregate or action: log a warning, store it and acknowledge (do not dispatch).
+
+#### T-008.1 Inbox module, storage port, JPA adapter, TTL cleaner   [open]
+Acceptance: module builds and is registered in service/pom.xml; InboxStore JPA adapter: first event for an aggregate is new; same eventId again is a duplicate; a different eventId overwrites; rows older than the TTL are deleted by the cleaner and newer ones kept; TTL is configurable.
+
+#### T-008.2 EventCatalog and envelope decoding   [open]
+Acceptance: EventCatalog resolves Product/CREATE to ProductEvent.CREATE and Variant/ADD to VariantEvent.ADD etc. for every action; unknown aggregate or action gives an empty result; decoding an envelope produced by Outbox.of gives back an equal record (round trip for every event type).
+
+#### T-008.3 InboxReceiver: dedupe, dispatch, transaction   [open]
+Acceptance (test-only listeners): a new message reaches an @EventListener for its record type and one for its sealed parent; the same message again is skipped and no listener runs; a listener that throws rolls back (no stored eventId, exception propagates, a redelivery is processed); an event with no listener is stored and acknowledged; an unknown action is logged, stored, acknowledged and not dispatched; the dedupe row is written in the same transaction as the listener's work.
+
 ## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]
 Module(s): service/product

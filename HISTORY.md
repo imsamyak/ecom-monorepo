@@ -263,3 +263,12 @@
 - Rollback: git revert the commits found by git log --grep T-007 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-008 docs - plan the inbox module
+- By: claude
+- Changed: TASKS.md (T-008 with three chunks), docs/PROGRESS.md
+- Why: owner agreed the inbox design and all five recommendations, go ahead given
+- Depends on: T-005, T-006
+- Rollback: git revert the commits found by git log --grep T-008 (newest first)
+- Tests: n/a (docs only)
+- Review: pending
