@@ -19,7 +19,7 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 ## Current: T-003 on branch work
 - [x] Drop the redundant stash present-tense-rename-prod-wip-claude
 - [x] T-003.1: agy fixes stale names (scripts/agy-impl-loop.ps1), Claude reviews, commits, pushes
-- [ ] T-003.2 (UPDATE carries active): agy writes tests only, Claude reviews, commits red tests
+- [ ] T-003.2 (ProductStatus enum replaces active): agy writes tests only, Claude reviews, commits red tests
 - [ ] T-003.2: agy implements until green, Claude reviews, commits, pushes
 - [ ] T-003.3 (PATCH partial update): agy writes tests only, Claude reviews, commits red tests
 - [ ] T-003.3: agy implements until green, Claude reviews, commits, pushes

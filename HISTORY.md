@@ -97,3 +97,10 @@
 - Why: owner: always discuss anything new first, implement only after the owner says go ahead
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 swgt-and-status-plan - SWGT.md, rule 19, T-003 re-planned for ProductStatus
+- By: claude
+- Changed: SWGT.md (new, ARCHIVED parked), AGENTS.md rule 19, TASKS.md T-003.2/T-003.3, docs/PROGRESS.md
+- Why: owner: status is an enum ACTIVE/INACTIVE (default INACTIVE), events carry status as a string, ARCHIVED parked for later
+- Tests: n/a (docs only)
+- Review: pending
