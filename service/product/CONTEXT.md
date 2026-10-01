@@ -12,5 +12,8 @@ A variant's properties map is stored in one `sku` column by `VariantSkuConverter
 ## Outbox usage
 Use cases that must emit events implement `OutboxUseCase` (e.g. `CreateProductUseCase`/`CreateProductService.buildOutbox`, aggregateType `Product`). The outbox module is auto-configured; this service needs an `OutboxPublisher` bean to actually ship events (none is defined yet; the relay idles without one).
 
+## Product entity
+Before persistence (insert and update), the product's `title` and `description` are stripped of leading and trailing whitespace. If the description is blank after trimming, it is stored as null.
+
 ## Test
 `cd service && mvn test`. `OutboxIntegrationTest` covers outbox write, relay ordering/backoff, payload limit, async cleanup and sweep.

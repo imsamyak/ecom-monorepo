@@ -16,3 +16,10 @@
 - Why: tests first for T-001; 3 of 4 fail because Product.sanitize() does not trim yet, the 4th (blank description becomes null) protects existing behavior
 - Tests: `cd service && mvn -pl product -am test -Dtest=ProductPersistenceTest` -> 3 failures (expected <Shoe> but was <  Shoe  >), as intended
 - Review: pending
+
+## 2026-10-01 T-001 – Trim product title and description before saving
+- By: gemini (agy)
+- Changed: src/main/java/com/ecom/product/domain/entity/Product.java, CONTEXT.md
+- Why: T-001 implementation: title and description are trimmed before insert and update, and a description blank after trimming becomes null
+- Tests: `cd service && mvn test` -> all pass (product 29 incl. 4 new, shared 31, outbox 5); run by claude, agy had no shell
+- Review: pending
