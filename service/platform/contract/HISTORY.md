@@ -111,3 +111,4 @@
 - Tests: pending
 - Review: pending
 - locale-independent upper-casing after Claude's review
+- Claude review (T-009.1): locale-independent upper-casing (Locale.ROOT) added after review; full build green.

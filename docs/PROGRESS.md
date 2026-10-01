@@ -23,7 +23,7 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 - [x] T-008.3 InboxReceiver dedupe and dispatch (pilot B run), same
 - [x] Pilot B result recorded in docs/AGY.md section 8 (compare with pilot A)
 
-- [ ] T-009.1 UserRole enum (chunk driver), Claude reviews, commits tests and impl
+- [x] T-009.1 UserRole enum (chunk driver), Claude reviews, commits tests and impl
 - [ ] T-009.2 JWT verification auto-configuration in shared (chunk driver), same
 - [ ] T-009.3 product uses the shared JWT, old filter removed (chunk driver), same
 

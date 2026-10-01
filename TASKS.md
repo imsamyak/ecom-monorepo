@@ -119,7 +119,7 @@ Module(s): service/platform/contract, service/platform/shared, service/product
 Owner go ahead 2026-10-01. Design (see .agent/notes/decisions.md): JWT lives only in the shared module, auto-configured; services only declare their access rules and keep @AuthenticationPrincipal JwtPrincipal. Issuer and algorithm are configuration, the same for every service. Open details use the recommendations: roles SELLER, BUYER, ADMIN; user id in claim sub (UUID), roles in claim roles (configurable name); a missing, invalid or expired token on a protected path gives 401; a valid token without the needed role gives 403.
 Three chunks, in order, each green alone:
 
-#### T-009.1 UserRole enum in contract   [open]
+#### T-009.1 UserRole enum in contract   [review]
 Module(s): service/platform/contract
 Spec: com.ecom.contract.enums.UserRole with SELLER, BUYER, ADMIN and UNKNOWN; a static fromClaim(String) that maps a claim value case-insensitively and returns UNKNOWN for anything else (never throws). Rule recorded in contract CONTEXT.md: values are only added, never renamed or removed; only truly cross-service concepts go into contract.
 Acceptance: unit tests: each known value maps from upper and lower case; null, blank and unknown values map to UNKNOWN.
