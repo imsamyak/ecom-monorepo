@@ -299,3 +299,12 @@
 - Rollback: git revert the commit found by git log --grep "low-memory automatic restart"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-007 docs - pilot B result
+- By: claude
+- Changed: docs/AGY.md section 8
+- Why: rule 22: record pilot B (one self-building agy run) against pilot A
+- Depends on: T-008.1
+- Rollback: git revert the commits found by git log --grep T-007 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

@@ -70,6 +70,15 @@ Measures of Claude's own work per chunk, compared between processes. Counts are 
 - Driver issues found: the flag "tests changed in implement step" also counts HISTORY.md (any step-1 file) as a test; only src/test files should count. No stall/time-limit guard yet. Both are small follow-ups for agy.
 
 
+### Pilot B: T-008.1 as one self-building agy run (2026-10-01)
+- Process: one prompt; agy wrote tests and code and ran mvn -f service/pom.xml test itself; Claude reviewed, ran the full build, sent fixes back with --continue.
+- Claude tool calls: about 17 (1 prompt, 2 runs incl. a memory restart, 3 fix prompts and runs, 4 report/file reads, 3 full builds, 2 diagnosis reads, 2 commit steps) versus about 7 for pilot A.
+- Prompt text written by Claude: about 3,300 characters plus three fix prompts of about 3,000 characters in total, versus none for pilot A.
+- Incidents: 1 memory kill; 1 headless command abort; agy twice stopped while its own build was still running and once reported done while the build was red (missing test, then a duplicate-bean bug and a broken cleaner test), all caught by Claude's full build.
+- Result: correct after three review rounds; green (inbox 7).
+- Verdict: pilot B is NOT cheaper and is less reliable than pilot A. agy running its own build is fragile (command aborts, early stops). Keep pilot A (the chunk driver, where the script runs the build) as the standard; use it for T-008.2 and T-008.3.
+
+
 ## 9. Chunk driver (T-007, pilot A)
 - Run one chunk with one command from the repo root: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-chunk.ps1 T-005`.
 - It reads the task's section from TASKS.md, builds the prompts from `scripts/prompts/tests.txt` and `implement.txt` (all standing rules live there; fix a lesson once in the template), runs the tests step (retries once on the headless command abort), stops if production code changed in the tests step, runs the implement-until-green loop, and writes `logs/agy-report.md`: step files split into tests and production, tests changed during implement, GREEN or STUCK, test summaries, fix rounds, files agy asks to remove, flags. Exit code 0 only when green with no flags.
