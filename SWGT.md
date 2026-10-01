@@ -14,3 +14,12 @@ Open questions (recommendation in brackets):
 - How is a product archived? (Same PATCH /products/{id} with "status": "ARCHIVED".)
 - What happens to DELETE /products/{id}? (Keep it as a real delete emitting DELETE; archive is the soft alternative.)
 Proposed transitions at the time: INACTIVE <-> ACTIVE; INACTIVE -> ARCHIVED; ACTIVE -> ARCHIVED; ARCHIVED -> nothing.
+## 2026-10-01 Per-aggregate outbox ordering
+Idea: instead of one strict global order, a failing outbox row would block only later events of the same aggregate id; other products keep publishing.
+Why parked: owner's point: a systemic failure (broker down) blocks everything anyway, so the benefit is only for row-specific "poison" failures; it needs per-aggregate locking and backoff and loses cross-aggregate order. Strict global order stays for now.
+Open questions: is head-of-line blocking by one bad row a real problem in practice? (Watch for it with the stuck-row alert below before building this.)
+
+## 2026-10-01 Alert for a stuck outbox row
+Idea: expose a metric such as "age of the oldest PENDING outbox row" (Spring Boot Actuator + Micrometer gauge) and alert when it grows, so a blocked relay is noticed without reading logs.
+Why parked: not needed until events are really published (no OutboxPublisher exists yet).
+Open questions: which monitoring system reads the metric? What age threshold means stuck? (Recommendation: start with a gauge and a log warning after a few minutes.)

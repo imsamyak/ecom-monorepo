@@ -104,3 +104,10 @@
 - Why: owner: status is an enum ACTIVE/INACTIVE (default INACTIVE), events carry status as a string, ARCHIVED parked for later
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 swgt-entries - two earlier parked ideas added to SWGT.md
+- By: claude
+- Changed: SWGT.md (per-aggregate outbox ordering, stuck outbox row alert)
+- Why: owner: SWGT.md is the dump file for future ideas
+- Tests: n/a (docs only)
+- Review: pending
