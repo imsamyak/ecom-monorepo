@@ -23,6 +23,7 @@ public class CreateProductService implements CreateProductUseCase {
 
     @Override
     public ProductResult execute(CreateProductCommand command) {
+        // Build the new product from the command
         Product product = Product.builder()
                 .sellerId(command.sellerId())
                 .title(command.title())
@@ -30,8 +31,10 @@ public class CreateProductService implements CreateProductUseCase {
                 .price(command.price())
                 .build();
 
+        // Save the product to the database
         Product savedProduct = saveProductPort.saveProduct(product);
 
+        // Map the saved product to a result
         return productMapper.toResult(savedProduct);
     }
 
@@ -45,6 +48,7 @@ public class CreateProductService implements CreateProductUseCase {
                 result.description(),
                 result.price(),
                 result.createdAt(),
-                result.updatedAt());
+                result.updatedAt(),
+                result.status().name());
     }
 }

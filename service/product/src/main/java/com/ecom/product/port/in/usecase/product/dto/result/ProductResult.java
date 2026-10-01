@@ -1,5 +1,6 @@
 package com.ecom.product.port.in.usecase.product.dto.result;
 
+import com.ecom.product.domain.enums.ProductStatus;
 import lombok.Builder;
 import java.util.UUID;
 
@@ -14,6 +15,6 @@ public record ProductResult(
     double price,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
-    boolean active
+    ProductStatus status
 ) {}
 

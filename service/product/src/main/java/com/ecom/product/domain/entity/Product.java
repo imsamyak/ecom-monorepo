@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.ecom.product.domain.exception.ProductNotOwnedException;
+import com.ecom.product.domain.enums.ProductStatus;
 import com.ecom.shared.entity.DomainEntity;
 
 @Getter
@@ -50,8 +51,9 @@ public class Product extends DomainEntity {
     private final Set<Variant> variants = new HashSet<>();
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean active = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ProductStatus status = ProductStatus.INACTIVE;
 
     public void verifyOwnership(UUID requestingSellerId) {
         if (!this.sellerId.equals(requestingSellerId)) {
@@ -78,12 +80,12 @@ public class Product extends DomainEntity {
 
     public void deactivate() {
         // Mark the product as inactive
-        this.active = false;
+        this.status = ProductStatus.INACTIVE;
     }
 
     public void activate() {
         // Mark the product as active
-        this.active = true;
+        this.status = ProductStatus.ACTIVE;
     }
 
     @PrePersist

@@ -21,12 +21,12 @@ public sealed interface Product extends DomainEvent {
 
     /** A product was created; carries the full snapshot. */
     record CREATE(UUID productId, UUID sellerId, String title, String description, double price,
-                   LocalDateTime createdAt, LocalDateTime updatedAt) implements Product {
+                   LocalDateTime createdAt, LocalDateTime updatedAt, String status) implements Product {
     }
 
     /** A product was updated; carries the full snapshot after the change. */
     record UPDATE(UUID productId, UUID sellerId, String title, String description, double price,
-                   LocalDateTime createdAt, LocalDateTime updatedAt) implements Product {
+                   LocalDateTime createdAt, LocalDateTime updatedAt, String status) implements Product {
     }
 
     /** A product was deleted; only the identifiers remain. */

@@ -11,7 +11,7 @@ One abstract method, `String aggregateId()`: the partition key. Events with the 
 - Event records carry the data a consumer needs (full snapshot for CREATE/UPDATE/ADD, identifiers or removed data for DELETE/REMOVE).
 
 ## `EventEnvelope(aggregate, action, data)`
-The JSON shape of every outbox payload: `{"aggregate": "Product", "action": "CREATE", "data": {...event record components...}}`. Consumers parse the envelope first, then `data` by (aggregate, action).
+The JSON shape of every outbox payload: `{"aggregate": "Product", "action": "CREATE", "data": {...event record components...}}`. Consumers parse the envelope first, then `data` by (aggregate, action). Product CREATE/UPDATE events carry the `status` as their last component.
 
 ## Rules for new events
 Declare a record nested in an aggregate sealed interface; top-level records, anonymous classes and lambdas are rejected by `Outbox.of`.

@@ -27,17 +27,22 @@ public class UpdateProductService implements UpdateProductUseCase {
 
     @Override
     public ProductResult execute(UpdateProductCommand command) {
+        // Load the product or throw an exception if it does not exist
         Product product = loadProductPort.loadProduct(command.productId())
                 .orElseThrow(() -> new ProductNotFoundException(command.productId()));
 
+        // Reject the request if the seller does not own this product
         product.verifyOwnership(command.sellerId());
 
+        // Update the product properties
         product.setTitle(command.title());
         product.setDescription(command.description());
         product.setPrice(command.price());
 
+        // Save the updated product
         Product savedProduct = saveProductPort.saveProduct(product);
 
+        // Map the saved product to a result
         return productMapper.toResult(savedProduct);
     }
 
@@ -51,6 +56,7 @@ public class UpdateProductService implements UpdateProductUseCase {
                 result.description(),
                 result.price(),
                 result.createdAt(),
-                result.updatedAt());
+                result.updatedAt(),
+                result.status().name());
     }
 }

@@ -11,6 +11,6 @@ public record ProductResponse(
     double price,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
-    boolean active
+    String status
 ) {}
 

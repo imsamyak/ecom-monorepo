@@ -49,6 +49,7 @@ Every section: what it is, where it lives here, how it works, gotchas. New tech 
 - **`AttributeConverter`:** `VariantSkuConverter` stores a variant's properties map as one string column. Hibernate calls it on every write and read, so a bug there corrupts data silently.
 - **Java gotcha, `String.join`:** its signature is `join(delimiter, elements...)`. Passing one already-joined string makes it the *delimiter* with nothing to join, which returns `""` and compiles without warning. That was the converter bug. Defence in depth: the converter is unit tested, and the `sku` column has a DB `@Check` so an empty value can never be stored even if code regresses.
 - **`@Modifying @Query`:** bulk update/delete in one statement, needs a transaction.
+- **`@Enumerated(EnumType.STRING)`:** stores an enum as text instead of its ordinal (integer index). If a new enum value is later inserted in the middle, STRING keeps old records valid, whereas ORDINAL would misinterpret them.
 
 ## Domain events as sealed interfaces and records
 - **Java records:** a short way to declare an immutable data class (`record CREATE(UUID productId, ...)`). The compiler generates the constructor, accessors, `equals`, `hashCode` and `toString`. Jackson serializes a record's components.
