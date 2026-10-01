@@ -30,3 +30,10 @@
 - Why: tests first for T-002.1; they do not compile until Product has isActive/activate/deactivate
 - Tests: `mvn test -pl product -am` -> testCompile fails on the missing methods, as intended
 - Review: pending
+
+## 2026-10-01 T-002.1 Product has an active flag
+- By: gemini (agy)
+- Changed: service/product/src/main/java/com/ecom/product/domain/entity/Product.java, service/product/CONTEXT.md
+- Why: Added the active flag and its domain methods as per T-002.1 spec.
+- Tests: `cd service && mvn test` -> all pass (product 35 tests)
+- Review: pending
