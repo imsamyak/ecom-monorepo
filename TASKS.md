@@ -13,7 +13,7 @@ Acceptance: <observable checks; tests that must exist or pass>
 ```
 
 ## Open tasks
-### T-003 Product activation events and stale event names   [in progress]
+### T-003 Stale event names, UPDATE carries active, PATCH partial update   [in progress]
 Branch: work. Two chunks, in order, each stable if merged alone.
 
 #### T-003.1 Fix stale event names in comments and messages   [review]
@@ -21,10 +21,23 @@ Module(s): service/product, service/platform/outbox
 Spec: comments in the five product services and RemoveVariantUseCase, and the javadoc and error message of Outbox.of, still name the old event records (Created, Updated, Deleted, Added, Removed). Rename them to CREATE, UPDATE, DELETE, ADD, REMOVE. Comment and message text only; no behavior change; no tests.
 Acceptance: no old event record names left in service main code; `cd service && mvn test` passes.
 
-#### T-003.2 Setting a product active or inactive emits a Product UPDATE event   [open]
+#### T-003.2 Product UPDATE event carries the active flag   [in progress]
 Module(s): service/platform/contract, service/product
-Spec (owner: keep it under the UPDATE event, no new actions): the `Product.UPDATE` event record gets a `boolean active` component, so it is a full snapshot including the active flag. `UpdateProductService` fills it from its result. `SetProductActiveUseCase` extends `OutboxAwareUseCase<SetProductActiveCommand, ProductResult>` and its `buildEvent` returns a `Product.UPDATE` built from the result (with the new active value). Its command stays validated: because Hibernate Validator forbids redeclaring `@Valid` on an overridden `execute` (HV000151), the service validates the command with an injected `Validator`, like DeleteProductService. `CREATE` is unchanged. HTTP behavior is unchanged.
-Acceptance: `Product` still permits exactly CREATE, UPDATE, DELETE; UPDATE carries `active`; unit tests of buildEvent for set-active (true and false) and for update; integration: PATCH /products/{id}/active writes one Product:UPDATE outbox row keyed by the product id whose data.active is the new value; a normal update's UPDATE row also has data.active; a 404 or 403 writes no row; an invalid command still throws ConstraintViolationException; `cd service && mvn test` passes. Existing tests that pin the UPDATE fields or constructor change on purpose (say so in HISTORY).
+Spec: the record `Product.UPDATE` gets a `boolean active` component as its LAST component: UPDATE(productId, sellerId, title, description, price, createdAt, updatedAt, active). `UpdateProductService.buildEvent` fills it from its result. CREATE and DELETE are unchanged; `Product` still permits exactly CREATE, UPDATE, DELETE. No API change.
+Acceptance: contract test that UPDATE carries active; UseCaseEventsTest expects UPDATE with active; the integration update row has data.active; `cd service && mvn test` passes. Tests that pin the UPDATE fields change on purpose.
+
+#### T-003.3 PATCH /products/{id} partial update replaces PUT and PATCH /active   [open]
+Module(s): service/product
+Spec (owner agreed 2026-10-01, JSON Merge Patch, RFC 7396):
+- `PATCH /products/{productId}` with a JSON body holding any of `title`, `description`, `price`, `active`. A field that is not sent is left unchanged. `"description": null` clears the description. `title`, `price` and `active` must not be null: sending null for them is a 400.
+- Absent vs null is told apart with `Optional` fields (no new library): the request DTO and `UpdateProductCommand` hold `Optional<String> title`, `Optional<String> description`, `Optional<Double> price`, `Optional<Boolean> active`; a Java null field means not sent, `Optional.empty()` means set to null, `Optional.of(v)` means set to v.
+- Validation only for fields that are sent, with today's rules: title 3 to 100 characters, description at most 500, price above 0. An empty body `{}` (nothing sent) is a 400 (nothing to update).
+- 404 for a missing product, 403 for another seller (nothing saved, no event). 200 with the updated product on success.
+- Every successful patch emits one `Product.UPDATE` (full snapshot including active), also when the values did not change.
+- `UpdateProductUseCase` becomes this partial update; `active` changes go through the entity's `activate()`/`deactivate()`.
+- Removed: `PUT /products/{productId}`, `PATCH /products/{productId}/active`, `SetProductActiveUseCase`, `SetProductActiveService`, `SetProductActiveCommand`, `SetProductActiveRequest` and their web mapper methods. Removed tests (owner agreed): `SetProductActiveServiceTest`, `ProductActiveControllerTest`; their behavior is covered by the new PATCH tests.
+- Hexagonal rule 11 applies: the controller calls only the use case.
+Acceptance: web and integration tests for: each field alone, several fields together, absent fields unchanged, description set to null, null title/price/active is 400, invalid values are 400, empty body is 400, 404, 403, one UPDATE outbox row per successful patch with data.active, no row on failure; PUT and PATCH /active answer 405 or 404 (gone); `cd service && mvn test` passes.
 ## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]
 Module(s): service/product
