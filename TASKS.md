@@ -104,6 +104,16 @@ Acceptance: EventCatalog resolves Product/CREATE to ProductEvent.CREATE and Vari
 #### T-008.3 InboxReceiver: dedupe, dispatch, transaction   [open]
 Acceptance (test-only listeners): a new message reaches an @EventListener for its record type and one for its sealed parent; the same message again is skipped and no listener runs; a listener that throws rolls back (no stored eventId, exception propagates, a redelivery is processed); an event with no listener is stored and acknowledged; an unknown action is logged, stored, acknowledged and not dispatched; the dedupe row is written in the same transaction as the listener's work.
 
+### T-009 Real JWT authentication in the shared module   [open - design in progress, needs go ahead]
+Module(s): service/platform/shared, service/platform/contract, service/product
+Design agreed so far with the owner (2026-10-01):
+- JWT handling lives ONLY in the shared module and is auto-configured; no service implements it. Services only declare their own access rules (for example /products/** needs SELLER) and keep using @AuthenticationPrincipal JwtPrincipal.
+- The token issuer and the signing algorithm are not decided yet, but they are the same for every service. So verification is configured by properties: security.jwt.algorithm (for example HS256 or RS256), the key material (security.jwt.secret from an environment variable, never in the repo, or a public key / JWK set URI), optional security.jwt.issuer, and the roles claim name. Changing issuer or algorithm is configuration, not code.
+- Spring Security resource-server support replaces today's hand-written JwtAuthenticationFilter (which accepts unsigned <uuid>:<ROLE> tokens).
+- UserRole becomes a shared enum in the contract module (com.ecom.contract.enums); rules: values are only added, never renamed or removed; unknown values are tolerated (UNKNOWN); only truly cross-service concepts go into contract (ProductStatus stays in the product service).
+- Tests sign tokens with a fixed test key through a shared test helper; existing tests that send <uuid>:SELLER change on purpose.
+Still to decide before go ahead: the role values; claim names; token lifetime handling; whether a missing or invalid token returns 401.
+
 ## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]
 Module(s): service/product

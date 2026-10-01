@@ -308,3 +308,12 @@
 - Rollback: git revert the commits found by git log --grep T-007 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-009 docs - queue the JWT task next (design in progress)
+- By: claude
+- Changed: TASKS.md (T-009), docs/PROGRESS.md
+- Why: owner: JWT is the next task; design points agreed so far recorded
+- Depends on: none
+- Rollback: git revert the commits found by git log --grep T-009 (newest first)
+- Tests: n/a (docs only)
+- Review: pending
