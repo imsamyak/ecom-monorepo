@@ -43,3 +43,12 @@
 - Why: fix stale event name in javadoc and error message text
 - Tests: cd service; mvn test -> all pass (product 62), comment and message text only
 - Review: pending
+
+## 2026-10-01 T-006 tests - event interfaces end in Event
+- By: gemini (agy)
+- Changed: service/platform/outbox/src/test/java/com/ecom/outbox/OutboxOfDomainEventTest.java, service/platform/outbox/src/test/java/com/ecom/outbox/aspect/OutboxAspectTest.java
+- Why: test outbox parsing aggregate type from interfaces ending in Event. Existing tests change on purpose because the event interfaces are renamed.
+- Depends on: T-003.2
+- Rollback: git revert the commits found by git log --grep T-006 (newest first)
+- Tests: written first, red on purpose
+- Review: pending

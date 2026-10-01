@@ -55,3 +55,12 @@
 - Tests: cd service; mvn test -> all pass (product 62), green on the first round, no test changed
 - Review: pending
 - New tech: docs/LEARNING.md JPA section (@Enumerated)
+
+## 2026-10-01 T-006 tests - event interfaces end in Event
+- By: gemini (agy)
+- Changed: service/platform/contract/src/test/java/com/ecom/contract/event/ProductEventsTest.java, service/platform/contract/src/test/java/com/ecom/contract/event/VariantEventsTest.java
+- Why: test renaming event interfaces to ProductEvent and VariantEvent to fix name clash. Existing tests change on purpose because the event interfaces are renamed.
+- Depends on: T-003.2
+- Rollback: git revert the commits found by git log --grep T-006 (newest first)
+- Tests: written first, red on purpose
+- Review: pending

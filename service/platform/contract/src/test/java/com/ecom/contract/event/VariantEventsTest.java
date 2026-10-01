@@ -20,20 +20,20 @@ class VariantEventsTest {
     private final UUID productId = UUID.randomUUID();
     private final LocalDateTime now = LocalDateTime.of(2026, 1, 1, 12, 0);
 
-    private Variant.ADD added() {
-        return new Variant.ADD(7L, productId, Map.of("color", "red"), now, now);
+    private VariantEvent.ADD added() {
+        return new VariantEvent.ADD(7L, productId, Map.of("color", "red"), now, now);
     }
 
-    private Variant.REMOVE removed() {
-        return new Variant.REMOVE(7L, productId, Map.of("color", "red"));
+    private VariantEvent.REMOVE removed() {
+        return new VariantEvent.REMOVE(7L, productId, Map.of("color", "red"));
     }
 
     @Test
     void variantIsASealedDomainEventWithExactlyTheTwoActions() {
         // The set of actions is closed
-        assertTrue(Variant.class.isSealed());
-        assertTrue(DomainEvent.class.isAssignableFrom(Variant.class));
-        Set<String> actions = Arrays.stream(Variant.class.getPermittedSubclasses())
+        assertTrue(VariantEvent.class.isSealed());
+        assertTrue(DomainEvent.class.isAssignableFrom(VariantEvent.class));
+        Set<String> actions = Arrays.stream(VariantEvent.class.getPermittedSubclasses())
                 .map(Class::getSimpleName).collect(Collectors.toSet());
         assertEquals(Set.of("ADD", "REMOVE"), actions);
     }
@@ -41,8 +41,8 @@ class VariantEventsTest {
     @Test
     void everyActionIsAVariantEvent() {
         // Each record is a Variant event
-        assertInstanceOf(Variant.class, added());
-        assertInstanceOf(Variant.class, removed());
+        assertInstanceOf(VariantEvent.class, added());
+        assertInstanceOf(VariantEvent.class, removed());
     }
 
     @Test
@@ -56,7 +56,7 @@ class VariantEventsTest {
     @Test
     void aggregateTypeIsTheInterfaceNameAndActionIsTheRecordName() {
         // The outbox reads these by reflection
-        assertEquals("Variant", added().getClass().getDeclaringClass().getSimpleName());
+        assertEquals("VariantEvent", added().getClass().getDeclaringClass().getSimpleName());
         assertEquals("ADD", added().getClass().getSimpleName());
         assertEquals("REMOVE", removed().getClass().getSimpleName());
     }

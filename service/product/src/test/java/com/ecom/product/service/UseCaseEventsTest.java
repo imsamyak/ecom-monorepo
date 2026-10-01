@@ -1,8 +1,8 @@
 package com.ecom.product.service;
 
 import com.ecom.contract.DomainEvent;
-import com.ecom.contract.event.Product;
-import com.ecom.contract.event.Variant;
+import com.ecom.contract.event.ProductEvent;
+import com.ecom.contract.event.VariantEvent;
 import com.ecom.product.domain.enums.ProductStatus;
 import com.ecom.product.port.in.usecase.product.dto.command.CreateProductCommand;
 import com.ecom.product.port.in.usecase.product.dto.command.DeleteProductCommand;
@@ -59,7 +59,7 @@ class UseCaseEventsTest {
         DomainEvent event = service.buildEvent(new CreateProductCommand(sellerId, "Phone", "desc", 10.5), productResult);
 
         // A CREATE event carrying the full product snapshot
-        assertEquals(new Product.CREATE(productId, sellerId, "Phone", "desc", 10.5, now, now, "ACTIVE"), event);
+        assertEquals(new ProductEvent.CREATE(productId, sellerId, "Phone", "desc", 10.5, now, now, "ACTIVE"), event);
     }
 
     @Test
@@ -73,7 +73,7 @@ class UseCaseEventsTest {
                 new UpdateProductCommand(productId, sellerId, "Phone", "desc", 10.5), productResult);
 
         // An UPDATE event carrying the full product snapshot after the change
-        assertEquals(new Product.UPDATE(productId, sellerId, "Phone", "desc", 10.5, now, now, "ACTIVE"), event);
+        assertEquals(new ProductEvent.UPDATE(productId, sellerId, "Phone", "desc", 10.5, now, now, "ACTIVE"), event);
     }
 
     @Test
@@ -86,7 +86,7 @@ class UseCaseEventsTest {
         DomainEvent event = service.buildEvent(new DeleteProductCommand(productId, sellerId), null);
 
         // A DELETE event with only the identifiers
-        assertEquals(new Product.DELETE(productId, sellerId), event);
+        assertEquals(new ProductEvent.DELETE(productId, sellerId), event);
     }
 
     @Test
@@ -100,7 +100,7 @@ class UseCaseEventsTest {
                 new AddVariantCommand(productId, sellerId, Map.of("color", "red")), variantResult);
 
         // An ADD event whose aggregate id is the product id
-        assertEquals(new Variant.ADD(7L, productId, Map.of("color", "red"), now, now), event);
+        assertEquals(new VariantEvent.ADD(7L, productId, Map.of("color", "red"), now, now), event);
         assertEquals(productId.toString(), event.aggregateId());
     }
 
@@ -114,7 +114,7 @@ class UseCaseEventsTest {
         DomainEvent event = service.buildEvent(new RemoveVariantCommand(productId, 7L, sellerId), variantResult);
 
         // A REMOVE event carrying what was removed
-        assertEquals(new Variant.REMOVE(7L, productId, Map.of("color", "red")), event);
+        assertEquals(new VariantEvent.REMOVE(7L, productId, Map.of("color", "red")), event);
     }
 
     @Test

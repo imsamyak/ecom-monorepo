@@ -33,8 +33,8 @@ import static org.mockito.Mockito.verify;
 class OutboxAspectTest {
 
     // Sample aggregate and action used as the emitted event
-    sealed interface Thing extends DomainEvent {
-        record Made(UUID thingId, String name) implements Thing {
+    sealed interface ThingEvent extends DomainEvent {
+        record Made(UUID thingId, String name) implements ThingEvent {
             @Override
             public String aggregateId() {
                 return thingId.toString();
@@ -42,7 +42,7 @@ class OutboxAspectTest {
         }
 
         // An event whose id is blank, which the outbox must refuse
-        record Blank() implements Thing {
+        record Blank() implements ThingEvent {
             @Override
             public String aggregateId() {
                 return "   ";
@@ -120,7 +120,7 @@ class OutboxAspectTest {
     void savesOneRowWithAggregateTypeIdAndEnvelopePayload() throws IOException {
         // The use case emits one event
         UUID id = UUID.randomUUID();
-        target.eventSupplier = () -> new Thing.Made(id, "widget");
+        target.eventSupplier = () -> new ThingEvent.Made(id, "widget");
 
         // Run it through the aspect
         proxy.execute("x");
@@ -155,7 +155,7 @@ class OutboxAspectTest {
     void failsTheUseCaseWhenThePayloadIsOverTheConfiguredLimit() {
         // A very small limit
         proxy = proxyWithLimit(20);
-        target.eventSupplier = () -> new Thing.Made(UUID.randomUUID(), "widget");
+        target.eventSupplier = () -> new ThingEvent.Made(UUID.randomUUID(), "widget");
 
         // The use case fails with a message naming the property, and nothing is saved
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> proxy.execute("x"));
@@ -167,7 +167,7 @@ class OutboxAspectTest {
     void acceptsAPayloadExactlyAtTheLimit() throws IOException {
         // Find the exact payload length first
         UUID id = UUID.randomUUID();
-        target.eventSupplier = () -> new Thing.Made(id, "widget");
+        target.eventSupplier = () -> new ThingEvent.Made(id, "widget");
         proxy.execute("x");
         int exact = savedRow().getPayload().length();
 
@@ -181,7 +181,7 @@ class OutboxAspectTest {
     @Test
     void anInvalidEventFailsTheUseCaseAndSavesNothing() {
         // An event with a blank id
-        target.eventSupplier = Thing.Blank::new;
+        target.eventSupplier = ThingEvent.Blank::new;
 
         // The use case fails and no row is written
         assertThrows(IllegalArgumentException.class, () -> proxy.execute("x"));
@@ -192,7 +192,7 @@ class OutboxAspectTest {
     void aRuntimeExceptionFromTheUseCaseSavesNothingRollsBackAndPropagates() {
         // The use case itself fails
         target.failure = new IllegalStateException("boom");
-        target.eventSupplier = () -> new Thing.Made(UUID.randomUUID(), "widget");
+        target.eventSupplier = () -> new ThingEvent.Made(UUID.randomUUID(), "widget");
 
         // The same exception reaches the caller, nothing is saved, and the transaction is rolled back
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> proxy.execute("x"));
@@ -220,7 +220,7 @@ class OutboxAspectTest {
     @Test
     void commitsTheTransactionWhenEverythingSucceeds() {
         // The use case emits one event
-        target.eventSupplier = () -> new Thing.Made(UUID.randomUUID(), "widget");
+        target.eventSupplier = () -> new ThingEvent.Made(UUID.randomUUID(), "widget");
 
         // Run it
         proxy.execute("x");

@@ -25,7 +25,7 @@ record TopLevelEvent(String id) implements DomainEvent {
 class OutboxOfDomainEventTest {
 
     // Sample aggregate: the interface name is the aggregate type, each nested record is an action
-    sealed interface Order extends DomainEvent {
+    sealed interface OrderEvent extends DomainEvent {
         UUID orderId();
 
         @Override
@@ -33,12 +33,12 @@ class OutboxOfDomainEventTest {
             return orderId().toString();
         }
 
-        record Placed(UUID orderId, double total) implements Order {}
+        record Placed(UUID orderId, double total) implements OrderEvent {}
     }
 
     // Aggregate whose id is built by the record itself from a number
-    sealed interface Invoice extends DomainEvent {
-        record Issued(long number) implements Invoice {
+    sealed interface InvoiceEvent extends DomainEvent {
+        record Issued(long number) implements InvoiceEvent {
             @Override
             public String aggregateId() {
                 return String.valueOf(number);
@@ -47,8 +47,8 @@ class OutboxOfDomainEventTest {
     }
 
     // Aggregate whose id is a composite string
-    sealed interface Shipment extends DomainEvent {
-        record Sent(UUID customerId, String region) implements Shipment {
+    sealed interface ShipmentEvent extends DomainEvent {
+        record Sent(UUID customerId, String region) implements ShipmentEvent {
             @Override
             public String aggregateId() {
                 return customerId + ":" + region;
@@ -57,15 +57,15 @@ class OutboxOfDomainEventTest {
     }
 
     // Aggregates whose id is missing or blank
-    sealed interface Broken extends DomainEvent {
-        record NoId() implements Broken {
+    sealed interface BrokenEvent extends DomainEvent {
+        record NoId() implements BrokenEvent {
             @Override
             public String aggregateId() {
                 return null;
             }
         }
 
-        record BlankId() implements Broken {
+        record BlankId() implements BrokenEvent {
             @Override
             public String aggregateId() {
                 return "   ";
@@ -73,21 +73,36 @@ class OutboxOfDomainEventTest {
         }
     }
 
+    // Interfaces that do not follow the Event suffix rule
+    sealed interface BadName extends DomainEvent {
+        record Stuff() implements BadName {
+            @Override
+            public String aggregateId() { return "1"; }
+        }
+    }
+
+    sealed interface Event extends DomainEvent {
+        record Thing() implements Event {
+            @Override
+            public String aggregateId() { return "1"; }
+        }
+    }
+
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
-    void aggregateTypeIsTheNameOfTheInterfaceTheRecordIsNestedIn() {
+    void aggregateTypeIsTheNameOfTheInterfaceTheRecordIsNestedInWithoutTheEventSuffix() {
         // Build an outbox from a nested event record
-        Outbox outbox = Outbox.of(new Order.Placed(UUID.randomUUID(), 5.0));
+        Outbox outbox = Outbox.of(new OrderEvent.Placed(UUID.randomUUID(), 5.0));
 
-        // The enclosing interface name is the aggregate type
+        // The enclosing interface name without Event is the aggregate type
         assertEquals("Order", outbox.getAggregateType());
     }
 
     @Test
     void actionIsTheRecordNameAndIsCarriedInTheEnvelope() {
         // Build an outbox from a nested event record
-        Order.Placed event = new Order.Placed(UUID.randomUUID(), 5.0);
+        OrderEvent.Placed event = new OrderEvent.Placed(UUID.randomUUID(), 5.0);
         Outbox outbox = Outbox.of(event);
 
         // The payload is an envelope: aggregate, action, and the event itself as data
@@ -101,20 +116,20 @@ class OutboxOfDomainEventTest {
     void aggregateIdIsExactlyWhatTheEventReturns() {
         // The event default method turns a UUID into its string form
         UUID id = UUID.randomUUID();
-        assertEquals(id.toString(), Outbox.of(new Order.Placed(id, 1.0)).getAggregateId());
+        assertEquals(id.toString(), Outbox.of(new OrderEvent.Placed(id, 1.0)).getAggregateId());
 
         // A record can convert a number itself
-        assertEquals("1007", Outbox.of(new Invoice.Issued(1007L)).getAggregateId());
+        assertEquals("1007", Outbox.of(new InvoiceEvent.Issued(1007L)).getAggregateId());
 
         // A record can build a composite key
         UUID customer = UUID.randomUUID();
-        assertEquals(customer + ":EU", Outbox.of(new Shipment.Sent(customer, "EU")).getAggregateId());
+        assertEquals(customer + ":EU", Outbox.of(new ShipmentEvent.Sent(customer, "EU")).getAggregateId());
     }
 
     @Test
     void resultPassesTheOutboxValidationRules() {
         // Build from a valid event
-        Outbox outbox = Outbox.of(new Order.Placed(UUID.randomUUID(), 1.0));
+        Outbox outbox = Outbox.of(new OrderEvent.Placed(UUID.randomUUID(), 1.0));
 
         // Type, id and payload all satisfy the constraints the aspect enforces
         assertTrue(validator.validate(outbox).isEmpty());
@@ -123,19 +138,19 @@ class OutboxOfDomainEventTest {
     @Test
     void nullAggregateIdIsRejectedWithAMessageNamingTheEvent() {
         // An event that returns no id cannot be partitioned
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Outbox.of(new Broken.NoId()));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Outbox.of(new BrokenEvent.NoId()));
 
         // The message tells the developer which event is wrong
-        assertTrue(ex.getMessage().contains("Broken"), ex.getMessage());
+        assertTrue(ex.getMessage().contains("BrokenEvent"), ex.getMessage());
     }
 
     @Test
     void blankAggregateIdIsRejectedWithAMessageNamingTheEvent() {
         // A blank id is as useless as a missing one
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Outbox.of(new Broken.BlankId()));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Outbox.of(new BrokenEvent.BlankId()));
 
         // The message names the event
-        assertTrue(ex.getMessage().contains("Broken"), ex.getMessage());
+        assertTrue(ex.getMessage().contains("BrokenEvent"), ex.getMessage());
     }
 
     @Test
@@ -145,6 +160,20 @@ class OutboxOfDomainEventTest {
 
         // The message names the offending class
         assertTrue(ex.getMessage().contains("TopLevelEvent"), ex.getMessage());
+    }
+
+    @Test
+    void aNestedInterfaceWhoseNameDoesNotEndInEventIsRejected() {
+        // Reject event interfaces that don't end in Event
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Outbox.of(new BadName.Stuff()));
+        assertTrue(ex.getMessage().contains("BadName"), ex.getMessage());
+    }
+
+    @Test
+    void anInterfaceNamedExactlyEventIsRejected() {
+        // Reject event interfaces named just Event
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Outbox.of(new Event.Thing()));
+        assertTrue(ex.getMessage().contains("Event"), ex.getMessage());
     }
 
     @Test
