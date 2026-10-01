@@ -21,3 +21,10 @@
 - Why: owner clarified that saying "merge" means the tests are approved and merging is authorized
 - Tests: n/a (docs only)
 - Review: approved (owner said "approved", 2026-10-01)
+
+## 2026-10-01 agy-notes – record Antigravity CLI setup and options
+- By: claude
+- Changed: docs/AGY.md
+- Why: save the researched agy (Antigravity CLI) install path, options, models and executor loop so it is not re-researched
+- Tests: n/a (docs only)
+- Review: pending
