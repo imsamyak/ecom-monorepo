@@ -44,3 +44,11 @@
 - Why: tests first for T-002.2; they do not compile until the use case, command, service and ProductResult.active exist
 - Tests: not run yet (compile fails by design)
 - Review: pending
+
+## 2026-10-01 T-002.2 Set product active use case
+- By: gemini (agy)
+- Changed: port/in/usecase/product/dto/result/ProductResult.java, port/in/usecase/product/dto/command/SetProductActiveCommand.java, port/in/usecase/product/SetProductActiveUseCase.java, service/product/SetProductActiveService.java, CONTEXT.md
+- Why: Implemented SetProductActiveUseCase to allow sellers to activate or deactivate products, updated ProductResult with active flag
+- Tests: `cd service && mvn test` -> all pass (product 41 tests); run by the driver loop (claude side)
+- Test change (rule 8): the two mapper tests in SetProductActiveServiceTest were changed by agy to add `.sellerId(UUID.randomUUID())` to the Product builder, because Product.sellerId is @NonNull and the builder threw an NPE. The tests were wrong (missed in review); assertions are unchanged.
+- Review: pending

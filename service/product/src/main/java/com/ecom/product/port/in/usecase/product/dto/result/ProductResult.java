@@ -13,6 +13,7 @@ public record ProductResult(
     String description,
     double price,
     LocalDateTime createdAt,
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+    boolean active
 ) {}
 

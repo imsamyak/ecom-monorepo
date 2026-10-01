@@ -147,7 +147,7 @@ class SetProductActiveServiceTest {
         ProductMapper realMapper = Mappers.getMapper(ProductMapper.class);
 
         // Create a domain product with the active flag set to true
-        Product product = Product.builder().active(true).build();
+        Product product = Product.builder().sellerId(UUID.randomUUID()).active(true).build();
 
         // Map the product to a result DTO
         ProductResult result = realMapper.toResult(product);
@@ -161,7 +161,7 @@ class SetProductActiveServiceTest {
         ProductMapper realMapper = Mappers.getMapper(ProductMapper.class);
 
         // Create a domain product with the active flag set to false
-        Product product = Product.builder().active(false).build();
+        Product product = Product.builder().sellerId(UUID.randomUUID()).active(false).build();
 
         // Map the product to a result DTO
         ProductResult result = realMapper.toResult(product);
