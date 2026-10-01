@@ -345,3 +345,12 @@
 - Tests: check runs by Claude on Windows PowerShell 5.1: parse check clean; schema valid JSON; a run keeps logs/agy/<time>-<prompt>.log and .jsonl and prints agy's final reply from the stream result event. Three bugs found by the first check run and fixed by agy (PowerShell 5.1 Split-Path, stream result parsing, fix-round prompt name)
 - Notes: these three fixes came from Claude's check run.
 - Review: pending
+
+## 2026-10-01 rule - rule 23 and the decision log
+- By: claude
+- Changed: AGENTS.md rule 23, .agent/notes/decisions.md (new, backfilled with every decision so far, incl. the inventory and JWT discussions)
+- Why: owner: track all discussions, implementations, history and logs in files so recovery is always possible
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "rule 23"
+- Tests: n/a (docs only)
+- Review: pending
