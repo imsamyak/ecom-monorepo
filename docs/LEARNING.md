@@ -46,7 +46,8 @@ Every section: what it is, where it lives here, how it works, gotchas. New tech 
 - **`@Version`** (in `DomainEntity`): optimistic locking; concurrent updates to the same row fail instead of silently overwriting.
 - **Lifecycle callbacks** (`@PrePersist`/`@PreUpdate`): set `createdAt`/`updatedAt`, sanitize blank descriptions.
 - **`@Check`:** database CHECK constraints (price > 0, title length) as a last line of defence beyond Java validation.
-- **`AttributeConverter`:** `VariantSkuConverter` stores a variant's properties map as one string column.
+- **`AttributeConverter`:** `VariantSkuConverter` stores a variant's properties map as one string column. Hibernate calls it on every write and read, so a bug there corrupts data silently.
+- **Java gotcha, `String.join`:** its signature is `join(delimiter, elements...)`. Passing one already-joined string makes it the *delimiter* with nothing to join, which returns `""` and compiles without warning. That was the converter bug. Defence in depth: the converter is unit tested, and the `sku` column has a DB `@Check` so an empty value can never be stored even if code regresses.
 - **`@Modifying @Query`:** bulk update/delete in one statement, needs a transaction.
 
 ## Exponential backoff

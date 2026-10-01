@@ -2,6 +2,7 @@ package com.ecom.product.domain.entity;
 
 import com.ecom.product.domain.converter.VariantSkuConverter;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Check;
 import lombok.*;
 
 import java.util.*;
@@ -24,9 +25,11 @@ public class Variant extends DomainEntity {
     @JoinColumn(name = "product_id", nullable = false, updatable = false)
     private Product product;
 
+    // The sku is built from the properties; the database refuses an empty or whitespace-only one
     @Builder.Default
     @Convert(converter = VariantSkuConverter.class)
     @Column(name = "sku", nullable = false)
+    @Check(constraints = "LENGTH(TRIM(sku)) > 0")
     private final TreeMap<String, String> properties = new TreeMap<>();
 
     public void verifyBelongsToProduct(UUID expectedProductId) {

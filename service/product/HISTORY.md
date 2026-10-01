@@ -4,7 +4,8 @@
 
 ## 2026-10-01 variant-sku-check – sku must never be empty (tests first)
 - By: claude
-- Changed: tests only so far: VariantSkuConverterTest, VariantPersistenceTest
-- Why: the converter always wrote an empty sku (String.join misuse) and nothing in the DB forbade it
-- Tests: `mvn -pl product -am test -Dtest='VariantSkuConverterTest,VariantPersistenceTest'` -> 14 of 19 failing, as intended before the fix
+- Changed: tests: VariantSkuConverterTest, VariantPersistenceTest (commit 1, written first, 14 of 19 failing); production: VariantSkuConverter (fix), Variant (@Check on sku) (commit 2)
+- Why: the converter always wrote an empty sku (String.join misuse), so variants lost their properties, a product could hold only one variant, and reads crashed; nothing in the DB forbade an empty sku
+- Tests: `cd service && mvn -pl product -am test` -> all pass (19 new in this task, 6 existing integration, outbox and shared suites green)
+- New tech: docs/LEARNING.md "JPA / Hibernate features used" (AttributeConverter, @Check) and the String.join gotcha
 - Review: pending owner approval of the tests
