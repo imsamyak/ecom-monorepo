@@ -54,12 +54,7 @@ public class AddVariantService implements AddVariantUseCase {
 
     @Override
     public DomainEvent buildEvent(AddVariantCommand command, VariantResult result) {
-        // Describe the new variant as an ADD event; its aggregate id is the owning product id
-        return new ADD(
-                result.id(),
-                result.productId(),
-                result.properties(),
-                result.createdAt(),
-                result.updatedAt());
+        // Build the ADD event using the mapper
+        return variantMapper.toAddEvent(result);
     }
 }

@@ -198,5 +198,6 @@
 - Why: Use MapStruct to map ProductResult, VariantResult, and DeleteProductCommand directly to their respective domain events instead of manual instantiation.
 - Depends on: T-006, T-003.3
 - Rollback: git revert the commits found by git log --grep T-005, newest first
-- Tests: pending
+- Tests: cd service; mvn test -> all pass (product 78), green after 2 fix rounds; full build re-run by Claude
+- Test change (rule 8): in the implement step agy changed UseCaseEventsTest so the services get the real generated mappers (Mappers.getMapper) instead of Mockito mocks, because buildEvent now calls the mapper and a mock returns null; DeleteProductService gets the mapper as a new constructor argument (allowed by the spec). Assertions unchanged; reviewed by Claude
 - Review: pending

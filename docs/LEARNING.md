@@ -65,7 +65,7 @@ Every section: what it is, where it lives here, how it works, gotchas. New tech 
 After each failure wait twice as long (1 s, 2 s, 4 s ... capped at 5 min) so a down broker is not hammered. State lives in memory in `RetryBackoff`; a restart retries from 1 s again.
 
 ## MapStruct
-Generates mapping code between DTOs and entities at compile time (no reflection). `@Mapper(componentModel = "spring")` makes the generated class a Spring bean. Used in `service/*/mapper` (entity <-> result) and `adapter/in/web/mapper` (request/response <-> command/result). Gotcha: needs the `lombok-mapstruct-binding` annotation processor ordering (already set in the pom).
+Generates mapping code between DTOs and entities at compile time (no reflection). `@Mapper(componentModel = "spring")` makes the generated class a Spring bean. Used in `service/*/mapper` (entity <-> result, result/command -> event) and `adapter/in/web/mapper` (request/response <-> command/result). Gotcha: needs the `lombok-mapstruct-binding` annotation processor ordering (already set in the pom).
 
 ## Bean Validation
 Annotations like `@NotBlank`, `@Size`, `@Positive` on commands and entities. `@Valid` triggers validation of an argument/field; `@Validated` on a Spring bean enables method-level validation through a proxy. Gotcha: validation on a method parameter only runs if the interface or class declares `@Valid`/constraints on it; `CreateProductUseCase.execute` has none, so invalid commands are caught later by entity validation.

@@ -61,7 +61,7 @@ public class RemoveVariantService implements RemoveVariantUseCase {
 
     @Override
     public DomainEvent buildEvent(RemoveVariantCommand command, VariantResult result) {
-        // Describe what was removed; the aggregate id is the owning product id
-        return new REMOVE(result.id(), result.productId(), result.properties());
+        // Build the REMOVE event using the mapper
+        return variantMapper.toRemoveEvent(result);
     }
 }

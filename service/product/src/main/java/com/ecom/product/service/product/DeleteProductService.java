@@ -9,6 +9,7 @@ import com.ecom.product.port.out.persistence.product.LoadProductPort;
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Product entity is already imported in this class
 import com.ecom.contract.event.ProductEvent.DELETE;
+import com.ecom.product.service.product.mapper.ProductMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -26,6 +27,7 @@ public class DeleteProductService implements DeleteProductUseCase {
 
     private final LoadProductPort loadProductPort;
     private final DeleteProductPort deleteProductPort;
+    private final ProductMapper productMapper;
     private final Validator validator;
 
     @Override
@@ -50,7 +52,7 @@ public class DeleteProductService implements DeleteProductUseCase {
 
     @Override
     public DomainEvent buildEvent(DeleteProductCommand command, Void result) {
-        // A delete has no result, so the DELETE event is built from the command alone
-        return new DELETE(command.productId(), command.sellerId());
+        // Build the DELETE event using the mapper
+        return productMapper.toDeleteEvent(command);
     }
 }

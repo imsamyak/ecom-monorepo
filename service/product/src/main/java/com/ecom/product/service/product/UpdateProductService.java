@@ -79,15 +79,7 @@ public class UpdateProductService implements UpdateProductUseCase {
 
     @Override
     public DomainEvent buildEvent(UpdateProductCommand command, ProductResult result) {
-        // Describe the updated product as an UPDATE event carrying the snapshot after the change
-        return new UPDATE(
-                result.id(),
-                result.sellerId(),
-                result.title(),
-                result.description(),
-                result.price(),
-                result.createdAt(),
-                result.updatedAt(),
-                result.status().name());
+        // Build the UPDATE event using the mapper
+        return productMapper.toUpdateEvent(result);
     }
 }
