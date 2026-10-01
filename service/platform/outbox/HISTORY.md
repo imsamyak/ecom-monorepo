@@ -21,3 +21,11 @@
 - Why: owner asked for the module to be called contract
 - Tests: `cd service && mvn test` -> all pass (no behavior change)
 - Review: pending
+
+## 2026-10-01 events-envelope – sealed events, envelope payload, buildEvent (tests first, red)
+- By: claude
+- Changed: tests only so far: OutboxOfDomainEventTest (rewritten for nested events and the envelope), new aspect/OutboxAspectTest
+- Why: owner design: sealed Product/Variant event interfaces with nested action records, {aggregate, action, data} envelope payload, use cases return only a DomainEvent
+- Tests: written first; modules do not compile yet (red on purpose)
+- Removed tests (replaced by the contract-module event tests): none
+- Review: pending
