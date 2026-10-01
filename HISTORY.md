@@ -20,4 +20,4 @@
 - Changed: AGENTS.md rule 9; Review lines of earlier entries set to approved
 - Why: owner clarified that saying "merge" means the tests are approved and merging is authorized
 - Tests: n/a (docs only)
-- Review: pending
+- Review: approved (owner said "approved", 2026-10-01)
