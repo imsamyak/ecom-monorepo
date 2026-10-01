@@ -355,3 +355,12 @@
 - Rollback: git revert the commit found by git log --grep "rule 23"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-007 docs - strategy experiment result (S1 two-step wins)
+- By: claude
+- Changed: docs/AGY.md section 8, .agent/notes/decisions.md, docs/PROGRESS.md, TASKS.md
+- Why: rule 22: owner asked to test strategies on separate branches and keep the better one
+- Depends on: T-008.2
+- Rollback: git revert the commits found by git log --grep "strategy experiment result"
+- Tests: n/a (docs only)
+- Review: pending

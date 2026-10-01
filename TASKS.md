@@ -98,7 +98,7 @@ Design:
 #### T-008.1 Inbox module, storage port, JPA adapter, TTL cleaner   [open]
 Acceptance: module builds and is registered in service/pom.xml; InboxStore JPA adapter: first event for an aggregate is new; same eventId again is a duplicate; a different eventId overwrites; rows older than the TTL are deleted by the cleaner and newer ones kept; TTL is configurable.
 
-#### T-008.2 EventCatalog and envelope decoding   [open]
+#### T-008.2 EventCatalog and envelope decoding   [review]
 Acceptance: EventCatalog resolves Product/CREATE to ProductEvent.CREATE and Variant/ADD to VariantEvent.ADD etc. for every action; unknown aggregate or action gives an empty result; decoding an envelope produced by Outbox.of gives back an equal record (round trip for every event type).
 
 #### T-008.3 InboxReceiver: dedupe, dispatch, transaction   [open]

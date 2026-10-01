@@ -55,3 +55,10 @@ Every design discussion with the owner is recorded here when it happens: the con
 - Keep optimizing cost by small measured pilots; pivot if not better.
 - Everything is recorded in files so recovery never depends on the chat: discussions here, tasks in TASKS.md, state in PROGRESS.md, history in HISTORY.md files, runs in reports.
 - AI files move into .agent/ (owner go ahead): docs/LEARNING.md stays in docs/, module context files go to .agent/modules/, settings in .agent/config.json.
+
+## 2026-10-01 agy strategy experiment and latest owner decisions
+- Strategy experiment on T-008.2: the two-step chunk driver (S1) produced a correct result; one combined prompt (S2) aborted on a grep command. S1 stays the standard. Details in docs/AGY.md section 8.
+- Next driver improvement: continue the same agy conversation after a command abort instead of starting over.
+- JWT (T-009): owner gave go ahead; open details use the recommendations (roles SELLER, BUYER, ADMIN; claims sub and roles; 401 for a missing or invalid token).
+- Inventory: waits for a design discussion and the owner's go ahead.
+- Executor model stays gemini-3.1-pro-high (only agy's Gemini models).

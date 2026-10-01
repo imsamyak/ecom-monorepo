@@ -79,6 +79,18 @@ Measures of Claude's own work per chunk, compared between processes. Counts are 
 - Verdict: pilot B is NOT cheaper and is less reliable than pilot A. agy running its own build is fragile (command aborts, early stops). Keep pilot A (the chunk driver, where the script runs the build) as the standard; use it for T-008.2 and T-008.3.
 
 
+### Strategy experiment on T-008.2 (2026-10-01), executor gemini-3.1-pro-high
+| | S1: chunk driver, two steps | S2: one combined prompt, then build loop |
+|---|---|---|
+| Result | correct: 12 tests covering all acceptance, then EventCatalog | nothing produced: aborted at step 18 |
+| Time | about 8 minutes (176 s tests, 316 s implement) | about 4 minutes, wasted |
+| Denied commands | 0 | 1 (grep to search the code) |
+| Fix rounds | 0 | n/a |
+- First S1 attempts failed because of driver bugs found by the experiment: the logs folder was missing in a fresh worktree, a run with no changes was reported GREEN, and agy listed folders with a shell command. All fixed (6ba1c52): the driver now puts the repository file list into every prompt.
+- Verdict: S1 (two-step chunk driver) stays the standard. One long combined run has more exploring steps, so agy is more likely to reach for a shell command, and one slip loses the whole run.
+- agy reaches for the shell in three situations seen so far: reading a slow command's result, listing folders, searching code (grep). Instead of chasing each trigger, the driver should continue the same agy conversation after an abort (--continue with a reminder to use file tools only), keeping the work done so far (follow-up driver task).
+- Model decision: gemini-3.1-pro-high stays the executor (owner: correctness first; Flash not used).
+
 ## 9. Chunk driver (T-007, pilot A)
 - Run one chunk with one command from the repo root: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-chunk.ps1 T-005`.
 - It reads the task's section from TASKS.md, builds the prompts from `scripts/prompts/tests.txt` and `implement.txt` (all standing rules live there; fix a lesson once in the template), runs the tests step (retries once on the headless command abort), stops if production code changed in the tests step, runs the implement-until-green loop, and writes `logs/agy-report.md`: step files split into tests and production, tests changed during implement, GREEN or STUCK, test summaries, fix rounds, files agy asks to remove, flags. Exit code 0 only when green with no flags.
