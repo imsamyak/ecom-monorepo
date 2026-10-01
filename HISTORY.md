@@ -165,3 +165,12 @@
 - Rollback: git revert the commit found by git log --grep "park multiple events"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 docs - park token-cost reduction ideas in SWGT.md
+- By: claude
+- Changed: SWGT.md
+- Why: owner: reduce cost later
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "park token-cost"
+- Tests: n/a (docs only)
+- Review: pending

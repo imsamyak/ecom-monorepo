@@ -31,3 +31,11 @@ Open questions (recommendation in brackets):
 - Should an empty list mean emit nothing, like null today? (Yes.)
 - Order of the rows for one execution? (Keep list order; they share the transaction, and createdAt ties are broken by insertion order.)
 Note from the same review: returning data from delete/remove use cases so the event can carry it is fine (owner); no change needed.
+## 2026-10-01 Reduce token cost of the Claude + agy workflow
+Idea: lower the cost per task. Findings at the time: delegating to agy saves Claude's code-writing (output) tokens, but adds prompt, review, monitoring, retry and commit overhead; for tiny mechanical tasks (renames, comment fixes) delegation can cost more than it saves. The biggest cost in a long session is the conversation itself, re-read on every reply.
+Why parked: owner wants to do it later.
+Options (recommendation in brackets):
+- Start a fresh Claude session per task or per few tasks; AGENTS.md, docs/PROGRESS.md, TASKS.md and the HISTORY.md files already let a new session resume. (Do this first: biggest saving.)
+- Give agy bigger chunks so the fixed overhead is spread over more code. (Yes, when chunks still stay stable alone.)
+- Owner batches decisions in one message to save round trips. (Yes.)
+- Rule change: Claude may make trivial non-logic edits itself (comments, renames, docs inside code files), agy keeps all logic and tests. (Owner decides; needs a change to rule 17.)
