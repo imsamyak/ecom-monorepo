@@ -201,3 +201,12 @@
 - Rollback: git revert the commits found by git log --grep T-007 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-005 docs - plan event mapping in the MapStruct mappers
+- By: claude
+- Changed: TASKS.md (T-005), docs/PROGRESS.md
+- Why: owner: build every event with a mapper (all or none), go ahead given
+- Depends on: T-006
+- Rollback: git revert the commits found by git log --grep T-005 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

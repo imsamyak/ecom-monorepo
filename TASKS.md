@@ -73,6 +73,16 @@ Owner addition 2026-10-01 (agy has a very large context window; agy may be made 
 - Pilot B: ONE agy run per task: it reads the task, the rules and all relevant files once, writes tests, implements, runs the approved exact command mvn -f service/pom.xml test itself and fixes failures in its own conversation, may use its own subagents (pilot whether they return complete results), then self-checks its diff against the spec and the AGENTS.md checklist and writes logs/agy-report.md (files changed split into tests and production, test results, tests changed during implement, doubts). Claude reads the report and the test files in full, spot-checks the rest, and still commits tests first and implementation second from the report's file lists.
 - Measure both against the T-003.3 baseline; keep the cheaper one that stays correct; pivot otherwise.Pilot: T-003.3 runs on the old process as the baseline; the next chunk after T-007 runs on the new one. Compare Claude tool calls, prompt size, diff lines read, retries and elapsed time; keep the new process only if it is clearly cheaper, else adjust or roll back. Record the numbers in docs/AGY.md.
 Acceptance: one agy-chunk.ps1 run on a small real chunk produces both steps and a correct report; the pilot comparison is recorded.
+### T-005 Every event is built by a MapStruct mapper   [open]
+Module(s): service/product
+Spec (owner: use mappers for all events or none; go ahead 2026-10-01):
+- `ProductMapper` gets `ProductEvent.CREATE toCreateEvent(ProductResult)`, `ProductEvent.UPDATE toUpdateEvent(ProductResult)` (both map `id` to `productId`; the status enum becomes its name) and `ProductEvent.DELETE toDeleteEvent(DeleteProductCommand)` (fields copied by name).
+- `VariantMapper` gets `VariantEvent.ADD toAddEvent(VariantResult)` and `VariantEvent.REMOVE toRemoveEvent(VariantResult)` (both map `id` to `variantId`).
+- Every `buildEvent` in CreateProduct, UpdateProduct, DeleteProduct, AddVariant and RemoveVariant services becomes one mapper call; no event is built by hand any more. DeleteProductService gets the ProductMapper injected.
+- No behavior change: events and outbox payloads stay exactly the same.
+Acceptance: new unit tests for each of the five mapper methods (written first, using the generated mappers via `Mappers.getMapper`); the existing UseCaseEventsTest and integration tests pass unchanged except for service constructors that gain a mapper; `cd service && mvn test` passes.
+Runs as pilot A of T-007 (the chunk driver), measured against the T-003.3 baseline.
+
 ## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]
 Module(s): service/product
