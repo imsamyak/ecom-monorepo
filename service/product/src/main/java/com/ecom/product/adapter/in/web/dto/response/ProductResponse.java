@@ -10,6 +10,7 @@ public record ProductResponse(
     String description,
     double price,
     LocalDateTime createdAt,
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+    boolean active
 ) {}
 

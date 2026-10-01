@@ -17,7 +17,7 @@ The product has a non-null boolean `active` flag (true by default), updated via 
 Before persistence (insert and update), the product's `title` and `description` are stripped of leading and trailing whitespace. If the description is blank after trimming, it is stored as null.
 
 ## Product activation
-The `SetProductActiveUseCase` allows sellers to activate or deactivate their products. Its result, `ProductResult`, carries the `active` state of the product.
+The `SetProductActiveUseCase` allows sellers to activate or deactivate their products, exposed via `PATCH /products/{productId}/active`. Its result, `ProductResult`, carries the `active` state of the product.
 
 ## Test
 `cd service && mvn test`. `OutboxIntegrationTest` covers outbox write, relay ordering/backoff, payload limit, async cleanup and sweep.

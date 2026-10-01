@@ -72,6 +72,16 @@ If it hangs on shell approvals (e.g. `mvn test`), rerun with `--dangerously-skip
   Needs an explicit owner decision; alternative is allow-rules in `~/.gemini/antigravity-cli/settings.json`
   `permissions.allow`, e.g. `command(mvn)`, `command(git)` (format seen: `command(Get-ChildItem)`).
 
+## Verified behaviour (T-001 / T-002 trial, 2026-10-01)
+- Working flow: agy edits files; Claude (or the driver script) runs `mvn test` and feeds failures back with `--continue`. Headless agy can run a command only if its EXACT string is in `permissions.allow` AND agy was started from a shell with the refreshed PATH (otherwise it prefixes a PATH-refresh line and the string no longer matches).
+- Launch from PowerShell: refresh `$env:Path` from Machine+User, set `JAVA_HOME`, `Set-Location` to the repo, then `agy.exe -p <prompt> --mode accept-edits --model gemini-3.1-pro-high --print-timeout 25m` (add `--continue` for follow-ups).
+- Prompt gotchas: no double quotes and no non-ASCII (en dash) in prompts, Windows mangles the argument ("unexpected argument"). Put the prompt in a file and read it with `Get-Content -Raw`.
+- agy will sometimes call the run-command tool just to explore; a denied command aborts the whole run with no output. Start every prompt with: use only file view/search/write tools, never run-command, no subagents.
+- agy may start a research subagent and return early ("I have sent a subagent..."). Resend with `--continue`: do the research yourself, in this turn.
+- agy follows AGENTS.md when told to read it, writes tests first and comments each step, and keeps hexagonal layers. It misses things a reviewer must catch (wrong method name in a test, tautological assertions on a stubbed result, missing @NonNull field in a builder). Two of those tests were corrected by Claude, one by agy in the loop with an explicit rule 8 note.
+- agy forgot the CONTEXT/HISTORY paperwork when the first prompt failed; check `git status` for those files after each chunk.
+- Driver loop idea: implement, `mvn test`, send failures back, repeat until green (no retry limit; stop only if the same failure repeats 5 times).
+
 ## Unverified (check on the first real task)
 - Whether `agy` automatically reads `AGENTS.md` / `GEMINI.md`. If not, put "read AGENTS.md first" in the prompt
   or add the rules file format it expects.

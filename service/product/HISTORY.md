@@ -59,3 +59,10 @@
 - Why: tests first for T-002.3; they do not compile until SetProductActiveRequest, the web mapper methods, the endpoint and ProductResponse.active exist
 - Tests: not run yet (compile fails by design)
 - Review: pending
+
+## 2026-10-01 T-002.3 PATCH endpoint to set product active
+- By: gemini (agy)
+- Changed: ProductController, ProductWebMapper, ProductResponse, SetProductActiveRequest, CONTEXT.md
+- Why: T-002.3 implementation
+- Tests: `cd service && mvn test` -> all pass (product 44 tests incl. 3 new web tests); run by the driver loop (claude side)
+- Review: pending
