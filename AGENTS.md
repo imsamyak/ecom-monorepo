@@ -40,10 +40,12 @@ Build and test everything: `cd service && mvn test`.
 
 Entry format for `HISTORY.md`:
 ```
-## YYYY-MM-DD <task-id> - <title>
+## YYYY-MM-DD <task-id> <tests|impl|docs|rule> - <title>
 - By: claude | gemini (agy)
 - Changed: <files or areas>
 - Why: <one line>
+- Depends on: <task ids this needs to keep working, or none>
+- Rollback: <how to remove it, e.g. git revert the commits found by git log --grep "<task-id>" (newest first); name any later task that depends on it>
 - Tests: <command> -> <result>
 - Review: pending | approved | changes requested: <notes>   (reviewer fills this in)
 ```
@@ -82,3 +84,5 @@ Entry format for `HISTORY.md`:
 17. Claude never writes or edits code, neither production code nor tests; every code change is done by the Executor agy; Claude splits tasks, writes prompts, reviews, runs the build and git, and edits docs.
 18. **Discuss first, build only after go ahead.** When the owner asks for anything new (a feature, a design change, a new rule or tool), first discuss it: options, trade-offs, a recommendation and open questions. Do not change code, tests or task specs until the owner and Claude have reached a conclusion AND the owner explicitly says `go ahead`. Nothing else counts as a go ahead (not `ok`, not a choice between options, not silence).
 19. **Parked ideas go to SWGT.md.** When the owner parks an idea (SWGT = see when got time), add an entry to `SWGT.md`: date, idea, why parked, open questions with the recommendation at the time. Entries there are not tasks; one becomes a task only after it is discussed again and the owner says go ahead (rule 18).
+20. **Small commits.** One task or chunk per commit, as small as possible; if a change covers two things, make two commits. A feature chunk is two commits: tests, then implementation. Every commit message starts with its task id and kind: `T-003.2 tests: ...`, `T-003.2 impl: ...`, `docs: ...`, `rule: ...`.
+21. **History made for rollback.** One `HISTORY.md` entry per commit, never one entry for several commits. Every new entry has `Depends on` and `Rollback` lines (format above) so the owner or any model can see what a feature needs and remove it cleanly with `git log --grep` and `git revert`. Old entries stay as written (append-only).

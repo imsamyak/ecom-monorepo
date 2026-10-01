@@ -111,3 +111,12 @@
 - Why: owner: SWGT.md is the dump file for future ideas
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 rule-20-21 rule - small commits, history entries made for rollback
+- By: claude
+- Changed: AGENTS.md rules 20 and 21, HISTORY.md entry format (task kind, Depends on, Rollback)
+- Why: owner: keep commits and history entries small so any feature can be understood and rolled back easily
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "rule: small commits"
+- Tests: n/a (docs only)
+- Review: pending
