@@ -40,3 +40,8 @@ Everything known about running `agy` as the Executor. Verified 2026-10-01 (T-001
 - Continue: `-c/--continue`, `--conversation <id>`.
 - Control: `--mode accept-edits|plan`, `--dangerously-skip-permissions`, `--sandbox`, `--model`, `--effort low|medium|high|max`, `--add-dir`.
 - Subcommands: `models`, `agents`, `mcp`, `plugin`, `update`, `install`, `changelog`, `remote-control`.
+
+## 7. Progress log and how to spot a stuck run (T-004)
+- Both scripts write to `logs/agy-progress.log` (git-ignored): a start line, a watcher line every 30 seconds (elapsed minutes, last step and last file written, read from `cli.log`; the loop also shows its round), and an end line with exit code and duration.
+- Prompt rule: every prompt asks agy to append one plain-English line per step to `logs/agy-progress.log` (what it is doing, or what blocks it).
+- Claude checks a running task with `Get-Content logs/agy-progress.log -Tail 10` and treats it as stuck or on a wrong path when: a tests-only step runs well over ~15 minutes or an implement loop over ~30 minutes without new progress; no new step appears for several minutes; the same file is rewritten again and again; files outside the step are touched (production code in a tests step); or the loop repeats the same failure (the loop itself stops after 5 identical rounds). Then Claude stops the run, discards its partial changes and resends a corrected prompt.

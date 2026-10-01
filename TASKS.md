@@ -44,7 +44,7 @@ Spec (owner agreed 2026-10-01, JSON Merge Patch, RFC 7396):
 - Removed: `PUT /products/{productId}`, `PATCH /products/{productId}/active`, `SetProductActiveUseCase`, `SetProductActiveService`, `SetProductActiveCommand`, `SetProductActiveRequest` and their web mapper methods. Removed tests (owner agreed): `SetProductActiveServiceTest`, `ProductActiveControllerTest`; their behavior is covered by the new PATCH tests.
 - Hexagonal rule 11 applies: the controller calls only the use case.
 Acceptance: web and integration tests for: each field alone, several fields together, absent fields unchanged, description set to null, null title/price/status is 400, unknown status is 400, invalid values are 400, empty body is 400, 404, 403, one UPDATE outbox row per successful patch with data.status, no row on failure; PUT and PATCH /active are gone (405 or 404); `cd service && mvn test` passes.
-### T-004 Progress log for agy runs   [open]
+### T-004 Progress log for agy runs   [review]
 Module(s): scripts/, .gitignore, docs/AGY.md (no Java code)
 Spec (owner said go ahead 2026-10-01):
 - One shared progress file `logs/agy-progress.log` in the repo root; `logs/` is added to `.gitignore`.

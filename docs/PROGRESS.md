@@ -23,7 +23,7 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 - [x] T-003.2: agy implements until green, Claude reviews, commits, pushes
 - [ ] T-003.3 (PATCH partial update): agy writes tests only, Claude reviews, commits red tests
 - [ ] T-003.3: agy implements until green, Claude reviews, commits, pushes
-- [ ] T-004: after the T-003.2 loop finishes, agy adds the watcher to the scripts and .gitignore; Claude updates docs/AGY.md; manual check run; separate commits
+- [x] T-004: after the T-003.2 loop finishes, agy adds the watcher to the scripts and .gitignore; Claude updates docs/AGY.md; manual check run; separate commits
 - [ ] Owner reviews the T-003.2 and T-003.3 tests and merges work when ready# Progress checklist (resume point)
 
 Rule 16 (AGENTS.md): at the START of every task or chunk, write its checklist here BEFORE doing the work.

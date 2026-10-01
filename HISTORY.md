@@ -138,3 +138,12 @@
 - Rollback: git revert the commits found by git log --grep T-004 (newest first)
 - Tests: manual check run (agy-run.ps1, 28s): start line, agy step note and end line written to logs/agy-progress.log; logs/ ignored by git; the 30 s watcher line is confirmed on the next run longer than 30 s
 - Review: pending
+
+## 2026-10-01 T-004 docs - document the progress log and stuck-run checks
+- By: claude
+- Changed: docs/AGY.md section 7
+- Why: so every session reads the progress log and stops a stuck agy run
+- Depends on: T-004 impl
+- Rollback: git revert the commits found by git log --grep T-004 (newest first)
+- Tests: n/a (docs only)
+- Review: pending
