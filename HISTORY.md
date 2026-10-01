@@ -281,3 +281,12 @@
 - Rollback: git revert the commit found by git log --grep "park inbox follow-ups"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-008.1 impl - inbox module registration
+- By: gemini (agy)
+- Changed: service/pom.xml
+- Why: Register the new platform/inbox module
+- Depends on: T-005, T-006
+- Rollback: git revert the commits found by git log --grep T-008.1 (newest first)
+- Tests: mvn -f service/pom.xml test -> GREEN
+- Review: pending

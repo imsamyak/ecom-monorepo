@@ -21,6 +21,7 @@
     <modules>
         <module>platform/contract</module>
         <module>platform/outbox</module>
+        <module>platform/inbox</module>
         <module>product</module>
         <module>platform/shared</module>
     </modules>
