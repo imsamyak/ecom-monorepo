@@ -67,3 +67,7 @@ Every design discussion with the owner is recorded here when it happens: the con
 - Owner: 17 percent of the weekly limit used in one day; reduce cost.
 - Biggest cost is the long chat re-read on every turn. Plan: two chats on the same files. Design chat (Opus, this one, compacted with /compact): discussions, decisions, task specs; edits only docs, commits only while the execution chat is idle. Execution chat (new session, /model sonnet): runs tasks through agy, reviews, builds, commits, pushes; only it commits code and runs agy. Go aheads are written into TASKS.md so both chats see them.
 - Execution chat reports once per task, keeps output short (Maven totals only, reports not full diffs). Memory kills are handled silently with the restart policy unless all 5 retries fail (owner runs the machine under heavy use).
+
+## 2026-10-01 One git writer at a time: the lock (rule 24)
+- Owner asked whether only the design chat could commit, using a flag the execution chat sets. Rejected: every commit would run on Opus (more cost), the owner would have to relay each chunk, and the design chat would have to trust or redo the build.
+- Chosen (owner: implement b): both chats may commit, never at the same time. Shared file .agent/lock (gitignored) with one line: who, date, time, task. Check before any git change; if held by the other chat, report waiting for lock to the owner; release after push. Execution chat holds it for a whole chunk; design chat only for doc commits. A lock older than 2 hours is not removed by a chat; the owner decides.

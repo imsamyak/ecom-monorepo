@@ -390,3 +390,12 @@
 - Rollback: git revert the commit found by git log --grep "cost plan"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 rule - one git writer at a time: the lock
+- By: claude
+- Changed: AGENTS.md (rule 24), .gitignore (.agent/lock), .agent/notes/decisions.md
+- Why: owner: design chat and execution chat must never change git at the same time
+- Depends on: docs - cost plan: design chat and execution chat
+- Rollback: git revert the commit found by git log --grep "one git writer"
+- Tests: n/a (docs only)
+- Review: pending
