@@ -89,3 +89,9 @@ Measures of Claude's own work per chunk, compared between processes. Counts are 
 - Claude Code may stop a background run when the machine is critically low on memory. That is not a failure of the run.
 - Claude restarts the same run automatically, without asking, after waiting 5, 10, 15, 20 and 25 seconds for retries 1 to 5 (75 seconds in total). Before each restart check that the stopped run left no partial changes that would confuse the next one.
 - If the run is stopped again after the fifth retry, stop and ask the owner to intervene (free memory, close old agy or PowerShell processes, or start Claude Code with CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1).
+
+## 11. Root cause: why agy stopped early or aborted (2026-10-01)
+- Reproduced with a kept log (`--log-file`): agy ran `mvn -f service/pom.xml test` (allowed). Maven is slow, so agy ran it as a background task and went idle ("I will wait for it to complete"); the CLI logged "root agent idle; waiting up to 25m for 1 background task(s)". When Maven finished the CLI woke agy, and its next step was another shell command (to read the result), which is not on the allow list. Headless mode soft-denied it ("soft-denying tool confirmation RunCommand") and the run ended with no answer.
+- This one cause explains both symptoms seen all day: runs that ended while "waiting for the tests" and runs that aborted on a denied command.
+- Rule: agy never runs builds, tests or other slow commands. The scripts run Maven and feed failures back (pilot A, agy-impl-loop.ps1). Prompts must not ask agy to run Maven.
+- The CLI log does not show the denied command's text; `--output-format stream-json` (T-010) shows every tool call.

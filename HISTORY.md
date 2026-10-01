@@ -317,3 +317,12 @@
 - Rollback: git revert the commits found by git log --grep T-009 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 docs - root cause of agy stopping early or aborting
+- By: claude
+- Changed: docs/AGY.md section 11
+- Why: owner asked for the root cause; reproduced with a kept agy log
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "root cause of agy"
+- Tests: n/a (docs only)
+- Review: pending
