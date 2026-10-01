@@ -10,7 +10,7 @@ Every section: what it is, where it lives here, how it works, gotchas. New tech 
 
 ## AOP (Aspect-Oriented Programming)
 - **What:** run cross-cutting code (transactions, logging, outbox) around methods without editing them. An *aspect* holds the code, a *pointcut* says which methods, *advice* (`@Around`) wraps the call.
-- **Here:** `OutboxAspect` in the outbox module, pointcut `execution(* com.ecom.outbox.OutboxUseCase+.execute(..))` = the `execute` method of every class implementing `OutboxUseCase`. It runs the use case, calls `buildOutbox`, and saves the event row in the same transaction.
+- **Here:** `OutboxAspect` in the outbox module, pointcut `execution(* com.ecom.outbox.OutboxAwareUseCase+.execute(..))` = the `execute` method of every class implementing `OutboxAwareUseCase`. It runs the use case, calls `buildOutbox`, and saves the event row in the same transaction.
 - **How:** Spring wraps matching beans in a *proxy*. Callers hit the proxy, which runs the advice, which calls the real method through `joinPoint.proceed()`.
 - **Gotchas:** (1) a method calling another method of the *same* class bypasses the proxy, so the advice and `@Transactional`/`@Async` do not run; (2) only Spring beans are proxied; (3) pointcut typos fail silently (the aspect just never fires), so test that it matches.
 
@@ -57,7 +57,7 @@ Every section: what it is, where it lives here, how it works, gotchas. New tech 
 - **Default interface methods:** `aggregateId()` is written once in `Product` (the product id as a string) and inherited by every action. `Variant` events deliberately return the owning product id, so they share the product's partition key and stay ordered with its events.
 - **Aggregate id = partition key:** events with the same key land on the same partition and are consumed in order. Choose the entity whose events must stay ordered relative to each other.
 - **Envelope:** every outbox payload is `{aggregate, action, data}` (`EventEnvelope`). Consumers parse that first, then `data` by (aggregate, action).
-- **Use cases return only an event:** `OutboxUseCase.buildEvent(command, result)` describes what happened; the `OutboxAspect` does the rest (type, action, envelope, JSON, size limit, saving in the same transaction).
+- **Use cases return only an event:** `OutboxAwareUseCase.buildEvent(command, result)` describes what happened; the `OutboxAspect` does the rest (type, action, envelope, JSON, size limit, saving in the same transaction).
 - **Gotchas:** a record named like an entity (`Product`) needs nested-type imports or full names where both are in scope; Hibernate Validator rejects `@Valid` redeclared on an overriding method (HV000151), so the delete and remove services validate with an injected `Validator`; JDK proxies wrap undeclared checked exceptions in `UndeclaredThrowableException`.
 
 ## Exponential backoff

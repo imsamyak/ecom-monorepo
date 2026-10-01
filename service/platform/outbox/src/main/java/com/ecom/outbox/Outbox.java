@@ -12,7 +12,7 @@ import lombok.Value;
 import java.util.Objects;
 
 /**
- * Event description returned by {@link OutboxUseCase#buildOutbox}. Validated by the outbox aspect, which fails
+ * Event description returned by {@link OutboxAwareUseCase#buildOutbox}. Validated by the outbox aspect, which fails
  * (and rolls back) the use case if it is invalid. The payload is serialized to JSON by the aspect.
  */
 @Value

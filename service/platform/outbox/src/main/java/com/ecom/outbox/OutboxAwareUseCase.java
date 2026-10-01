@@ -8,7 +8,7 @@ import com.ecom.shared.usecase.UseCase;
  * {@link #execute}. Return {@code null} from {@link #buildEvent} to skip emitting. The use case only describes what
  * happened; the aggregate type, action, envelope and JSON are produced by the outbox module.
  */
-public interface OutboxUseCase<C, R> extends UseCase<C, R> {
+public interface OutboxAwareUseCase<C, R> extends UseCase<C, R> {
 
     DomainEvent buildEvent(C command, R result);
 }

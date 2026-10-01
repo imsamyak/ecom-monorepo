@@ -2,7 +2,7 @@ package com.ecom.outbox.aspect;
 
 import com.ecom.contract.DomainEvent;
 import com.ecom.outbox.Outbox;
-import com.ecom.outbox.OutboxUseCase;
+import com.ecom.outbox.OutboxAwareUseCase;
 import com.ecom.outbox.entity.OutboxEntity;
 import com.ecom.outbox.repository.OutboxRepository;
 import jakarta.validation.ConstraintViolation;
@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Wraps every {@link OutboxUseCase#execute} in a transaction and writes the outbox row in that same
+ * Wraps every {@link OutboxAwareUseCase#execute} in a transaction and writes the outbox row in that same
  * transaction, so the business change and its event commit or roll back together. If the caller already
  * has a transaction the aspect joins it.
  */
@@ -37,7 +37,7 @@ public class OutboxAspect {
     private final int maxPayloadLength;
     private final TransactionTemplate transactionTemplate;
 
-    @Around("execution(* com.ecom.outbox.OutboxUseCase+.execute(..))")
+    @Around("execution(* com.ecom.outbox.OutboxAwareUseCase+.execute(..))")
     public Object interceptUseCase(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return transactionTemplate.execute(status -> {
@@ -59,7 +59,7 @@ public class OutboxAspect {
         Object result = joinPoint.proceed();
 
         Object command = joinPoint.getArgs().length > 0 ? joinPoint.getArgs()[0] : null;
-        OutboxUseCase<Object, Object> useCase = (OutboxUseCase<Object, Object>) joinPoint.getTarget();
+        OutboxAwareUseCase<Object, Object> useCase = (OutboxAwareUseCase<Object, Object>) joinPoint.getTarget();
         // The use case only describes what happened; everything else is derived from the event
         DomainEvent event = useCase.buildEvent(command, result);
 

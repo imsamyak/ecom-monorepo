@@ -29,3 +29,10 @@
 - Tests: `cd service && mvn test` -> all pass; OutboxOfDomainEventTest rewritten (10 tests) and new OutboxAspectTest (9 tests). Adjusted one of my own new aspect tests: JDK proxies wrap undeclared checked exceptions, so it looks through UndeclaredThrowableException
 - Behavior change: every outbox payload is now the envelope {aggregate, action, data} instead of the bare object
 - Review: pending
+
+## 2026-10-01 outbox-aware-rename - rename OutboxUseCase to OutboxAwareUseCase
+- By: claude
+- Changed: OutboxUseCase.java renamed to OutboxAwareUseCase.java; OutboxAspect pointcut, Outbox, OutboxAutoConfiguration, OutboxAspectTest and CONTEXT.md use the new name
+- Why: owner asked for the name OutboxAwareUseCase (no behavior change)
+- Tests: cd service; mvn test -> all pass (116, no test changed except the renamed type)
+- Review: pending

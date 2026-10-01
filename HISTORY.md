@@ -42,3 +42,10 @@
 - Why: owner design: sealed events per aggregate, {aggregate, action, data} envelope, use cases return only an event
 - Tests: `cd service && mvn test` -> all pass (116 tests)
 - Review: pending
+
+## 2026-10-01 outbox-aware-rename - rename OutboxUseCase to OutboxAwareUseCase
+- By: claude
+- Changed: docs/LEARNING.md uses the new name; code changes are in the outbox and product HISTORY.md
+- Why: owner asked for the name OutboxAwareUseCase (no behavior change)
+- Tests: cd service; mvn test -> all pass (116, no test changed except the renamed type)
+- Review: pending

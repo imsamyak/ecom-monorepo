@@ -40,3 +40,10 @@
 - Removed tests, replaced by the contract-module event tests: ProductEventTest, VariantEventTest, CreateProductServiceOutboxTest
 - Behavior changes: adding/removing a variant and updating/deleting a product now write outbox rows; payloads are envelopes
 - Review: pending
+
+## 2026-10-01 outbox-aware-rename - rename OutboxUseCase to OutboxAwareUseCase
+- By: claude
+- Changed: the five state-changing use case interfaces extend OutboxAwareUseCase; CONTEXT.md
+- Why: owner asked for the name OutboxAwareUseCase (no behavior change)
+- Tests: cd service; mvn test -> all pass (116, no test changed except the renamed type)
+- Review: pending

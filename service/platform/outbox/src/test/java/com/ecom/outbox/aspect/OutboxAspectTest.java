@@ -1,7 +1,7 @@
 package com.ecom.outbox.aspect;
 
 import com.ecom.contract.DomainEvent;
-import com.ecom.outbox.OutboxUseCase;
+import com.ecom.outbox.OutboxAwareUseCase;
 import com.ecom.outbox.entity.OutboxEntity;
 import com.ecom.outbox.enums.OutboxStatus;
 import com.ecom.outbox.repository.OutboxRepository;
@@ -51,7 +51,7 @@ class OutboxAspectTest {
     }
 
     // Use case under test: the event and result are supplied by the test through a Supplier
-    static class SampleUseCase implements OutboxUseCase<String, String> {
+    static class SampleUseCase implements OutboxAwareUseCase<String, String> {
         Supplier<DomainEvent> eventSupplier = () -> null;
         RuntimeException failure;
         Exception checkedFailure;
@@ -83,10 +83,10 @@ class OutboxAspectTest {
     private OutboxRepository repository;
     private PlatformTransactionManager transactionManager;
     private SampleUseCase target;
-    private OutboxUseCase<String, String> proxy;
+    private OutboxAwareUseCase<String, String> proxy;
 
     // Builds the aspect with the given payload limit and returns a proxied use case
-    private OutboxUseCase<String, String> proxyWithLimit(int maxPayloadLength) {
+    private OutboxAwareUseCase<String, String> proxyWithLimit(int maxPayloadLength) {
         OutboxAspect aspect = new OutboxAspect(repository, mapper,
                 Validation.buildDefaultValidatorFactory().getValidator(), maxPayloadLength,
                 new TransactionTemplate(transactionManager));

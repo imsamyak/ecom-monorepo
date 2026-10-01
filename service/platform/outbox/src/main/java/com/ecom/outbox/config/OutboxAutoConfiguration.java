@@ -1,6 +1,6 @@
 package com.ecom.outbox.config;
 
-import com.ecom.outbox.OutboxUseCase;
+import com.ecom.outbox.OutboxAwareUseCase;
 import com.ecom.outbox.aspect.OutboxAspect;
 import com.ecom.outbox.relay.OutboxCleaner;
 import com.ecom.outbox.relay.OutboxPublisher;
@@ -33,7 +33,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @AutoConfiguration(
         after = {JacksonAutoConfiguration.class, ValidationAutoConfiguration.class},
         before = {JpaRepositoriesAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-@AutoConfigurationPackage(basePackageClasses = OutboxUseCase.class)
+@AutoConfigurationPackage(basePackageClasses = OutboxAwareUseCase.class)
 @EnableScheduling
 @EnableAsync
 public class OutboxAutoConfiguration {
