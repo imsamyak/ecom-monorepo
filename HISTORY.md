@@ -290,3 +290,12 @@
 - Rollback: git revert the commits found by git log --grep T-008.1 (newest first)
 - Tests: mvn -f service/pom.xml test -> GREEN
 - Review: pending
+
+## 2026-10-01 docs - low-memory automatic restart policy
+- By: claude
+- Changed: docs/AGY.md section 10
+- Why: owner: restart a run killed for low memory after 5, 10, 15, 20, 25 seconds, then ask
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "low-memory automatic restart"
+- Tests: n/a (docs only)
+- Review: pending

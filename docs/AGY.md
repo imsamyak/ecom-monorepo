@@ -75,3 +75,8 @@ Measures of Claude's own work per chunk, compared between processes. Counts are 
 - It reads the task's section from TASKS.md, builds the prompts from `scripts/prompts/tests.txt` and `implement.txt` (all standing rules live there; fix a lesson once in the template), runs the tests step (retries once on the headless command abort), stops if production code changed in the tests step, runs the implement-until-green loop, and writes `logs/agy-report.md`: step files split into tests and production, tests changed during implement, GREEN or STUCK, test summaries, fix rounds, files agy asks to remove, flags. Exit code 0 only when green with no flags.
 - Claude then: reads the report, reads the test files in full (the owner reviews them), spot-checks flagged items, removes listed files with git, runs `cd service && mvn test`, commits tests first and implementation second (rule 20), pushes both only when green (rule 3).
 - Known gap: no stall or overall time-limit guard yet; each agy call keeps its 25 minute timeout and the loop stops after 5 identical failures.
+
+## 10. Low-memory kills: automatic restart (owner policy, 2026-10-01)
+- Claude Code may stop a background run when the machine is critically low on memory. That is not a failure of the run.
+- Claude restarts the same run automatically, without asking, after waiting 5, 10, 15, 20 and 25 seconds for retries 1 to 5 (75 seconds in total). Before each restart check that the stopped run left no partial changes that would confuse the next one.
+- If the run is stopped again after the fifth retry, stop and ask the owner to intervene (free memory, close old agy or PowerShell processes, or start Claude Code with CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1).
