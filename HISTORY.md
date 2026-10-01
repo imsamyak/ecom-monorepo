@@ -381,3 +381,12 @@
 - Rollback: git revert the commits found by git log --grep T-009 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 docs - cost plan: design chat and execution chat
+- By: claude
+- Changed: .agent/notes/decisions.md, docs/PROGRESS.md (start-here line for the execution chat)
+- Why: owner: reduce cost; split into a compacted design chat and a fresh execution chat
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "cost plan"
+- Tests: n/a (docs only)
+- Review: pending

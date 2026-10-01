@@ -6,6 +6,7 @@ After a crash or in a new session: read this file first and continue from the fi
 When a task is fully merged, collapse its block to one line in "Done" at the bottom.
 
 ## Current: branch work (the one work branch; the owner reviews and merges it)
+NEXT FOR THE EXECUTION CHAT (start here): run T-009.2, then T-009.3, each with: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-chunk.ps1 <id>; read logs/agy-report.md; read the test files in full; run cd service; mvn -q test; commit tests then impl (rules 20, 21); push when green (rule 3). Then the .agent/ move once the owner has added the three .agent/scripts permission rules. Inventory waits for the design chat.
 - [x] T-006 (event interfaces end in Event): agy implements until green, Claude reviews, commits, pushes
 - [x] T-003.3 (PATCH /products/{id} partial update): agy writes tests only, Claude reviews, commits red tests
 - [x] T-003.3: agy implements until green, Claude reviews, commits, pushes

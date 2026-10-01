@@ -62,3 +62,8 @@ Every design discussion with the owner is recorded here when it happens: the con
 - JWT (T-009): owner gave go ahead; open details use the recommendations (roles SELLER, BUYER, ADMIN; claims sub and roles; 401 for a missing or invalid token).
 - Inventory: waits for a design discussion and the owner's go ahead.
 - Executor model stays gemini-3.1-pro-high (only agy's Gemini models).
+
+## 2026-10-01 Cost: two chats
+- Owner: 17 percent of the weekly limit used in one day; reduce cost.
+- Biggest cost is the long chat re-read on every turn. Plan: two chats on the same files. Design chat (Opus, this one, compacted with /compact): discussions, decisions, task specs; edits only docs, commits only while the execution chat is idle. Execution chat (new session, /model sonnet): runs tasks through agy, reviews, builds, commits, pushes; only it commits code and runs agy. Go aheads are written into TASKS.md so both chats see them.
+- Execution chat reports once per task, keeps output short (Maven totals only, reports not full diffs). Memory kills are handled silently with the restart policy unless all 5 retries fail (owner runs the machine under heavy use).
