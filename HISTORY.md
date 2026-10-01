@@ -156,3 +156,12 @@
 - Rollback: git revert the commits found by git log --grep T-006 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 docs - park multiple events per use case in SWGT.md
+- By: claude
+- Changed: SWGT.md
+- Why: owner: list support is useful later, park it
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "park multiple events"
+- Tests: n/a (docs only)
+- Review: pending

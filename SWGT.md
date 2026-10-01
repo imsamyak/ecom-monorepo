@@ -23,3 +23,11 @@ Open questions: is head-of-line blocking by one bad row a real problem in practi
 Idea: expose a metric such as "age of the oldest PENDING outbox row" (Spring Boot Actuator + Micrometer gauge) and alert when it grows, so a blocked relay is noticed without reading logs.
 Why parked: not needed until events are really published (no OutboxPublisher exists yet).
 Open questions: which monitoring system reads the metric? What age threshold means stuck? (Recommendation: start with a gauge and a log warning after a few minutes.)
+## 2026-10-01 More than one event per use case
+Idea: let a use case emit several events from one execution, for example `buildEvent` returning a list of DomainEvent (or a new `buildEvents` method). The aspect would save one outbox row per event, all in the same transaction, in list order.
+Why parked: owner agrees it is useful but not needed yet; today every use case emits at most one event.
+Open questions (recommendation in brackets):
+- Change `buildEvent` to return a list, or add a separate `buildEvents` with a default that wraps `buildEvent`? (Add `buildEvents` with a default, so existing use cases do not change.)
+- Should an empty list mean emit nothing, like null today? (Yes.)
+- Order of the rows for one execution? (Keep list order; they share the transaction, and createdAt ties are broken by insertion order.)
+Note from the same review: returning data from delete/remove use cases so the event can carry it is fine (owner); no change needed.
