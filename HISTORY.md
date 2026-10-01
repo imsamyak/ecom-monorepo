@@ -183,3 +183,12 @@
 - Rollback: git revert the commit found by git log --grep "clean up docs/PROGRESS.md"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-007 docs - plan the agy chunk driver pilot, rule 22
+- By: claude
+- Changed: TASKS.md (T-007), docs/PROGRESS.md, AGENTS.md rule 22
+- Why: owner: design agy to cut Claude's cost, pilot it, keep optimizing, pivot if needed
+- Depends on: T-004
+- Rollback: git revert the commits found by git log --grep T-007 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

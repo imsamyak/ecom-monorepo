@@ -60,6 +60,16 @@ Spec (owner chose option 1 and said go ahead 2026-10-01):
 - The outbox payload and row are unchanged for consumers: `"aggregate": "Product"` / `"Variant"`, same actions, same data.
 - Product services use `ProductEvent.CREATE`, `VariantEvent.ADD` and so on (no fully qualified names, no clash with the entities).
 Acceptance: contract tests use ProductEvent/VariantEvent; outbox tests: sample interfaces named `...Event` give the aggregate type without the suffix, a name without the suffix is rejected, a name exactly `Event` is rejected; product integration tests still see aggregate Product/Variant (unchanged); `cd service && mvn test` passes.
+### T-007 agy chunk driver to cut Claude's cost (pilot)   [open]
+Module(s): scripts/, docs/AGY.md, AGENTS.md rule 15 (no Java code)
+Spec (owner: you can do it, pilot it, keep optimizing, pivot if needed; 2026-10-01):
+- `scripts/agy-chunk.ps1 <task-id>`: builds the prompts from templates in `scripts/prompts/` (tests.txt, implement.txt) plus the task's section in TASKS.md, runs the tests-only step, then the implement-until-green loop, then writes `logs/agy-report.md`.
+- Templates hold all standing prompt rules (no commands, no file deletion, read AGENTS.md etc., HISTORY format, rule 12), so Claude writes only the task spec.
+- Guardrails: on a headless command abort retry once automatically; production files changed in the tests step or tests changed in the implement step -> stop and flag; no new agy step for 5 minutes or over the time limit -> stop and flag; files agy asked to delete are listed in the report.
+- Report (about 20 lines): test files changed, production files changed, test counts before/after and green or not, tests changed during implement, fix rounds, duration, flags.
+- Claude reviews once per chunk from the report plus the test files in full, then still makes two commits (tests, then impl).
+Pilot: T-003.3 runs on the old process as the baseline; the next chunk after T-007 runs on the new one. Compare Claude tool calls, prompt size, diff lines read, retries and elapsed time; keep the new process only if it is clearly cheaper, else adjust or roll back. Record the numbers in docs/AGY.md.
+Acceptance: one agy-chunk.ps1 run on a small real chunk produces both steps and a correct report; the pilot comparison is recorded.
 ## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]
 Module(s): service/product
