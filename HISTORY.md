@@ -372,3 +372,12 @@
 - Rollback: git revert the commit found by git log --grep "resumes the same agy conversation"
 - Tests: pending (checked by the next chunk run)
 - Review: pending
+
+## 2026-10-01 T-009 docs - final JWT spec in three chunks
+- By: claude
+- Changed: TASKS.md (T-009 spec, T-007 status), docs/PROGRESS.md
+- Why: owner go ahead for JWT; open details settled with the recommendations
+- Depends on: T-008
+- Rollback: git revert the commits found by git log --grep T-009 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

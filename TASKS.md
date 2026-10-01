@@ -60,7 +60,7 @@ Spec (owner chose option 1 and said go ahead 2026-10-01):
 - The outbox payload and row are unchanged for consumers: `"aggregate": "Product"` / `"Variant"`, same actions, same data.
 - Product services use `ProductEvent.CREATE`, `VariantEvent.ADD` and so on (no fully qualified names, no clash with the entities).
 Acceptance: contract tests use ProductEvent/VariantEvent; outbox tests: sample interfaces named `...Event` give the aggregate type without the suffix, a name without the suffix is rejected, a name exactly `Event` is rejected; product integration tests still see aggregate Product/Variant (unchanged); `cd service && mvn test` passes.
-### T-007 agy chunk driver to cut Claude's cost (pilot)   [open]
+### T-007 agy chunk driver to cut Claude's cost (pilot)   [review]
 Module(s): scripts/, docs/AGY.md, AGENTS.md rule 15 (no Java code)
 Spec (owner: you can do it, pilot it, keep optimizing, pivot if needed; 2026-10-01):
 - `scripts/agy-chunk.ps1 <task-id>`: builds the prompts from templates in `scripts/prompts/` (tests.txt, implement.txt) plus the task's section in TASKS.md, runs the tests-only step, then the implement-until-green loop, then writes `logs/agy-report.md`.
@@ -114,15 +114,25 @@ Spec (owner go ahead 2026-10-01: persist agy logs, use the CLI's features, optim
 - Keep PowerShell 5.1 compatible; a comment before every step (rule 12).
 Acceptance: a short check run produces the .log and .jsonl files and prints the final reply; the driver's report uses the JSON answer; a run with a HISTORY.md change in the tests step does not flag tests changed.
 
-### T-009 Real JWT authentication in the shared module   [open - design in progress, needs go ahead]
-Module(s): service/platform/shared, service/platform/contract, service/product
-Design agreed so far with the owner (2026-10-01):
-- JWT handling lives ONLY in the shared module and is auto-configured; no service implements it. Services only declare their own access rules (for example /products/** needs SELLER) and keep using @AuthenticationPrincipal JwtPrincipal.
-- The token issuer and the signing algorithm are not decided yet, but they are the same for every service. So verification is configured by properties: security.jwt.algorithm (for example HS256 or RS256), the key material (security.jwt.secret from an environment variable, never in the repo, or a public key / JWK set URI), optional security.jwt.issuer, and the roles claim name. Changing issuer or algorithm is configuration, not code.
-- Spring Security resource-server support replaces today's hand-written JwtAuthenticationFilter (which accepts unsigned <uuid>:<ROLE> tokens).
-- UserRole becomes a shared enum in the contract module (com.ecom.contract.enums); rules: values are only added, never renamed or removed; unknown values are tolerated (UNKNOWN); only truly cross-service concepts go into contract (ProductStatus stays in the product service).
-- Tests sign tokens with a fixed test key through a shared test helper; existing tests that send <uuid>:SELLER change on purpose.
-Still to decide before go ahead: the role values; claim names; token lifetime handling; whether a missing or invalid token returns 401.
+### T-009 Real JWT authentication in the shared module   [in progress]
+Module(s): service/platform/contract, service/platform/shared, service/product
+Owner go ahead 2026-10-01. Design (see .agent/notes/decisions.md): JWT lives only in the shared module, auto-configured; services only declare their access rules and keep @AuthenticationPrincipal JwtPrincipal. Issuer and algorithm are configuration, the same for every service. Open details use the recommendations: roles SELLER, BUYER, ADMIN; user id in claim sub (UUID), roles in claim roles (configurable name); a missing, invalid or expired token on a protected path gives 401; a valid token without the needed role gives 403.
+Three chunks, in order, each green alone:
+
+#### T-009.1 UserRole enum in contract   [open]
+Module(s): service/platform/contract
+Spec: com.ecom.contract.enums.UserRole with SELLER, BUYER, ADMIN and UNKNOWN; a static fromClaim(String) that maps a claim value case-insensitively and returns UNKNOWN for anything else (never throws). Rule recorded in contract CONTEXT.md: values are only added, never renamed or removed; only truly cross-service concepts go into contract.
+Acceptance: unit tests: each known value maps from upper and lower case; null, blank and unknown values map to UNKNOWN.
+
+#### T-009.2 JWT verification auto-configuration in shared   [open]
+Module(s): service/platform/shared
+Spec: a new auto-configuration in shared (registered in AutoConfiguration.imports) that builds, from properties security.jwt.*: algorithm (default HS256; HS256 needs security.jwt.secret of at least 32 bytes, startup fails with a clear message otherwise; RS256 uses security.jwt.public-key (PEM) or security.jwt.jwk-set-uri), optional security.jwt.issuer (if set, tokens from other issuers are rejected), security.jwt.roles-claim (default roles). It provides a JwtDecoder bean (Spring Security OAuth2 resource server, add spring-boot-starter-oauth2-resource-server) and a converter bean that turns a verified Jwt into an authentication whose principal is JwtPrincipal(userId from sub as UUID, role) and whose authorities are ROLE_<UserRole> for each role in the roles claim (UNKNOWN roles are ignored). A shared test helper (in shared test sources, published as a test-jar so services can use it) signs HS256 tokens with a given secret, subject, roles and expiry. The existing JwtAuthenticationFilter stays untouched in this chunk (product still uses it).
+Acceptance: unit tests: a token signed with the right secret is decoded and converted to JwtPrincipal with the right userId and role; a wrong signature, an expired token and a wrong issuer (when issuer is set) are rejected; a short secret fails at startup; unknown roles are ignored; the roles claim name is configurable.
+
+#### T-009.3 Product uses the shared JWT; remove the simulated token   [open]
+Module(s): service/product, service/platform/shared
+Spec: product's SecurityConfig uses the shared JwtDecoder and converter through oauth2ResourceServer (stateless, CSRF off, /products/** needs SELLER as today), with an entry point that returns 401 for missing, invalid or expired tokens and 403 for a missing role. product application.properties: security.jwt.secret=${JWT_SECRET} (never a real secret in the repo); test resources set a fixed test secret. All product tests switch from Bearer <uuid>:SELLER to tokens signed with the shared test helper (changed on purpose). The old JwtAuthenticationFilter and its tests are no longer used: agy lists them for Claude to remove with git.
+Acceptance: web tests: a valid SELLER token works as before; no token gives 401; a garbage or wrongly signed token gives 401; an expired token gives 401; a BUYER token on /products gives 403; all existing product tests pass with signed tokens.
 
 ## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]

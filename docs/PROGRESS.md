@@ -23,7 +23,9 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 - [x] T-008.3 InboxReceiver dedupe and dispatch (pilot B run), same
 - [x] Pilot B result recorded in docs/AGY.md section 8 (compare with pilot A)
 
-- [ ] T-009 JWT in the shared module: finish the design with the owner, then go ahead (next after T-008)
+- [ ] T-009.1 UserRole enum (chunk driver), Claude reviews, commits tests and impl
+- [ ] T-009.2 JWT verification auto-configuration in shared (chunk driver), same
+- [ ] T-009.3 product uses the shared JWT, old filter removed (chunk driver), same
 
 ## Done on branch work (not on main until the owner merges work)
 - [x] Folded claude/gemini-cli-setup-check-8bda3d (T-001, T-002) and confess-module into work (8a67544)
