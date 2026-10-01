@@ -35,3 +35,11 @@
 - Why: owner wants agy to read and maintain CONTEXT/HISTORY and follow the agreed one-branch, tests-first, no-retry-limit flow
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-002 - seller can deactivate and reactivate a product (3 chunks, PR)
+- By: claude (reviewer) with gemini (agy) as executor
+- Changed: service/product (see its HISTORY.md for T-001 and T-002.1 to T-002.3), TASKS.md, docs/AGY.md (verified agy behaviour)
+- Why: trial of the one-branch chunk flow: tests first, review, implement with retry until green, one PR
+- Tests: `cd service && mvn test` -> all pass (product 44, shared 31, outbox 5)
+- Review: pending
+
