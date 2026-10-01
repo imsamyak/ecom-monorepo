@@ -38,3 +38,22 @@ Entry format for `HISTORY.md`:
 4. Keep tasks small so diffs are cheap to review. Do not refactor beyond the task.
 5. Tests must pass before committing; record the command and result in `HISTORY.md`.
 6. Enable the hook once per clone: `git config core.hooksPath .githooks`.
+
+## Test-driven development (owner's policy)
+7. **Tests first.** For any new behavior or bug fix, write or change the tests first, watch them fail for the right reason, then change production code until they pass. Existing behavior is protected by tests; a change that breaks an old test is a regression unless the owner approves changing that test.
+8. **Owner reviews tests only.** The owner reviews the added or changed test files on a branch, not the production diff. So: keep test-only changes in their own commit where possible, name tests as sentences describing behavior, and never weaken or delete an existing test to make a change pass without saying so explicitly in the history entry.
+9. **Merge gate.** Only after the owner has approved the tests on a branch may the reviewer merge that branch to `main` on its own. Approval covers that branch's tests only; it is not a standing approval for other branches or for production changes the tests do not cover.
+10. **Known bugs.** A test that exposes a production bug is written for the *correct* behavior and marked `@Disabled("BUG: <what is wrong>")` so the build stays green. Never encode wrong behavior as expected. List disabled tests in the history entry for the owner to decide on.
+
+## Architecture, comments and teaching (owner's policy)
+11. **Hexagonal structure, always.** Every service follows the layout of `service/product`; new modules and features copy it, they do not invent another.
+    - `port/in/usecase/...` – use case interfaces plus their command/query/result DTOs. This is what the outside world may call.
+    - `port/out/...` – interfaces the core needs from the outside (persistence, messaging, other services).
+    - `service/...` – use case implementations. They depend only on `port/in` types, `port/out` interfaces and `domain`. Never on controllers, repositories or other adapters.
+    - `adapter/in/...` – entry points (web controllers, request/response DTOs, web mappers, security). They call `port/in` use cases only and never touch repositories or entities.
+    - `adapter/out/...` – implementations of `port/out` (persistence adapters, Spring Data repositories). Nothing outside `adapter/out` references a repository.
+    - `domain/...` – entities, domain exceptions, converters. Business rules live here (e.g. `Product.verifyOwnership`), not in controllers or adapters.
+    - Dependencies point inward: adapters -> ports <- services -> domain. Each layer has its own DTOs and mappers; no entity crosses the web boundary.
+    - Tests mirror the package layout of the code they cover.
+12. **Comment every step, without numbering.** In code you write, put a short comment before each meaningful step saying what it does and why (for example `// Reject the request if the seller does not own this product`). Plain sentences, no "Step 1/2/3" and no numbered lists. This applies to tests too: comment the setup, the action and the expectation.
+13. **Teach the new tech.** Whenever a task uses a technology, library, pattern or Spring feature not yet explained in `docs/LEARNING.md` (AOP, actuator, async, auto-configuration, etc.), add a section there: what it is, where it is used in this repo, how it works, gotchas. Then add a `New tech:` line to the task's `HISTORY.md` entry linking the section, and explain it briefly in the reply to the owner.
