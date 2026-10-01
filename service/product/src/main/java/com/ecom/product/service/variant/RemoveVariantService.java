@@ -2,7 +2,7 @@ package com.ecom.product.service.variant;
 
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Variant entity is already imported in this class
-import com.ecom.contract.event.Variant.Removed;
+import com.ecom.contract.event.Variant.REMOVE;
 import com.ecom.product.domain.entity.Variant;
 import com.ecom.product.domain.exception.VariantNotFoundException;
 import com.ecom.product.port.in.usecase.variant.RemoveVariantUseCase;
@@ -62,6 +62,6 @@ public class RemoveVariantService implements RemoveVariantUseCase {
     @Override
     public DomainEvent buildEvent(RemoveVariantCommand command, VariantResult result) {
         // Describe what was removed; the aggregate id is the owning product id
-        return new Removed(result.id(), result.productId(), result.properties());
+        return new REMOVE(result.id(), result.productId(), result.properties());
     }
 }

@@ -13,7 +13,7 @@ import com.ecom.product.domain.exception.ProductNotOwnedException;
 
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Variant entity is already imported in this class
-import com.ecom.contract.event.Variant.Added;
+import com.ecom.contract.event.Variant.ADD;
 import lombok.RequiredArgsConstructor;
 
 import java.util.TreeMap;
@@ -55,7 +55,7 @@ public class AddVariantService implements AddVariantUseCase {
     @Override
     public DomainEvent buildEvent(AddVariantCommand command, VariantResult result) {
         // Describe the new variant as an Added event; its aggregate id is the owning product id
-        return new Added(
+        return new ADD(
                 result.id(),
                 result.productId(),
                 result.properties(),

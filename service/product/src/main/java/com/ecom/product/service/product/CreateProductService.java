@@ -11,7 +11,7 @@ import com.ecom.product.domain.entity.Product;
 import com.ecom.product.service.product.mapper.ProductMapper;
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Product entity is already imported in this class
-import com.ecom.contract.event.Product.Created;
+import com.ecom.contract.event.Product.CREATE;
 
 @Service
 @Validated
@@ -38,7 +38,7 @@ public class CreateProductService implements CreateProductUseCase {
     @Override
     public DomainEvent buildEvent(CreateProductCommand command, ProductResult result) {
         // Describe the created product as a Created event; the outbox derives type, action and id from it
-        return new Created(
+        return new CREATE(
                 result.id(),
                 result.sellerId(),
                 result.title(),

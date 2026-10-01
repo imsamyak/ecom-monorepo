@@ -9,7 +9,7 @@ import com.ecom.product.port.out.persistence.product.LoadProductPort;
 import com.ecom.product.port.out.persistence.product.SaveProductPort;
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Product entity is already imported in this class
-import com.ecom.contract.event.Product.Updated;
+import com.ecom.contract.event.Product.UPDATE;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.ecom.product.service.product.mapper.ProductMapper;
@@ -44,7 +44,7 @@ public class UpdateProductService implements UpdateProductUseCase {
     @Override
     public DomainEvent buildEvent(UpdateProductCommand command, ProductResult result) {
         // Describe the updated product as an Updated event carrying the snapshot after the change
-        return new Updated(
+        return new UPDATE(
                 result.id(),
                 result.sellerId(),
                 result.title(),

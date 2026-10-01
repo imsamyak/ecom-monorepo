@@ -45,7 +45,7 @@ class UseCaseEventsTest {
     private final UUID productId = UUID.randomUUID();
     private final UUID sellerId = UUID.randomUUID();
     private final LocalDateTime now = LocalDateTime.of(2026, 1, 1, 12, 0);
-    private final ProductResult productResult = new ProductResult(productId, sellerId, "Phone", "desc", 10.5, now, now);
+    private final ProductResult productResult = new ProductResult(productId, sellerId, "Phone", "desc", 10.5, now, now, true);
     private final VariantResult variantResult = new VariantResult(7L, productId, Map.of("color", "red"), now, now);
 
     @Test

@@ -49,6 +49,10 @@ public class Product extends DomainEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private final Set<Variant> variants = new HashSet<>();
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean active = true;
+
     public void verifyOwnership(UUID requestingSellerId) {
         if (!this.sellerId.equals(requestingSellerId)) {
             throw new ProductNotOwnedException(this.id, requestingSellerId);
@@ -56,10 +60,30 @@ public class Product extends DomainEntity {
     }
 
     private void sanitize() {
+        // Strip leading and trailing whitespace from the title
+        if (this.title != null) {
+            this.title = this.title.trim();
+        }
 
+        // Strip leading and trailing whitespace from the description
+        if (this.description != null) {
+            this.description = this.description.trim();
+        }
+
+        // Store the description as null if it is blank after trimming
         if (this.description != null && this.description.isBlank()) {
             this.description = null;
         }
+    }
+
+    public void deactivate() {
+        // Mark the product as inactive
+        this.active = false;
+    }
+
+    public void activate() {
+        // Mark the product as active
+        this.active = true;
     }
 
     @PrePersist

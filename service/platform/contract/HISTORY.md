@@ -29,3 +29,10 @@
 - Why: owner asked for present-tense upper-case action names; the action string in the outbox payload changes accordingly
 - Tests: written first; module does not compile yet (red on purpose)
 - Review: pending
+
+## 2026-10-01 merge-into-work - event records renamed to present tense
+- By: gemini (agy), reviewed by claude
+- Changed: event/Product records Created/Updated/Deleted -> CREATE/UPDATE/DELETE; event/Variant records Added/Removed -> ADD/REMOVE (implements the red tests of 9559d74); CONTEXT.md updated by claude
+- Why: owner asked for present-tense upper-case action names; the action string in the outbox payload changes accordingly
+- Tests: cd service; mvn test -> all pass
+- Review: pending

@@ -21,11 +21,11 @@ public sealed interface Variant extends DomainEvent {
     }
 
     /** A variant was added to a product. */
-    record Added(Long variantId, UUID productId, Map<String, String> properties,
+    record ADD(Long variantId, UUID productId, Map<String, String> properties,
                  LocalDateTime createdAt, LocalDateTime updatedAt) implements Variant {
     }
 
     /** A variant was removed from a product; carries what was removed. */
-    record Removed(Long variantId, UUID productId, Map<String, String> properties) implements Variant {
+    record REMOVE(Long variantId, UUID productId, Map<String, String> properties) implements Variant {
     }
 }
