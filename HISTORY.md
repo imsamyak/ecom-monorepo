@@ -227,3 +227,12 @@
 - Rollback: git revert the commits found by git log --grep T-007 (newest first)
 - Tests: syntax check (0 parse errors); reviewed by Claude (fixed: git status -uall so new files in new folders are seen; templates gained the search rule, the HISTORY heading format and the CONTEXT/LEARNING duty); known gap: no stall/time-limit guard yet (agy calls keep their 25 min timeout, the loop stops after 5 identical failures); real check is the T-005 pilot run
 - Review: pending
+
+## 2026-10-01 rule - rule 17: Claude is accountable for agy's output
+- By: claude
+- Changed: AGENTS.md rule 17
+- Why: owner: Claude controls agy and must make sure the code never breaks
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "rule 17: Claude is accountable"
+- Tests: n/a (docs only)
+- Review: pending
