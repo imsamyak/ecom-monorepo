@@ -11,6 +11,7 @@
 ## Project
 Java 17, Spring Boot 3.2.4, Maven multi-module under `service/`:
 - `service/platform/shared` – common base types (UseCase, exceptions, JWT filter, validation)
+- `service/platform/confess` – `DomainEvent` contract (record name = aggregate type, `String aggregateId()`)
 - `service/platform/outbox` – transactional outbox module (auto-configured, pluggable)
 - `service/product` – product service (hexagonal: `port/in`, `port/out`, `adapter`, `service`, `domain`)
 

@@ -35,10 +35,15 @@ public class CreateProductService implements CreateProductUseCase {
 
     @Override
     public Outbox buildOutbox(CreateProductCommand command, ProductResult result) {
-        return Outbox.builder()
-                .aggregateType("Product")
-                .aggregateId(String.valueOf(result.id()))
-                .payload(result)
-                .build();
+        // Describe the created product as a domain event; the outbox derives type and id from it
+        // (fully qualified because the Product entity is already imported here)
+        return Outbox.of(new com.ecom.product.domain.event.Product(
+                result.id(),
+                result.sellerId(),
+                result.title(),
+                result.description(),
+                result.price(),
+                result.createdAt(),
+                result.updatedAt()));
     }
 }

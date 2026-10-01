@@ -17,43 +17,43 @@ class OutboxOfDomainEventTest {
     // Sample events: the record name is the aggregate type, the chosen attribute is the aggregate id
     private record Order(UUID id, double total) implements DomainEvent {
         @Override
-        public Object aggregateId() {
-            return id;
+        public String aggregateId() {
+            return id.toString();
         }
     }
 
     private record Invoice(long number) implements DomainEvent {
         @Override
-        public Object aggregateId() {
-            return number;
+        public String aggregateId() {
+            return String.valueOf(number);
         }
     }
 
     private record Coupon(String code) implements DomainEvent {
         @Override
-        public Object aggregateId() {
+        public String aggregateId() {
             return code;
         }
     }
 
     private record Shipment(UUID customerId, String region) implements DomainEvent {
-        // A composite key built from two attributes
+        // A composite key built from two attributes, already a string
         @Override
-        public Object aggregateId() {
+        public String aggregateId() {
             return customerId + ":" + region;
         }
     }
 
     private record NoId() implements DomainEvent {
         @Override
-        public Object aggregateId() {
+        public String aggregateId() {
             return null;
         }
     }
 
     private record BlankId() implements DomainEvent {
         @Override
-        public Object aggregateId() {
+        public String aggregateId() {
             return "   ";
         }
     }
@@ -74,13 +74,13 @@ class OutboxOfDomainEventTest {
         // The record chose a UUID attribute
         UUID id = UUID.randomUUID();
 
-        // It is converted to a string for the outbox
+        // The record converted it, and the outbox uses that string unchanged
         assertEquals(id.toString(), Outbox.of(new Order(id, 1.0)).getAggregateId());
     }
 
     @Test
     void numericAggregateIdBecomesItsStringForm() {
-        // The record chose a numeric attribute
+        // The record turned its number into a string, and the outbox uses it unchanged
         assertEquals("1007", Outbox.of(new Invoice(1007L)).getAggregateId());
     }
 
@@ -140,13 +140,22 @@ class OutboxOfDomainEventTest {
         // An anonymous class has an empty simple name
         DomainEvent anonymous = new DomainEvent() {
             @Override
-            public Object aggregateId() {
+            public String aggregateId() {
                 return "x";
             }
         };
 
         // Refuse it instead of storing an empty aggregate type
         assertThrows(IllegalArgumentException.class, () -> Outbox.of(anonymous));
+    }
+
+    @Test
+    void aLambdaEventHasNoUsableTypeNameAndIsRejected() {
+        // A lambda is a synthetic class whose name is generated, not a real event name
+        DomainEvent lambda = () -> "x";
+
+        // Refuse it instead of storing a generated class name as the aggregate type
+        assertThrows(IllegalArgumentException.class, () -> Outbox.of(lambda));
     }
 
     @Test

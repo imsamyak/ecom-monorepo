@@ -10,6 +10,9 @@ Transactional outbox, plug-and-play: adding the dependency auto-configures it (`
 - After each publish commits, `OutboxCleaner.cleanup()` runs `@Async` on the single-thread `outboxCleanupExecutor` and bulk-deletes all PROCESSED rows (`deleteByStatus`). Overlapping calls are skipped; failures are only logged. `OutboxCleaner.purge()` (`outbox.cleanup.cron`, hourly) sweeps leftovers. There is no retention window; processed rows are not kept.
 - Relay and cleaner run only when `outbox.relay.enabled` is true (default). Run on **one instance only**.
 
+## Building events
+`Outbox.of(DomainEvent)` (from the `confess` module) builds the row: aggregate type = the event record's simple name, aggregate id = the string the record returns, payload = the event itself. It throws `IllegalArgumentException` for a null/blank id, anonymous classes and lambdas. Use cases can still build `Outbox` by hand with the builder.
+
 ## Invariants / known limits
 - Order can break if concurrent transactions commit out of `createdAt` order (would need a sequence column or CDC).
 - No metric/alert for a stuck row; only error logs.

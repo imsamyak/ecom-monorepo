@@ -50,6 +50,13 @@ Every section: what it is, where it lives here, how it works, gotchas. New tech 
 - **Java gotcha, `String.join`:** its signature is `join(delimiter, elements...)`. Passing one already-joined string makes it the *delimiter* with nothing to join, which returns `""` and compiles without warning. That was the converter bug. Defence in depth: the converter is unit tested, and the `sku` column has a DB `@Check` so an empty value can never be stored even if code regresses.
 - **`@Modifying @Query`:** bulk update/delete in one statement, needs a transaction.
 
+## Domain events as records
+- **Java records:** a short way to declare an immutable data class (`record Product(UUID id, ...)`). The compiler generates the constructor, accessors, `equals`, `hashCode` and `toString`. Jackson serializes a record's components, which is why the event record is also the outbox payload.
+- **`DomainEvent` (confess module):** an interface with one method, `String aggregateId()`. Each event record picks the attribute that identifies its aggregate and converts it to a string itself. The record's simple name (`getClass().getSimpleName()`) is the aggregate type, so there is nothing to configure.
+- **Why the aggregate id matters:** it becomes the broker partition key. Events with the same key land on the same partition and are consumed in order, so choose the entity whose events must stay ordered (for product events, the product id).
+- **Static factory:** `Outbox.of(event)` is a named constructor-like method, clearer than a long builder chain at every call site.
+- **Gotchas:** lambdas and anonymous classes have generated names, so `Outbox.of` rejects them; a record named like an entity (`Product`) needs fully qualified names where both are in scope.
+
 ## Exponential backoff
 After each failure wait twice as long (1 s, 2 s, 4 s ... capped at 5 min) so a down broker is not hammered. State lives in memory in `RetryBackoff`; a restart retries from 1 s again.
 

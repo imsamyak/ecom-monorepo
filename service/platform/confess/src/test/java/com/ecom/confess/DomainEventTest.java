@@ -15,21 +15,21 @@ class DomainEventTest {
     // Sample events whose aggregate id is a different type each time
     private record WithUuid(UUID id, String name) implements DomainEvent {
         @Override
-        public Object aggregateId() {
-            return id;
+        public String aggregateId() {
+            return id.toString();
         }
     }
 
     private record WithLong(long number) implements DomainEvent {
         @Override
-        public Object aggregateId() {
-            return number;
+        public String aggregateId() {
+            return String.valueOf(number);
         }
     }
 
     private record WithString(String code) implements DomainEvent {
         @Override
-        public Object aggregateId() {
+        public String aggregateId() {
             return code;
         }
     }
@@ -44,6 +44,8 @@ class DomainEventTest {
         assertEquals("aggregateId", methods[0].getName());
         assertTrue(Modifier.isAbstract(methods[0].getModifiers()), "aggregateId must not be a default method");
         assertEquals(0, methods[0].getParameterCount());
+        // The id is a String, so every record must convert its own attribute (the compiler enforces it)
+        assertEquals(String.class, methods[0].getReturnType());
     }
 
     @Test
@@ -51,14 +53,14 @@ class DomainEventTest {
         // The record picks its id component
         UUID id = UUID.randomUUID();
 
-        // The chosen attribute comes back untouched, with its original type
-        assertEquals(id, new WithUuid(id, "x").aggregateId());
+        // The record converts it to a string itself
+        assertEquals(id.toString(), new WithUuid(id, "x").aggregateId());
     }
 
     @Test
     void aRecordCanChooseANumericAttributeAsTheAggregateId() {
-        // A primitive component is boxed when returned as Object
-        assertEquals(42L, new WithLong(42L).aggregateId());
+        // The record converts the number to a string itself
+        assertEquals("42", new WithLong(42L).aggregateId());
     }
 
     @Test

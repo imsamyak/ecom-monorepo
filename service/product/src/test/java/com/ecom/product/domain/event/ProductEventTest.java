@@ -30,8 +30,8 @@ class ProductEventTest {
 
     @Test
     void theProductIdIsTheAggregateId() {
-        // The event is about one product, so its id is the partition key
-        assertEquals(id, event.aggregateId());
+        // The event is about one product, so its id as a string is the partition key
+        assertEquals(id.toString(), event.aggregateId());
     }
 
     @Test

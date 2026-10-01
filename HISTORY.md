@@ -22,9 +22,9 @@
 - Tests: n/a (docs only)
 - Review: approved (owner said "approved", 2026-10-01)
 
-## 2026-10-01 confess-module – DomainEvent contract module (tests and skeleton only so far)
+## 2026-10-01 confess-module – confess module registered
 - By: claude
-- Changed: new module service/platform/confess (pom, DomainEventTest); module registered in service/pom.xml. No production code yet.
-- Why: events decide their own aggregate id; the record name is the aggregate type (owner design)
-- Tests: written first; the branch does not compile yet because DomainEvent and Outbox.of do not exist (red on purpose)
-- Review: pending; waiting for the owner's explicit go ahead before implementing
+- Changed: service/pom.xml (module platform/confess); AGENTS.md project list; docs/LEARNING.md
+- Why: new DomainEvent contract module, see service/platform/confess/HISTORY.md
+- Tests: `cd service && mvn test` -> all pass
+- Review: pending
