@@ -16,3 +16,11 @@
 - Why: emit the outbox row through a DomainEvent record named Product, keeping the same payload fields
 - Tests: `cd service && mvn test` -> all pass (5 new here; OutboxIntegrationTest still passes unchanged)
 - Review: pending
+
+## 2026-10-01 variant-event – Variant domain event record
+- By: claude
+- Changed: new domain/event/Variant record (DomainEvent); tests: VariantEventTest (written first, failed to compile, then passed)
+- Why: owner asked for product and variant event records implementing DomainEvent; the variant uses the owning product id as aggregate id so its events stay ordered with that product's events
+- Tests: `cd service && mvn test` -> all pass (4 new)
+- Not done on purpose: AddVariantService/RemoveVariantService do not emit it yet (would add outbox rows for variant changes; needs the owner's decision)
+- Review: pending
