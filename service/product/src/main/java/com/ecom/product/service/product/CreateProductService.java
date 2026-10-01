@@ -37,7 +37,7 @@ public class CreateProductService implements CreateProductUseCase {
 
     @Override
     public DomainEvent buildEvent(CreateProductCommand command, ProductResult result) {
-        // Describe the created product as a Created event; the outbox derives type, action and id from it
+        // Describe the created product as a CREATE event; the outbox derives type, action and id from it
         return new CREATE(
                 result.id(),
                 result.sellerId(),

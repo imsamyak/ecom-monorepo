@@ -16,15 +16,9 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 - [x] Owner said merge all (2026-10-01); branch claude/gemini-cli-setup-check-8bda3d merged to main, Review lines set to approved, T-001/T-002 done
 - [ ] Waiting for the owner to give the next task
 
-## Next task (template - copy for a new task)
-- [ ] Owner gives the task; Claude adds it to TASKS.md and splits it into chunks (each stable if merged alone)
-- [ ] Per chunk: tests only via agy -> review test diff -> fixes via --continue -> commit tests
-- [ ] Per chunk: implement via scripts/agy-impl-loop.ps1 until green -> review code -> fix CONTEXT/HISTORY lines -> mvn test + scripts/check-context-sync.sh main -> commit
-- [ ] Push the branch, give the owner the PR link
-
-## Done
-- 2026-10-01 agy trial: T-001 and T-002 built on one branch (merged to main)
-
-## Next
-- [ ] agy: update the stale comments and the Outbox.java message that still say Created/Updated/Deleted/Added/Removed
-- [ ] Owner decides: should SetProductActiveService emit a Product event (it changes state but emits none yet), and should events carry `active`
+## Current: T-003 on branch work
+- [x] Drop the redundant stash present-tense-rename-prod-wip-claude
+- [x] T-003.1: agy fixes stale names (scripts/agy-impl-loop.ps1), Claude reviews, commits, pushes
+- [ ] T-003.2: agy writes tests only (scripts/agy-run.ps1), Claude reviews the test diff, commits the red tests
+- [ ] T-003.2: agy implements until green (scripts/agy-impl-loop.ps1), Claude reviews, commits, pushes
+- [ ] Owner reviews the T-003.2 tests and merges work when ready

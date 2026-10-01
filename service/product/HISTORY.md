@@ -118,3 +118,10 @@
 - Tests: cd service; mvn test -> all pass (product 62 incl. the merged active-flag tests)
 - Follow-up: comments in five product services, RemoveVariantUseCase and the Outbox.java javadoc/message still mention the old names Created/Updated/Deleted/Added/Removed (code files, left for agy)
 - Review: pending
+
+## 2026-10-01 T-003.1 - fix stale event names in comments and messages
+- By: gemini (agy)
+- Changed: CreateProductService, UpdateProductService, DeleteProductService, AddVariantService, RemoveVariantService, RemoveVariantUseCase
+- Why: fix stale event names in comments
+- Tests: cd service; mvn test -> all pass (product 62), comment and message text only
+- Review: pending

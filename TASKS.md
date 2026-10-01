@@ -13,9 +13,19 @@ Acceptance: <observable checks; tests that must exist or pass>
 ```
 
 ## Open tasks
-(none - ask the owner)
+### T-003 Product activation events and stale event names   [in progress]
+Branch: work. Two chunks, in order, each stable if merged alone.
 
-## Done (merged to main 2026-10-01)
+#### T-003.1 Fix stale event names in comments and messages   [review]
+Module(s): service/product, service/platform/outbox
+Spec: comments in the five product services and RemoveVariantUseCase, and the javadoc and error message of Outbox.of, still name the old event records (Created, Updated, Deleted, Added, Removed). Rename them to CREATE, UPDATE, DELETE, ADD, REMOVE. Comment and message text only; no behavior change; no tests.
+Acceptance: no old event record names left in service main code; `cd service && mvn test` passes.
+
+#### T-003.2 Setting a product active or inactive emits a Product UPDATE event   [open]
+Module(s): service/platform/contract, service/product
+Spec (owner: keep it under the UPDATE event, no new actions): the `Product.UPDATE` event record gets a `boolean active` component, so it is a full snapshot including the active flag. `UpdateProductService` fills it from its result. `SetProductActiveUseCase` extends `OutboxAwareUseCase<SetProductActiveCommand, ProductResult>` and its `buildEvent` returns a `Product.UPDATE` built from the result (with the new active value). Its command stays validated: because Hibernate Validator forbids redeclaring `@Valid` on an overridden `execute` (HV000151), the service validates the command with an injected `Validator`, like DeleteProductService. `CREATE` is unchanged. HTTP behavior is unchanged.
+Acceptance: `Product` still permits exactly CREATE, UPDATE, DELETE; UPDATE carries `active`; unit tests of buildEvent for set-active (true and false) and for update; integration: PATCH /products/{id}/active writes one Product:UPDATE outbox row keyed by the product id whose data.active is the new value; a normal update's UPDATE row also has data.active; a 404 or 403 writes no row; an invalid command still throws ConstraintViolationException; `cd service && mvn test` passes. Existing tests that pin the UPDATE fields or constructor change on purpose (say so in HISTORY).
+## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]
 Module(s): service/product
 Spec: `Product` must strip leading/trailing whitespace from `title` and `description` before it is persisted (insert and update), in the domain `sanitize()` step. A description that is blank after trimming is still stored as null. Chunk is self-contained: no API or schema change.

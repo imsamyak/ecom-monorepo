@@ -50,7 +50,7 @@ public class RemoveVariantService implements RemoveVariantUseCase {
         // The seller must own that product
         variant.getProduct().verifyOwnership(command.sellerId());
 
-        // Capture the variant's data before it is deleted so the Removed event can carry it
+        // Capture the variant's data before it is deleted so the REMOVE event can carry it
         VariantResult removed = variantMapper.toResult(variant);
 
         // Delete the variant

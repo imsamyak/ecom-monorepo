@@ -36,3 +36,10 @@
 - Why: owner asked for the name OutboxAwareUseCase (no behavior change)
 - Tests: cd service; mvn test -> all pass (116, no test changed except the renamed type)
 - Review: pending
+
+## 2026-10-01 T-003.1 - fix stale event names in comments and messages
+- By: gemini (agy)
+- Changed: Outbox.java
+- Why: fix stale event name in javadoc and error message text
+- Tests: cd service; mvn test -> all pass (product 62), comment and message text only
+- Review: pending

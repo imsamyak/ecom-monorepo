@@ -32,7 +32,7 @@ public class Outbox {
 
     /**
      * Builds the outbox row from a domain event so use cases never spell out type and id by hand. The event must be a
-     * record nested in its aggregate interface (for example {@code Product.Created}): the interface name is the
+     * record nested in its aggregate interface (for example {@code Product.CREATE}): the interface name is the
      * aggregate type, the record name is the action, and the aggregate id is the string the event returns. The payload
      * is an {@link EventEnvelope} {aggregate, action, data}.
      */
@@ -46,7 +46,7 @@ public class Outbox {
         Class<?> aggregate = type.getDeclaringClass();
         if (type.isAnonymousClass() || type.isSynthetic() || aggregate == null) {
             throw new IllegalArgumentException("DomainEvent must be a record nested in its aggregate interface "
-                    + "(for example Product.Created): " + type.getName());
+                    + "(for example Product.CREATE): " + type.getName());
         }
         String aggregateType = aggregate.getSimpleName();
 

@@ -50,7 +50,7 @@ public class DeleteProductService implements DeleteProductUseCase {
 
     @Override
     public DomainEvent buildEvent(DeleteProductCommand command, Void result) {
-        // A delete has no result, so the Deleted event is built from the command alone
+        // A delete has no result, so the DELETE event is built from the command alone
         return new DELETE(command.productId(), command.sellerId());
     }
 }
