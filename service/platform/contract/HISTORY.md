@@ -92,3 +92,22 @@
 - Tests: pending
 - Review: pending
 - Claude review: full build green (contract 25, shared 31, outbox 31, inbox 7, product 78); chosen over experiment S2, which aborted; agy's edit to docs/PROGRESS.md was undone
+
+## 2026-10-01 T-009.1 tests - UserRole enum in contract
+- By: gemini (agy)
+- Changed: service/platform/contract/src/test/java/com/ecom/contract/enums/UserRoleTest.java
+- Why: test UserRole mapping from claim
+- Depends on: none
+- Rollback: git revert the commits found by git log --grep T-009.1 (newest first)
+- Tests: pending
+- Review: pending
+
+## 2026-10-01 T-009.1 impl - UserRole enum in contract
+- By: gemini (agy)
+- Changed: service/platform/contract/src/main/java/com/ecom/contract/enums/UserRole.java, service/platform/contract/CONTEXT.md
+- Why: Create UserRole enum to map claim values case-insensitively and add constraints to CONTEXT.md
+- Depends on: none
+- Rollback: git revert the commits found by git log --grep T-009.1 (newest first)
+- Tests: pending
+- Review: pending
+- locale-independent upper-casing after Claude's review
