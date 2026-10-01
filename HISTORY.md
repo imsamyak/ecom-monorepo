@@ -28,3 +28,10 @@
 - Why: save the researched agy (Antigravity CLI) install path, options, models and executor loop so it is not re-researched
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 executor-startup-rules – make the executor read context and follow the chunk flow
+- By: claude
+- Changed: AGENTS.md (rules 14-15), docs/AGY.md (prompt preamble, permissions)
+- Why: owner wants agy to read and maintain CONTEXT/HISTORY and follow the agreed one-branch, tests-first, no-retry-limit flow
+- Tests: n/a (docs only)
+- Review: pending

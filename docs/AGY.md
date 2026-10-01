@@ -62,6 +62,16 @@ If it hangs on shell approvals (e.g. `mvn test`), rerun with `--dangerously-skip
 5. On success, write the review verdict in `HISTORY.md` and **stop**. Never merge: only the owner saying
    "merge" / "approved" authorizes it (AGENTS.md rule 9).
 
+## Prompt preamble (always start the agy prompt with this)
+"Read AGENTS.md (all rules 1-15), docs/LEARNING.md, TASKS.md task <id>, and for each module you change its CONTEXT.md and recent HISTORY.md, before doing anything. Follow every rule. Do not commit unless told; do not touch files outside the task."
+`agy` is not known to load `AGENTS.md` by itself, so the preamble is mandatory.
+
+## Permissions
+- `--mode accept-edits` auto-denies shell commands in headless mode (so `mvn test` fails).
+- `--dangerously-skip-permissions` works but Claude Code's safety classifier blocked launching it (2026-10-01).
+  Needs an explicit owner decision; alternative is allow-rules in `~/.gemini/antigravity-cli/settings.json`
+  `permissions.allow`, e.g. `command(mvn)`, `command(git)` (format seen: `command(Get-ChildItem)`).
+
 ## Unverified (check on the first real task)
 - Whether `agy` automatically reads `AGENTS.md` / `GEMINI.md`. If not, put "read AGENTS.md first" in the prompt
   or add the rules file format it expects.
