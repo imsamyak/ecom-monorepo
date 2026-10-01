@@ -57,8 +57,8 @@ class UseCaseEventsTest {
         // Ask it what happened
         DomainEvent event = service.buildEvent(new CreateProductCommand(sellerId, "Phone", "desc", 10.5), productResult);
 
-        // A Created event carrying the full product snapshot
-        assertEquals(new Product.Created(productId, sellerId, "Phone", "desc", 10.5, now, now), event);
+        // A CREATE event carrying the full product snapshot
+        assertEquals(new Product.CREATE(productId, sellerId, "Phone", "desc", 10.5, now, now), event);
     }
 
     @Test
@@ -71,8 +71,8 @@ class UseCaseEventsTest {
         DomainEvent event = service.buildEvent(
                 new UpdateProductCommand(productId, sellerId, "Phone", "desc", 10.5), productResult);
 
-        // An Updated event carrying the full product snapshot after the change
-        assertEquals(new Product.Updated(productId, sellerId, "Phone", "desc", 10.5, now, now), event);
+        // An UPDATE event carrying the full product snapshot after the change
+        assertEquals(new Product.UPDATE(productId, sellerId, "Phone", "desc", 10.5, now, now), event);
     }
 
     @Test
@@ -84,8 +84,8 @@ class UseCaseEventsTest {
         // Delete has no result, so the event comes from the command
         DomainEvent event = service.buildEvent(new DeleteProductCommand(productId, sellerId), null);
 
-        // A Deleted event with only the identifiers
-        assertEquals(new Product.Deleted(productId, sellerId), event);
+        // A DELETE event with only the identifiers
+        assertEquals(new Product.DELETE(productId, sellerId), event);
     }
 
     @Test
@@ -98,8 +98,8 @@ class UseCaseEventsTest {
         DomainEvent event = service.buildEvent(
                 new AddVariantCommand(productId, sellerId, Map.of("color", "red")), variantResult);
 
-        // An Added event whose aggregate id is the product id
-        assertEquals(new Variant.Added(7L, productId, Map.of("color", "red"), now, now), event);
+        // An ADD event whose aggregate id is the product id
+        assertEquals(new Variant.ADD(7L, productId, Map.of("color", "red"), now, now), event);
         assertEquals(productId.toString(), event.aggregateId());
     }
 
@@ -112,8 +112,8 @@ class UseCaseEventsTest {
         // The result of a remove is the data of the variant that was removed
         DomainEvent event = service.buildEvent(new RemoveVariantCommand(productId, 7L, sellerId), variantResult);
 
-        // A Removed event carrying what was removed
-        assertEquals(new Variant.Removed(7L, productId, Map.of("color", "red")), event);
+        // A REMOVE event carrying what was removed
+        assertEquals(new Variant.REMOVE(7L, productId, Map.of("color", "red")), event);
     }
 
     @Test

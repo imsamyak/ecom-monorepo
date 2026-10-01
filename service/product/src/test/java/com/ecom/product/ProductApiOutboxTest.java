@@ -85,7 +85,7 @@ class ProductApiOutboxTest {
                 .andExpect(status().isNoContent());
 
         // One event per state change, in order
-        assertEquals(List.of("Product:Created", "Product:Updated", "Variant:Added", "Variant:Removed", "Product:Deleted"),
+        assertEquals(List.of("Product:CREATE", "Product:UPDATE", "Variant:ADD", "Variant:REMOVE", "Product:DELETE"),
                 actions());
     }
 

@@ -20,12 +20,12 @@ class VariantEventsTest {
     private final UUID productId = UUID.randomUUID();
     private final LocalDateTime now = LocalDateTime.of(2026, 1, 1, 12, 0);
 
-    private Variant.Added added() {
-        return new Variant.Added(7L, productId, Map.of("color", "red"), now, now);
+    private Variant.ADD added() {
+        return new Variant.ADD(7L, productId, Map.of("color", "red"), now, now);
     }
 
-    private Variant.Removed removed() {
-        return new Variant.Removed(7L, productId, Map.of("color", "red"));
+    private Variant.REMOVE removed() {
+        return new Variant.REMOVE(7L, productId, Map.of("color", "red"));
     }
 
     @Test
@@ -35,7 +35,7 @@ class VariantEventsTest {
         assertTrue(DomainEvent.class.isAssignableFrom(Variant.class));
         Set<String> actions = Arrays.stream(Variant.class.getPermittedSubclasses())
                 .map(Class::getSimpleName).collect(Collectors.toSet());
-        assertEquals(Set.of("Added", "Removed"), actions);
+        assertEquals(Set.of("ADD", "REMOVE"), actions);
     }
 
     @Test
@@ -57,8 +57,8 @@ class VariantEventsTest {
     void aggregateTypeIsTheInterfaceNameAndActionIsTheRecordName() {
         // The outbox reads these by reflection
         assertEquals("Variant", added().getClass().getDeclaringClass().getSimpleName());
-        assertEquals("Added", added().getClass().getSimpleName());
-        assertEquals("Removed", removed().getClass().getSimpleName());
+        assertEquals("ADD", added().getClass().getSimpleName());
+        assertEquals("REMOVE", removed().getClass().getSimpleName());
     }
 
     @Test

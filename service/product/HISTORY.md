@@ -47,3 +47,10 @@
 - Why: owner asked for the name OutboxAwareUseCase (no behavior change)
 - Tests: cd service; mvn test -> all pass (116, no test changed except the renamed type)
 - Review: pending
+
+## 2026-10-01 present-tense-actions - event actions named CREATE/UPDATE/DELETE and ADD/REMOVE (tests first, red)
+- By: claude
+- Changed: tests only: UseCaseEventsTest, ProductEventsOutboxIntegrationTest, ProductApiOutboxTest
+- Why: owner asked for present-tense upper-case action names; the action string in the outbox payload changes accordingly
+- Tests: written first; module does not compile yet (red on purpose)
+- Review: pending

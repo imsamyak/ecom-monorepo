@@ -22,3 +22,10 @@
 - Tests: `cd service && mvn test` -> all pass (13 new here)
 - New tech: docs/LEARNING.md "Domain events as sealed interfaces and records"
 - Review: pending
+
+## 2026-10-01 present-tense-actions - event actions named CREATE/UPDATE/DELETE and ADD/REMOVE (tests first, red)
+- By: claude
+- Changed: tests only: ProductEventsTest, VariantEventsTest
+- Why: owner asked for present-tense upper-case action names; the action string in the outbox payload changes accordingly
+- Tests: written first; module does not compile yet (red on purpose)
+- Review: pending

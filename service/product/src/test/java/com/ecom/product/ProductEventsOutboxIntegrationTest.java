@@ -56,7 +56,7 @@ class ProductEventsOutboxIntegrationTest {
         outboxRepository.deleteAll();
     }
 
-    // Creates a product and clears the Created row so a test only sees the rows of its own action
+    // Creates a product and clears the CREATE row so a test only sees the rows of its own action
     private ProductResult newProduct() {
         ProductResult result = createProduct.execute(new CreateProductCommand(sellerId, "Phone", "desc", 10.5));
         outboxRepository.deleteAll();
@@ -91,7 +91,7 @@ class ProductEventsOutboxIntegrationTest {
         JsonNode json = payload(row);
         assertEquals(Set.of("aggregate", "action", "data"), keys(json));
         assertEquals("Product", json.get("aggregate").asText());
-        assertEquals("Created", json.get("action").asText());
+        assertEquals("CREATE", json.get("action").asText());
         assertEquals(Set.of("productId", "sellerId", "title", "description", "price", "createdAt", "updatedAt"),
                 keys(json.get("data")));
         assertEquals(result.id().toString(), json.get("data").get("productId").asText());
@@ -104,12 +104,12 @@ class ProductEventsOutboxIntegrationTest {
         ProductResult product = newProduct();
         updateProduct.execute(new UpdateProductCommand(product.id(), sellerId, "Phone 2", "new", 20.0));
 
-        // One Updated row with the values after the change
+        // One UPDATE row with the values after the change
         OutboxEntity row = onlyRow();
         assertEquals("Product", row.getAggregateType());
         assertEquals(product.id().toString(), row.getAggregateId());
         JsonNode json = payload(row);
-        assertEquals("Updated", json.get("action").asText());
+        assertEquals("UPDATE", json.get("action").asText());
         assertEquals("Phone 2", json.get("data").get("title").asText());
         assertEquals(20.0, json.get("data").get("price").asDouble());
     }
@@ -120,12 +120,12 @@ class ProductEventsOutboxIntegrationTest {
         ProductResult product = newProduct();
         deleteProduct.execute(new DeleteProductCommand(product.id(), sellerId));
 
-        // One Deleted row with just the ids
+        // One DELETE row with just the ids
         OutboxEntity row = onlyRow();
         assertEquals("Product", row.getAggregateType());
         assertEquals(product.id().toString(), row.getAggregateId());
         JsonNode json = payload(row);
-        assertEquals("Deleted", json.get("action").asText());
+        assertEquals("DELETE", json.get("action").asText());
         assertEquals(Set.of("productId", "sellerId"), keys(json.get("data")));
     }
 
@@ -135,13 +135,13 @@ class ProductEventsOutboxIntegrationTest {
         ProductResult product = newProduct();
         VariantResult variant = addVariant.execute(new AddVariantCommand(product.id(), sellerId, Map.of("color", "red")));
 
-        // One Added row whose aggregate id is the product id, not the variant id
+        // One ADD row whose aggregate id is the product id, not the variant id
         OutboxEntity row = onlyRow();
         assertEquals("Variant", row.getAggregateType());
         assertEquals(product.id().toString(), row.getAggregateId());
         JsonNode json = payload(row);
         assertEquals("Variant", json.get("aggregate").asText());
-        assertEquals("Added", json.get("action").asText());
+        assertEquals("ADD", json.get("action").asText());
         assertEquals(variant.id(), json.get("data").get("variantId").asLong());
         assertEquals("red", json.get("data").get("properties").get("color").asText());
         assertEquals(Set.of("variantId", "productId", "properties", "createdAt", "updatedAt"), keys(json.get("data")));
@@ -159,12 +159,12 @@ class ProductEventsOutboxIntegrationTest {
         assertEquals(variant.id(), removed.id());
         assertEquals(Map.of("color", "red"), removed.properties());
 
-        // One Removed row, keyed by the product id, carrying what was removed
+        // One REMOVE row, keyed by the product id, carrying what was removed
         OutboxEntity row = onlyRow();
         assertEquals("Variant", row.getAggregateType());
         assertEquals(product.id().toString(), row.getAggregateId());
         JsonNode json = payload(row);
-        assertEquals("Removed", json.get("action").asText());
+        assertEquals("REMOVE", json.get("action").asText());
         assertEquals(Set.of("variantId", "productId", "properties"), keys(json.get("data")));
         assertEquals("red", json.get("data").get("properties").get("color").asText());
     }
