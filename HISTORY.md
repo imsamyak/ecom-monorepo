@@ -272,3 +272,12 @@
 - Rollback: git revert the commits found by git log --grep T-008 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 docs - park inbox follow-ups in SWGT.md
+- By: claude
+- Changed: SWGT.md (Bloom filter, dead-letter queue, backfill for new listeners, DynamoDB adapter)
+- Why: owner agreed to park them during the inbox design
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "park inbox follow-ups"
+- Tests: n/a (docs only)
+- Review: pending

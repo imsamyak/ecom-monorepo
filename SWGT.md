@@ -39,3 +39,18 @@ Options (recommendation in brackets):
 - Give agy bigger chunks so the fixed overhead is spread over more code. (Yes, when chunks still stay stable alone.)
 - Owner batches decisions in one message to save round trips. (Yes.)
 - Rule change: Claude may make trivial non-logic edits itself (comments, renames, docs inside code files), agy keeps all logic and tests. (Owner decides; needs a change to rule 17.)
+## 2026-10-01 Bloom filter in front of the inbox dedupe
+Idea: an in-memory Bloom filter answers "definitely new" for most event ids so the database check is skipped.
+Why parked: the agreed inbox keeps one row per aggregate with a direct key lookup, so there is little to save; a Bloom filter must be rebuilt after restarts and after rows expire. Revisit only if inbox lookups show up as a real cost.
+
+## 2026-10-01 Dead-letter queue for poison messages
+Idea: after N failed attempts the inbox moves a message aside (dead-letter store or topic) instead of letting the broker redeliver it forever.
+Why parked: for now a failing listener rolls back and the broker redelivers (owner agreed). Open questions: N? where do dead letters go? how are they replayed after a fix?
+
+## 2026-10-01 Giving a listener added later the past events (backfill)
+Idea: events acknowledged while nobody listened are not replayed automatically. Options: (1) Kafka replay in a separate consumer group for the new listener (a compacted topic per aggregate keeps the latest full snapshot per product, which our UPDATE events are); (2) bootstrap from a snapshot (product API or bulk export) and then follow events; (3) store unhandled events in the inbox (rejected: database bloat).
+Why parked: depends on the broker choice. Recommendation at the time: decide together with the broker task; with Kafka use option 1, otherwise option 2.
+
+## 2026-10-01 DynamoDB inbox adapter with event history
+Idea: an InboxStore adapter on DynamoDB: partition key aggregate id, sort key LAST for the last event and EVT#<seq> for the history; native TTL; history enables replay for new listeners.
+Why parked: the inbox record must commit in the same transaction as the listener's work; with a relational service database and DynamoDB that is impossible (lost or duplicate events). It fits a service whose main database is DynamoDB (TransactWriteItems). Replay also needs an ordered sort key (event ids are random UUIDs).
