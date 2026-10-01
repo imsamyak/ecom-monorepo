@@ -104,6 +104,16 @@ Acceptance: EventCatalog resolves Product/CREATE to ProductEvent.CREATE and Vari
 #### T-008.3 InboxReceiver: dedupe, dispatch, transaction   [open]
 Acceptance (test-only listeners): a new message reaches an @EventListener for its record type and one for its sealed parent; the same message again is skipped and no listener runs; a listener that throws rolls back (no stored eventId, exception propagates, a redelivery is processed); an event with no listener is stored and acknowledged; an unknown action is logged, stored, acknowledged and not dispatched; the dedupe row is written in the same transaction as the listener's work.
 
+### T-010 agy tooling: kept logs, live step stream, JSON report   [in progress]
+Module(s): scripts/ (no Java code)
+Spec (owner go ahead 2026-10-01: persist agy logs, use the CLI's features, optimize):
+- Root cause found (docs/AGY.md): agy runs a slow command (Maven) as a background task, goes idle, and when woken tries another command to read the result; headless mode denies it and the run ends with no answer. Rule: agy never runs builds or tests; the scripts do.
+- `scripts/agy-run.ps1`: every run writes its CLI log to `logs/agy/<yyyyMMdd-HHmmss>-<prompt name>.log` via `--log-file`, and its output with `--output-format stream-json` to `logs/agy/<same>.jsonl`; the script still prints agy's final text reply to stdout as today (taken from the stream's final result) so existing callers keep working.
+- `scripts/prompts/report.schema.json`: a JSON schema for agy's final answer: testFiles, productionFiles, filesToRemove, testsChangedAfterWriting (path and reason), doubts. The tests and implement templates ask for that final answer; agy-run passes `--json-schema` when the prompt file name contains tests or implement.
+- `scripts/agy-chunk.ps1`: reads the JSON final answers instead of text lines for files to remove and changed tests; counts only files under src/test as tests (fixes the HISTORY.md false flag); adds a stall guard: if the stream gets no new event for 10 minutes, stop agy and flag stalled.
+- Keep PowerShell 5.1 compatible; a comment before every step (rule 12).
+Acceptance: a short check run produces the .log and .jsonl files and prints the final reply; the driver's report uses the JSON answer; a run with a HISTORY.md change in the tests step does not flag tests changed.
+
 ### T-009 Real JWT authentication in the shared module   [open - design in progress, needs go ahead]
 Module(s): service/platform/shared, service/platform/contract, service/product
 Design agreed so far with the owner (2026-10-01):

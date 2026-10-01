@@ -16,6 +16,9 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 - [ ] Owner reviews the tests of T-003.2, T-003.3, T-006 (and the agy-changed tests listed in service/product/HISTORY.md) and merges work when ready
 
 - [x] T-008.1 inbox module, store port, JPA adapter, TTL cleaner (pilot B run), Claude reviews, commits tests and impl, pushes when green
+- [ ] T-010 agy tooling (kept logs, stream-json, JSON report, stall guard): agy builds, Claude reviews and checks, commits
+- [ ] Claude writes the agy helper skills in .claude/skills (agy-chunk, agy-fix, agy-diagnose) after T-010
+- [ ] Model comparison on T-008.2: gemini-3.1-pro-high vs claude-opus-4-6-thinking vs gemini-3.8-flash-high; commit only the best result after a full build
 - [ ] T-008.2 EventCatalog and envelope decoding (pilot B run), same
 - [ ] T-008.3 InboxReceiver dedupe and dispatch (pilot B run), same
 - [x] Pilot B result recorded in docs/AGY.md section 8 (compare with pilot A)

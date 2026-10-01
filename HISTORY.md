@@ -326,3 +326,12 @@
 - Rollback: git revert the commit found by git log --grep "root cause of agy"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-010 docs - plan agy tooling (kept logs, stream-json, JSON report)
+- By: claude
+- Changed: TASKS.md (T-010), docs/PROGRESS.md
+- Why: owner go ahead: persist agy logs, use the CLI features, helper skills, try other models
+- Depends on: T-007
+- Rollback: git revert the commits found by git log --grep T-010 (newest first)
+- Tests: n/a (docs only)
+- Review: pending
