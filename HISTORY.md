@@ -120,3 +120,12 @@
 - Rollback: git revert the commit found by git log --grep "rule: small commits"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-004 docs - plan the agy progress log
+- By: claude
+- Changed: TASKS.md (T-004), docs/PROGRESS.md
+- Why: owner: agy should log what it is doing so a blocker is visible
+- Depends on: none
+- Rollback: git revert the commits found by git log --grep T-004 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

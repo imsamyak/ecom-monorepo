@@ -44,6 +44,14 @@ Spec (owner agreed 2026-10-01, JSON Merge Patch, RFC 7396):
 - Removed: `PUT /products/{productId}`, `PATCH /products/{productId}/active`, `SetProductActiveUseCase`, `SetProductActiveService`, `SetProductActiveCommand`, `SetProductActiveRequest` and their web mapper methods. Removed tests (owner agreed): `SetProductActiveServiceTest`, `ProductActiveControllerTest`; their behavior is covered by the new PATCH tests.
 - Hexagonal rule 11 applies: the controller calls only the use case.
 Acceptance: web and integration tests for: each field alone, several fields together, absent fields unchanged, description set to null, null title/price/status is 400, unknown status is 400, invalid values are 400, empty body is 400, 404, 403, one UPDATE outbox row per successful patch with data.status, no row on failure; PUT and PATCH /active are gone (405 or 404); `cd service && mvn test` passes.
+### T-004 Progress log for agy runs   [open]
+Module(s): scripts/, .gitignore, docs/AGY.md (no Java code)
+Spec (owner said go ahead 2026-10-01):
+- One shared progress file `logs/agy-progress.log` in the repo root; `logs/` is added to `.gitignore`.
+- Watcher in `scripts/agy-run.ps1` and `scripts/agy-impl-loop.ps1`: while agy runs, a background job appends one line every 30 seconds: time, elapsed minutes, the last step number and the last file written, both read from `~/.gemini/antigravity-cli/cli.log`, and in the loop the current round. The watcher stops when agy exits. Each script writes a start line and an end line (exit code, duration).
+- Every agy prompt asks agy to append one plain-English line per step to `logs/agy-progress.log` (what it is doing and why, or what blocks it). Documented as a prompt rule in `docs/AGY.md`, together with how Claude reads the file to spot a stuck run.
+- Rule 12 applies to the scripts (a comment before every step).
+Acceptance: a short agy run produces start, periodic watcher and end lines in `logs/agy-progress.log`; the file is not tracked by git; existing script usage is unchanged. (Scripts have no test framework, so this is checked by a manual run, noted in HISTORY.)
 ## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]
 Module(s): service/product
