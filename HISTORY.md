@@ -254,3 +254,12 @@
 - Rollback: git revert the commits found by git log --grep T-007 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-007 docs - pilot A result
+- By: claude
+- Changed: docs/AGY.md section 8, docs/PROGRESS.md
+- Why: rule 22: record the measured cost of pilot A against the T-003.3 baseline
+- Depends on: T-007 impl, T-005
+- Rollback: git revert the commits found by git log --grep T-007 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

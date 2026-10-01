@@ -58,6 +58,18 @@ Measures of Claude's own work per chunk, compared between processes. Counts are 
 - Elapsed: about 40 minutes wall time for tests and implementation, mostly agy and Maven.
 - Result: correct, green (product 73), two commits (5395aa3 tests, 840013b impl).
 
+### Pilot A: T-005 on the chunk driver (2026-10-01)
+- Process: one command `scripts/agy-chunk.ps1 T-005`; Claude read the report, checked the one flagged test change, ran the full build, committed tests and impl, pushed both together.
+- Claude tool calls: about 7 (1 run, 1 report read, 1 flag check, 1 build, 1 commit script plus its 2 helper files) versus about 22 in the baseline.
+- Prompt text written by Claude: none for the chunk (the templates and the TASKS.md spec were enough) versus about 6,500 characters.
+- Lines read in review: about 70 (the report and the flagged test diff) versus about 200.
+- Retries and incidents: 1 headless command abort, retried automatically by the driver; no manual retry; no memory kill.
+- Elapsed: about 17 minutes (tests step 388 s, implement step 652 s, 2 fix rounds) versus about 40 minutes.
+- Result: correct, green (product 78), separate tests and impl commits.
+- Verdict: keep pilot A as the standard process. Claude's work per chunk fell to roughly a third.
+- Driver issues found: the flag "tests changed in implement step" also counts HISTORY.md (any step-1 file) as a test; only src/test files should count. No stall/time-limit guard yet. Both are small follow-ups for agy.
+
+
 ## 9. Chunk driver (T-007, pilot A)
 - Run one chunk with one command from the repo root: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agy-chunk.ps1 T-005`.
 - It reads the task's section from TASKS.md, builds the prompts from `scripts/prompts/tests.txt` and `implement.txt` (all standing rules live there; fix a lesson once in the template), runs the tests step (retries once on the headless command abort), stops if production code changed in the tests step, runs the implement-until-green loop, and writes `logs/agy-report.md`: step files split into tests and production, tests changed during implement, GREEN or STUCK, test summaries, fix rounds, files agy asks to remove, flags. Exit code 0 only when green with no flags.
