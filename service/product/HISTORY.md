@@ -9,3 +9,10 @@
 - Tests: `cd service && mvn -pl product -am test` -> all pass (19 new in this task, 6 existing integration, outbox and shared suites green)
 - New tech: docs/LEARNING.md "JPA / Hibernate features used" (AttributeConverter, @Check) and the String.join gotcha
 - Review: approved (owner said "merge all branches to main", 2026-10-01)
+
+## 2026-10-01 T-001 tests – trim product title and description (tests first)
+- By: gemini (agy) wrote the tests, claude reviewed them
+- Changed: tests: ProductPersistenceTest (new); no production code yet
+- Why: tests first for T-001; 3 of 4 fail because Product.sanitize() does not trim yet, the 4th (blank description becomes null) protects existing behavior
+- Tests: `cd service && mvn -pl product -am test -Dtest=ProductPersistenceTest` -> 3 failures (expected <Shoe> but was <  Shoe  >), as intended
+- Review: pending
