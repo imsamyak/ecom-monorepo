@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,8 +64,8 @@ class ProductApiOutboxTest {
                 .andExpect(status().isCreated()).andReturn();
         String productId = mapper.readTree(created.getResponse().getContentAsString()).get("id").asText();
 
-        // Update it
-        mvc.perform(put("/products/" + productId).header("Authorization", bearer)
+        // Update it via partial patch
+        mvc.perform(patch("/products/" + productId).header("Authorization", bearer)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\":\"Phone 2\",\"description\":\"desc\",\"price\":11.5}"))
                 .andExpect(status().isOk());
@@ -92,7 +93,7 @@ class ProductApiOutboxTest {
     @Test
     void aRequestThatFailsRecordsNoEvent() throws Exception {
         // Update a product that does not exist
-        mvc.perform(put("/products/" + UUID.randomUUID()).header("Authorization", bearer)
+        mvc.perform(patch("/products/" + UUID.randomUUID()).header("Authorization", bearer)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\":\"Phone\",\"description\":\"d\",\"price\":1.0}"))
                 .andExpect(status().isNotFound());

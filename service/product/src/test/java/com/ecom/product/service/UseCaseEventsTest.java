@@ -70,7 +70,7 @@ class UseCaseEventsTest {
 
         // Ask it what happened
         DomainEvent event = service.buildEvent(
-                new UpdateProductCommand(productId, sellerId, "Phone", "desc", 10.5), productResult);
+                new UpdateProductCommand(productId, sellerId, Optional.of("Phone"), Optional.of("desc"), Optional.of(10.5), Optional.empty()), productResult);
 
         // An UPDATE event carrying the full product snapshot after the change
         assertEquals(new ProductEvent.UPDATE(productId, sellerId, "Phone", "desc", 10.5, now, now, "ACTIVE"), event);

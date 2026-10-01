@@ -162,3 +162,13 @@
 - Rollback: git revert the commits found by git log --grep T-006 (newest first)
 - Tests: cd service; mvn test -> all pass (product 62), green after 1 fix round, no test changed. The old Product.java and Variant.java were removed by Claude with git rm (agy cannot delete files); the build stays green without them
 - Review: pending
+
+## 2026-10-01 T-003.3 tests - PATCH partial update replaces PUT and PATCH active
+- By: gemini (agy)
+- Changed: ProductPatchApiTest.java (new), ProductEventsOutboxIntegrationTest.java, UseCaseEventsTest.java, ProductApiOutboxTest.java
+- Why: Tests for T-003.3 partial update
+- Depends on: T-003.2 and T-006
+- Rollback: git revert the commits found by git log --grep T-003.3 (newest first)
+- Tests: written first, red on purpose
+- Review: pending
+  (Note: Existing tests changed on purpose to use the new Optional UpdateProductCommand and PATCH instead of PUT. SetProductActiveServiceTest and ProductActiveControllerTest are removed as owner agreed.)

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -103,7 +104,8 @@ class ProductEventsOutboxIntegrationTest {
     void updatingAProductWritesAProductUpdatedRowWithTheNewValues() throws Exception {
         // An existing product, then an update
         ProductResult product = newProduct();
-        updateProduct.execute(new UpdateProductCommand(product.id(), sellerId, "Phone 2", "new", 20.0));
+        updateProduct.execute(new UpdateProductCommand(product.id(), sellerId, 
+                Optional.of("Phone 2"), Optional.of("new"), Optional.of(20.0), Optional.empty()));
 
         // One UPDATE row with the values after the change
         OutboxEntity row = onlyRow();
@@ -178,7 +180,8 @@ class ProductEventsOutboxIntegrationTest {
     void aFailedUpdateOfAnUnknownProductWritesNoRow() {
         // The product does not exist
         assertThrows(ProductNotFoundException.class,
-                () -> updateProduct.execute(new UpdateProductCommand(UUID.randomUUID(), sellerId, "Phone", "d", 1.0)));
+                () -> updateProduct.execute(new UpdateProductCommand(UUID.randomUUID(), sellerId, 
+                        Optional.of("Phone"), Optional.of("d"), Optional.of(1.0), Optional.empty())));
 
         // The business rule failed, so no event was recorded
         assertEquals(0, outboxRepository.count());
@@ -191,7 +194,8 @@ class ProductEventsOutboxIntegrationTest {
 
         // The update is refused and no event is recorded
         assertThrows(ProductNotOwnedException.class,
-                () -> updateProduct.execute(new UpdateProductCommand(product.id(), UUID.randomUUID(), "Hacked", "d", 1.0)));
+                () -> updateProduct.execute(new UpdateProductCommand(product.id(), UUID.randomUUID(), 
+                        Optional.of("Hacked"), Optional.of("d"), Optional.of(1.0), Optional.empty())));
         assertEquals(0, outboxRepository.count());
     }
 
