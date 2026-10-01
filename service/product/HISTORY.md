@@ -15,35 +15,35 @@
 - Changed: tests: ProductPersistenceTest (new); no production code yet
 - Why: tests first for T-001; 3 of 4 fail because Product.sanitize() does not trim yet, the 4th (blank description becomes null) protects existing behavior
 - Tests: `cd service && mvn -pl product -am test -Dtest=ProductPersistenceTest` -> 3 failures (expected <Shoe> but was <  Shoe  >), as intended
-- Review: pending
+- Review: approved (owner said merge all, 2026-10-01)
 
 ## 2026-10-01 T-001 – Trim product title and description before saving
 - By: gemini (agy)
 - Changed: src/main/java/com/ecom/product/domain/entity/Product.java, CONTEXT.md
 - Why: T-001 implementation: title and description are trimmed before insert and update, and a description blank after trimming becomes null
 - Tests: `cd service && mvn test` -> all pass (product 29 incl. 4 new, shared 31, outbox 5); run by claude, agy had no shell
-- Review: pending
+- Review: approved (owner said merge all, 2026-10-01)
 
 ## 2026-10-01 T-002.1 tests – product active flag (tests first)
 - By: gemini (agy) wrote the tests, claude reviewed them and asked for one more (reactivate persisted)
 - Changed: tests: ProductActiveFlagTest, ProductActiveFlagPersistenceTest (new); no production code yet
 - Why: tests first for T-002.1; they do not compile until Product has isActive/activate/deactivate
 - Tests: `mvn test -pl product -am` -> testCompile fails on the missing methods, as intended
-- Review: pending
+- Review: approved (owner said merge all, 2026-10-01)
 
 ## 2026-10-01 T-002.1 Product has an active flag
 - By: gemini (agy)
 - Changed: service/product/src/main/java/com/ecom/product/domain/entity/Product.java, service/product/CONTEXT.md
 - Why: Added the active flag and its domain methods as per T-002.1 spec.
 - Tests: `cd service && mvn test` -> all pass (product 35 tests)
-- Review: pending
+- Review: approved (owner said merge all, 2026-10-01)
 
 ## 2026-10-01 T-002.2 tests – set product active use case (tests first)
 - By: gemini (agy) wrote the tests, claude reviewed them and sent back two fixes (tautological assertions on a stubbed result, mapper only tested for the default)
 - Changed: tests: SetProductActiveServiceTest (new); no production code yet
 - Why: tests first for T-002.2; they do not compile until the use case, command, service and ProductResult.active exist
 - Tests: not run yet (compile fails by design)
-- Review: pending
+- Review: approved (owner said merge all, 2026-10-01)
 
 ## 2026-10-01 T-002.2 Set product active use case
 - By: gemini (agy)
@@ -51,18 +51,18 @@
 - Why: Implemented SetProductActiveUseCase to allow sellers to activate or deactivate products, updated ProductResult with active flag
 - Tests: `cd service && mvn test` -> all pass (product 41 tests); run by the driver loop (claude side)
 - Test change (rule 8): the two mapper tests in SetProductActiveServiceTest were changed by agy to add `.sellerId(UUID.randomUUID())` to the Product builder, because Product.sellerId is @NonNull and the builder threw an NPE. The tests were wrong (missed in review); assertions are unchanged.
-- Review: pending
+- Review: approved (owner said merge all, 2026-10-01)
 
 ## 2026-10-01 T-002.3 tests – PATCH /products/{id}/active (tests first)
 - By: gemini (agy) wrote the tests, claude reviewed them and sent back one fix (wrong use case method name)
 - Changed: tests: ProductActiveControllerTest (new, @WebMvcTest); no production code yet
 - Why: tests first for T-002.3; they do not compile until SetProductActiveRequest, the web mapper methods, the endpoint and ProductResponse.active exist
 - Tests: not run yet (compile fails by design)
-- Review: pending
+- Review: approved (owner said merge all, 2026-10-01)
 
 ## 2026-10-01 T-002.3 PATCH endpoint to set product active
 - By: gemini (agy)
 - Changed: ProductController, ProductWebMapper, ProductResponse, SetProductActiveRequest, CONTEXT.md
 - Why: T-002.3 implementation
 - Tests: `cd service && mvn test` -> all pass (product 44 tests incl. 3 new web tests); run by the driver loop (claude side)
-- Review: pending
+- Review: approved (owner said merge all, 2026-10-01)
