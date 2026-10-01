@@ -18,3 +18,6 @@ Declare a record nested in an aggregate sealed interface; top-level records, ano
 
 ## Test
 `cd service && mvn test`.
+
+## `EventCatalog`
+Provides a central directory that resolves an `(aggregate, action)` pair (e.g., `"Product"`, `"CREATE"`) to the specific event record class (e.g., `ProductEvent.CREATE.class`). Used by the inbox to decode envelopes back into domain events.

@@ -91,3 +91,4 @@
 - Rollback: git revert the commits found by git log --grep T-008.2 (newest first)
 - Tests: pending
 - Review: pending
+- Claude review: full build green (contract 25, shared 31, outbox 31, inbox 7, product 78); chosen over experiment S2, which aborted; agy's edit to docs/PROGRESS.md was undone
