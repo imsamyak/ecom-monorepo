@@ -11,7 +11,7 @@ Transactional outbox, plug-and-play: adding the dependency auto-configures it (`
 - Relay and cleaner run only when `outbox.relay.enabled` is true (default). Run on **one instance only**.
 
 ## Building events
-A use case implements `OutboxAwareUseCase<C,R>`: `execute` plus `DomainEvent buildEvent(command, result)` (return null to emit nothing). It only describes what happened. `OutboxAspect` then calls `Outbox.of(event)`: aggregate type = the interface the event record is nested in (`event.getClass().getDeclaringClass()`), action = the record name, aggregate id = `event.aggregateId()`, payload = `EventEnvelope(aggregate, action, event)` serialized to JSON. It throws `IllegalArgumentException` for a null/blank id, anonymous classes, lambdas and top-level records. The size limit applies to the whole envelope.
+A use case implements `OutboxAwareUseCase<C,R>`: `execute` plus `DomainEvent buildEvent(command, result)` (return null to emit nothing). It only describes what happened. `OutboxAspect` then calls `Outbox.of(event)`: aggregate type = the interface the event record is nested in (`event.getClass().getDeclaringClass().getSimpleName()`) with the trailing `Event` removed, action = the record name, aggregate id = `event.aggregateId()`, payload = `EventEnvelope(aggregate, action, event)` serialized to JSON. It throws `IllegalArgumentException` for a null/blank id, anonymous classes, lambdas, top-level records, or if the declaring interface name does not end in `Event` or is exactly `Event`. The size limit applies to the whole envelope.
 
 ## Invariants / known limits
 - Order can break if concurrent transactions commit out of `createdAt` order (would need a sequence column or CDC).

@@ -11,7 +11,7 @@ import com.ecom.product.domain.entity.Product;
 import com.ecom.product.service.product.mapper.ProductMapper;
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Product entity is already imported in this class
-import com.ecom.contract.event.Product.CREATE;
+import com.ecom.contract.event.ProductEvent.CREATE;
 
 @Service
 @Validated

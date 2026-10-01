@@ -9,7 +9,7 @@ import java.util.UUID;
  * Events of the Product aggregate. The interface name is the aggregate type and each nested record is an action, so
  * the set of actions is closed. All actions share one aggregate id rule: the product id.
  */
-public sealed interface Product extends DomainEvent {
+public sealed interface ProductEvent extends DomainEvent {
 
     UUID productId();
 
@@ -21,15 +21,15 @@ public sealed interface Product extends DomainEvent {
 
     /** A product was created; carries the full snapshot. */
     record CREATE(UUID productId, UUID sellerId, String title, String description, double price,
-                   LocalDateTime createdAt, LocalDateTime updatedAt, String status) implements Product {
+                   LocalDateTime createdAt, LocalDateTime updatedAt, String status) implements ProductEvent {
     }
 
     /** A product was updated; carries the full snapshot after the change. */
     record UPDATE(UUID productId, UUID sellerId, String title, String description, double price,
-                   LocalDateTime createdAt, LocalDateTime updatedAt, String status) implements Product {
+                   LocalDateTime createdAt, LocalDateTime updatedAt, String status) implements ProductEvent {
     }
 
     /** A product was deleted; only the identifiers remain. */
-    record DELETE(UUID productId, UUID sellerId) implements Product {
+    record DELETE(UUID productId, UUID sellerId) implements ProductEvent {
     }
 }

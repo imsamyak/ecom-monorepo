@@ -153,3 +153,12 @@
 - Rollback: git revert the commits found by git log --grep T-006 (newest first)
 - Tests: written first, red on purpose
 - Review: pending
+
+## 2026-10-01 T-006 impl - event interfaces end in Event
+- By: gemini (agy)
+- Changed: CreateProductService.java, UpdateProductService.java, DeleteProductService.java, AddVariantService.java, RemoveVariantService.java, CONTEXT.md updated
+- Why: Use the renamed ProductEvent and VariantEvent types
+- Depends on: T-003.2
+- Rollback: git revert the commits found by git log --grep T-006 (newest first)
+- Tests: cd service; mvn test -> all pass (product 62), green after 1 fix round, no test changed. The old Product.java and Variant.java were removed by Claude with git rm (agy cannot delete files); the build stays green without them
+- Review: pending

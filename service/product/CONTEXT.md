@@ -20,8 +20,8 @@ A variant's properties map is stored in one `sku` column by `VariantSkuConverter
 
 ## Events (outbox)
 Every state-changing use case implements `OutboxAwareUseCase` (method `execute`) and returns only a `DomainEvent` from `buildEvent`, using the sealed events of the `contract` module:
-- `CreateProductService` -> `Product.CREATE` (includes `status`), `UpdateProductService` -> `Product.UPDATE` (includes `status`), `DeleteProductService` -> `Product.DELETE` (from the command alone; its result is `Void`)
-- `AddVariantService` -> `Variant.ADD`, `RemoveVariantService` -> `Variant.REMOVE` (the use case returns the removed variant's data so the event can carry it; the controller still answers 204)
+- `CreateProductService` -> `ProductEvent.CREATE` (includes `status`), `UpdateProductService` -> `ProductEvent.UPDATE` (includes `status`), `DeleteProductService` -> `ProductEvent.DELETE` (from the command alone; its result is `Void`)
+- `AddVariantService` -> `VariantEvent.ADD`, `RemoveVariantService` -> `VariantEvent.REMOVE` (the use case returns the removed variant's data so the event can carry it; the controller still answers 204)
 Variant events use the owning product id as aggregate id. Query use cases (get, list) emit nothing. The app needs an `OutboxPublisher` bean to ship events (none is defined yet; the relay idles without one).
 `DeleteProductService` and `RemoveVariantService` validate their command with an injected `Validator` (Hibernate Validator forbids redeclaring `@Valid` on an overridden `execute`).
 

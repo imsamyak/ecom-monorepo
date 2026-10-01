@@ -46,9 +46,15 @@ public class Outbox {
         Class<?> aggregate = type.getDeclaringClass();
         if (type.isAnonymousClass() || type.isSynthetic() || aggregate == null) {
             throw new IllegalArgumentException("DomainEvent must be a record nested in its aggregate interface "
-                    + "(for example Product.CREATE): " + type.getName());
+                    + "(for example ProductEvent.CREATE): " + type.getName());
         }
-        String aggregateType = aggregate.getSimpleName();
+        
+        // Derive aggregate type from declaring interface name, expecting 'Event' suffix
+        String aggregateInterfaceName = aggregate.getSimpleName();
+        if (!aggregateInterfaceName.endsWith("Event") || aggregateInterfaceName.equals("Event")) {
+            throw new IllegalArgumentException("Declaring interface name must end with 'Event' and cannot be exactly 'Event': " + aggregateInterfaceName);
+        }
+        String aggregateType = aggregateInterfaceName.substring(0, aggregateInterfaceName.length() - 5);
 
         // The record's own name is the action
         String action = type.getSimpleName();
@@ -56,7 +62,7 @@ public class Outbox {
         // The event already converted its id to a string; only reject an empty one
         String aggregateId = event.aggregateId();
         if (aggregateId == null || aggregateId.isBlank()) {
-            throw new IllegalArgumentException(aggregateType + "." + action + ".aggregateId() must not be null or blank");
+            throw new IllegalArgumentException(aggregateInterfaceName + "." + action + ".aggregateId() must not be null or blank");
         }
 
         // The payload is the envelope; the event itself is its data, so Jackson serializes the record's components

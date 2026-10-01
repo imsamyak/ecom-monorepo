@@ -2,7 +2,7 @@ package com.ecom.product.service.variant;
 
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Variant entity is already imported in this class
-import com.ecom.contract.event.Variant.REMOVE;
+import com.ecom.contract.event.VariantEvent.REMOVE;
 import com.ecom.product.domain.entity.Variant;
 import com.ecom.product.domain.exception.VariantNotFoundException;
 import com.ecom.product.port.in.usecase.variant.RemoveVariantUseCase;

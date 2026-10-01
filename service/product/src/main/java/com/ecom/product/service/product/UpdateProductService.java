@@ -9,7 +9,7 @@ import com.ecom.product.port.out.persistence.product.LoadProductPort;
 import com.ecom.product.port.out.persistence.product.SaveProductPort;
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Product entity is already imported in this class
-import com.ecom.contract.event.Product.UPDATE;
+import com.ecom.contract.event.ProductEvent.UPDATE;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.ecom.product.service.product.mapper.ProductMapper;

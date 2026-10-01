@@ -13,7 +13,7 @@ import com.ecom.product.domain.exception.ProductNotOwnedException;
 
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Variant entity is already imported in this class
-import com.ecom.contract.event.Variant.ADD;
+import com.ecom.contract.event.VariantEvent.ADD;
 import lombok.RequiredArgsConstructor;
 
 import java.util.TreeMap;

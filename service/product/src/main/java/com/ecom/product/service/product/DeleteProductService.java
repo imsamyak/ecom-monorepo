@@ -8,7 +8,7 @@ import com.ecom.product.port.out.persistence.product.DeleteProductPort;
 import com.ecom.product.port.out.persistence.product.LoadProductPort;
 import com.ecom.contract.DomainEvent;
 // Nested event record imported directly because the Product entity is already imported in this class
-import com.ecom.contract.event.Product.DELETE;
+import com.ecom.contract.event.ProductEvent.DELETE;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;

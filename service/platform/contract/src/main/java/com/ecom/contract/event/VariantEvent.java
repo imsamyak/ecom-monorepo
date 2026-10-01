@@ -10,7 +10,7 @@ import java.util.UUID;
  * Events of the Variant aggregate. A variant belongs to a product, so its events are keyed by the owning product id
  * (not the variant id): variant events then stay ordered together with the events of that product.
  */
-public sealed interface Variant extends DomainEvent {
+public sealed interface VariantEvent extends DomainEvent {
 
     UUID productId();
 
@@ -22,10 +22,10 @@ public sealed interface Variant extends DomainEvent {
 
     /** A variant was added to a product. */
     record ADD(Long variantId, UUID productId, Map<String, String> properties,
-                 LocalDateTime createdAt, LocalDateTime updatedAt) implements Variant {
+                 LocalDateTime createdAt, LocalDateTime updatedAt) implements VariantEvent {
     }
 
     /** A variant was removed from a product; carries what was removed. */
-    record REMOVE(Long variantId, UUID productId, Map<String, String> properties) implements Variant {
+    record REMOVE(Long variantId, UUID productId, Map<String, String> properties) implements VariantEvent {
     }
 }
