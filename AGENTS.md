@@ -53,7 +53,7 @@ Entry format for `HISTORY.md`:
 ## Rules
 1. Code change and its context/history update go in **the same commit**. A change under a module's `src/` or `pom.xml` requires that module's `HISTORY.md` to change; a change anywhere else requires the root `HISTORY.md`. `scripts/check-context-sync.sh` enforces this (git hook + review).
 2. If a decision or invariant changed, update that module's `CONTEXT.md` too. A stale `CONTEXT.md` is a review rejection.
-3. Commit at the end of every task, never on `main`. **All work goes on ONE work branch** (currently `work`); do not create a new branch per task. Push it after every commit. The owner reviews and merges it whenever ready. **Never open pull requests**: the owner opens them. Do not commit build output (`target/` is ignored).
+3. Commit at the end of every task, never on `main`. **All work goes on ONE work branch** (currently `work`); do not create a new branch per task. Push only when the tip builds: a chunk's red tests commit is pushed together with its green implementation commit, after the full build passes; docs-only commits may be pushed at once. The pushed tip of `work` must always build, so the owner can merge it at any moment. The owner reviews and merges it whenever ready. **Never open pull requests**: the owner opens them. Do not commit build output (`target/` is ignored).
 4. Keep tasks small so diffs are cheap to review. Do not refactor beyond the task.
 5. Tests must pass before committing; record the command and result in `HISTORY.md`.
 6. Enable the hook once per clone: `git config core.hooksPath .githooks`.

@@ -236,3 +236,12 @@
 - Rollback: git revert the commit found by git log --grep "rule 17: Claude is accountable"
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 rule - rule 3: push only when the tip of work builds
+- By: claude
+- Changed: AGENTS.md rule 3
+- Why: owner: code must never break; a red tests commit alone on the remote would break a merge
+- Depends on: none
+- Rollback: git revert the commit found by git log --grep "rule 3: push only"
+- Tests: n/a (docs only)
+- Review: pending
