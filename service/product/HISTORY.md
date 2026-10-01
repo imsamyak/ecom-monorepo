@@ -23,3 +23,10 @@
 - Why: T-001 implementation: title and description are trimmed before insert and update, and a description blank after trimming becomes null
 - Tests: `cd service && mvn test` -> all pass (product 29 incl. 4 new, shared 31, outbox 5); run by claude, agy had no shell
 - Review: pending
+
+## 2026-10-01 T-002.1 tests – product active flag (tests first)
+- By: gemini (agy) wrote the tests, claude reviewed them and asked for one more (reactivate persisted)
+- Changed: tests: ProductActiveFlagTest, ProductActiveFlagPersistenceTest (new); no production code yet
+- Why: tests first for T-002.1; they do not compile until Product has isActive/activate/deactivate
+- Tests: `mvn test -pl product -am` -> testCompile fails on the missing methods, as intended
+- Review: pending
