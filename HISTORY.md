@@ -147,3 +147,12 @@
 - Rollback: git revert the commits found by git log --grep T-004 (newest first)
 - Tests: n/a (docs only)
 - Review: pending
+
+## 2026-10-01 T-006 docs - plan the Event suffix rename
+- By: claude
+- Changed: TASKS.md (T-006), docs/PROGRESS.md
+- Why: owner chose option 1 to fix the Product/Variant name clash between entities and events
+- Depends on: none
+- Rollback: git revert the commits found by git log --grep T-006 (newest first)
+- Tests: n/a (docs only)
+- Review: pending

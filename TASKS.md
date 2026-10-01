@@ -52,6 +52,14 @@ Spec (owner said go ahead 2026-10-01):
 - Every agy prompt asks agy to append one plain-English line per step to `logs/agy-progress.log` (what it is doing and why, or what blocks it). Documented as a prompt rule in `docs/AGY.md`, together with how Claude reads the file to spot a stuck run.
 - Rule 12 applies to the scripts (a comment before every step).
 Acceptance: a short agy run produces start, periodic watcher and end lines in `logs/agy-progress.log`; the file is not tracked by git; existing script usage is unchanged. (Scripts have no test framework, so this is checked by a manual run, noted in HISTORY.)
+### T-006 Event interfaces end in Event (fixes the Product/Variant name clash)   [in progress]
+Module(s): service/platform/contract, service/platform/outbox, service/product
+Spec (owner chose option 1 and said go ahead 2026-10-01):
+- Rename the sealed event interfaces `com.ecom.contract.event.Product` -> `ProductEvent` and `Variant` -> `VariantEvent` (files renamed too). The nested records (CREATE, UPDATE, DELETE, ADD, REMOVE) and their components do not change.
+- `Outbox.of` derives the aggregate type from the declaring interface name with the trailing `Event` removed (`ProductEvent` -> `Product`). An interface whose name does not end in `Event`, or is exactly `Event`, is rejected with `IllegalArgumentException` naming the class (like lambdas today).
+- The outbox payload and row are unchanged for consumers: `"aggregate": "Product"` / `"Variant"`, same actions, same data.
+- Product services use `ProductEvent.CREATE`, `VariantEvent.ADD` and so on (no fully qualified names, no clash with the entities).
+Acceptance: contract tests use ProductEvent/VariantEvent; outbox tests: sample interfaces named `...Event` give the aggregate type without the suffix, a name without the suffix is rejected, a name exactly `Event` is rejected; product integration tests still see aggregate Product/Variant (unchanged); `cd service && mvn test` passes.
 ## Done (owner approved; on branch work, reaches main when the owner merges work)
 ### T-001 Trim product title and description before saving   [done]
 Module(s): service/product
