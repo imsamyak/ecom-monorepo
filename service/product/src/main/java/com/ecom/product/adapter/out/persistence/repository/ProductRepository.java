@@ -1,21 +1,13 @@
-package com.ecom.product.adapter.out.repository;
+package com.ecom.product.adapter.out.persistence.repository;
 
 import com.ecom.product.domain.entity.Product;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-public interface ProductRepository extends Repository<Product, UUID> {
-
-    Product save(Product product);
-    
-    Optional<Product> findById(UUID id);
+public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     List<Product> findBySellerId(UUID sellerId);
 
-    void delete(Product product);
-
-    void deleteById(UUID id);
 }

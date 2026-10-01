@@ -1,0 +1,9 @@
+com\ecom\shared\security\JwtPrincipal.class
+com\ecom\shared\exception\InvalidRequestException.class
+com\ecom\shared\usecase\UseCase.class
+com\ecom\shared\web\exception\GlobalExceptionHandler.class
+com\ecom\shared\entity\DomainEntity.class
+com\ecom\shared\exception\ResourceNotFoundException.class
+com\ecom\shared\security\JwtAuthenticationFilter.class
+com\ecom\shared\exception\UnauthorizedAccessException.class
+com\ecom\shared\validation\SelfValidating.class

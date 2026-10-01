@@ -1,0 +1,12 @@
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\repository\OutboxRepository.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\entity\OutboxEntity.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\enums\OutboxStatus.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\relay\OutboxPublisher.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\OutboxUseCase.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\OutboxMessage.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\relay\OutboxCleaner.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\aspect\OutboxAspect.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\relay\RetryBackoff.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\config\OutboxAutoConfiguration.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\Outbox.java
+C:\Users\Compro\Desktop\ecom\service\platform\outbox\src\main\java\com\ecom\outbox\relay\OutboxRelay.java
