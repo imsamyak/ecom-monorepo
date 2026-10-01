@@ -17,3 +17,10 @@ Under these rules, a duplicate is always the immediate repeat of the last event 
 
 ## TTL Cleaner
 - An hourly cleaner deletes rows whose `processed_at` is older than `inbox.dedupe.ttl` (defaults to 7 days).
+
+## Message Processing
+- The entry point is `InboxReceiver.receive(InboxMessage)`.
+- Each message is processed in a single transaction: the adapter locks the aggregate's deduplication row; if it's a duplicate, it skips; otherwise, the envelope is decoded via `EventCatalog`.
+- The decoded domain event is dispatched synchronously using Spring's `ApplicationEventPublisher` to `@EventListener` methods.
+- If a listener fails, the transaction rolls back, and the message is not acknowledged.
+- Events with no listeners, or with unknown actions, are acknowledged and stored without dispatching.

@@ -37,3 +37,4 @@
 - Rollback: git revert the commits found by git log --grep T-008.3 (newest first)
 - Tests: pending
 - Review: pending
+- Claude review (T-008.3): green after 7 fix rounds in the implement loop; agy changed InboxReceiverTest during implement (flagged by the driver); Claude read the final test in full and had agy add two missing cases (redelivery after a failed listener is processed; unknown aggregate is stored and acknowledged) and rename the tests to sentences. Full build by Claude: contract 25, shared 31, outbox 31, inbox 14, product 78, all green. Receiver checked against the design: one transaction per message, dedupe with a row lock, EventCatalog decoding, synchronous @EventListener dispatch, store the id, failures roll back.

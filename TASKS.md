@@ -83,7 +83,7 @@ Spec (owner: use mappers for all events or none; go ahead 2026-10-01):
 Acceptance: new unit tests for each of the five mapper methods (written first, using the generated mappers via `Mappers.getMapper`); the existing UseCaseEventsTest and integration tests pass unchanged except for service constructors that gain a mapper; `cd service && mvn test` passes.
 Runs as pilot A of T-007 (the chunk driver), measured against the T-003.3 baseline.
 
-### T-008 Inbox module: receive broker events, dedupe, dispatch to @EventListener   [in progress]
+### T-008 Inbox module: receive broker events, dedupe, dispatch to @EventListener   [review]
 Module(s): service/platform/inbox (new), service/platform/contract, service/pom.xml
 Agreed with the owner 2026-10-01 (go ahead given). Three chunks, in order, each green alone. Built as pilot B (one agy run per chunk: tests, implementation, agy runs the build itself).
 Design:
@@ -95,13 +95,13 @@ Design:
 - Decoding: `contract` gets an `EventCatalog` that lists the sealed event interfaces (ProductEvent, VariantEvent) and maps (aggregate, action) to the record class, using the same naming rule as Outbox.of (interface name without the Event suffix is the aggregate type, record name is the action). Jackson reads `data` into that record.
 - An event no listener handles: stored and acknowledged. An unknown aggregate or action: log a warning, store it and acknowledge (do not dispatch).
 
-#### T-008.1 Inbox module, storage port, JPA adapter, TTL cleaner   [open]
+#### T-008.1 Inbox module, storage port, JPA adapter, TTL cleaner   [review]
 Acceptance: module builds and is registered in service/pom.xml; InboxStore JPA adapter: first event for an aggregate is new; same eventId again is a duplicate; a different eventId overwrites; rows older than the TTL are deleted by the cleaner and newer ones kept; TTL is configurable.
 
 #### T-008.2 EventCatalog and envelope decoding   [review]
 Acceptance: EventCatalog resolves Product/CREATE to ProductEvent.CREATE and Variant/ADD to VariantEvent.ADD etc. for every action; unknown aggregate or action gives an empty result; decoding an envelope produced by Outbox.of gives back an equal record (round trip for every event type).
 
-#### T-008.3 InboxReceiver: dedupe, dispatch, transaction   [open]
+#### T-008.3 InboxReceiver: dedupe, dispatch, transaction   [review]
 Acceptance (test-only listeners): a new message reaches an @EventListener for its record type and one for its sealed parent; the same message again is skipped and no listener runs; a listener that throws rolls back (no stored eventId, exception propagates, a redelivery is processed); an event with no listener is stored and acknowledged; an unknown action is logged, stored, acknowledged and not dispatched; the dedupe row is written in the same transaction as the listener's work.
 
 ### T-010 agy tooling: kept logs, live step stream, JSON report   [review]

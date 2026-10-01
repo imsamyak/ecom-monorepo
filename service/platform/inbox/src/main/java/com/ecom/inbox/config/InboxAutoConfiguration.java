@@ -14,7 +14,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.Duration;
 
-@AutoConfiguration(before = {JpaRepositoriesAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.context.ApplicationEventPublisher;
+
+@AutoConfiguration(
+        after = {JacksonAutoConfiguration.class},
+        before = {JpaRepositoriesAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @AutoConfigurationPackage(basePackages = "com.ecom.inbox")
 @EnableScheduling
 public class InboxAutoConfiguration {
@@ -28,5 +34,16 @@ public class InboxAutoConfiguration {
     public InboxCleaner inboxCleaner(InboxRepository inboxRepository,
                                      @Value("${inbox.dedupe.ttl:7d}") Duration ttl) {
         return new InboxCleaner(inboxRepository, ttl);
+    }
+
+    @Bean
+    @org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper().registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+    }
+
+    @Bean
+    public com.ecom.inbox.InboxReceiver inboxReceiver(InboxStore inboxStore, ObjectMapper objectMapper, ApplicationEventPublisher eventPublisher) {
+        return new com.ecom.inbox.InboxReceiver(inboxStore, objectMapper, eventPublisher);
     }
 }

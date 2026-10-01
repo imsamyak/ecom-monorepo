@@ -20,7 +20,7 @@ When a task is fully merged, collapse its block to one line in "Done" at the bot
 - [ ] Claude writes the agy helper skills in .claude/skills (agy-chunk, agy-fix, agy-diagnose) after T-010
 - [x] Strategy comparison on T-008.2 (S1 wins; model stays pro-high): gemini-3.1-pro-high vs claude-opus-4-6-thinking vs gemini-3.8-flash-high; commit only the best result after a full build
 - [x] T-008.2 EventCatalog and envelope decoding (pilot B run), same
-- [ ] T-008.3 InboxReceiver dedupe and dispatch (pilot B run), same
+- [x] T-008.3 InboxReceiver dedupe and dispatch (pilot B run), same
 - [x] Pilot B result recorded in docs/AGY.md section 8 (compare with pilot A)
 
 - [ ] T-009 JWT in the shared module: finish the design with the owner, then go ahead (next after T-008)

@@ -4,6 +4,9 @@ import com.ecom.inbox.port.spi.InboxStore;
 import java.time.Instant;
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
+
+@Transactional
 public class InboxJpaAdapter implements InboxStore {
 
     private final InboxRepository inboxRepository;
