@@ -3,6 +3,7 @@ package com.ecom.product.service;
 import com.ecom.contract.DomainEvent;
 import com.ecom.contract.event.Product;
 import com.ecom.contract.event.Variant;
+import com.ecom.product.domain.enums.ProductStatus;
 import com.ecom.product.port.in.usecase.product.dto.command.CreateProductCommand;
 import com.ecom.product.port.in.usecase.product.dto.command.DeleteProductCommand;
 import com.ecom.product.port.in.usecase.product.dto.command.UpdateProductCommand;
@@ -45,7 +46,7 @@ class UseCaseEventsTest {
     private final UUID productId = UUID.randomUUID();
     private final UUID sellerId = UUID.randomUUID();
     private final LocalDateTime now = LocalDateTime.of(2026, 1, 1, 12, 0);
-    private final ProductResult productResult = new ProductResult(productId, sellerId, "Phone", "desc", 10.5, now, now, true);
+    private final ProductResult productResult = new ProductResult(productId, sellerId, "Phone", "desc", 10.5, now, now, ProductStatus.ACTIVE);
     private final VariantResult variantResult = new VariantResult(7L, productId, Map.of("color", "red"), now, now);
 
     @Test
@@ -58,7 +59,7 @@ class UseCaseEventsTest {
         DomainEvent event = service.buildEvent(new CreateProductCommand(sellerId, "Phone", "desc", 10.5), productResult);
 
         // A CREATE event carrying the full product snapshot
-        assertEquals(new Product.CREATE(productId, sellerId, "Phone", "desc", 10.5, now, now), event);
+        assertEquals(new Product.CREATE(productId, sellerId, "Phone", "desc", 10.5, now, now, "ACTIVE"), event);
     }
 
     @Test
@@ -72,7 +73,7 @@ class UseCaseEventsTest {
                 new UpdateProductCommand(productId, sellerId, "Phone", "desc", 10.5), productResult);
 
         // An UPDATE event carrying the full product snapshot after the change
-        assertEquals(new Product.UPDATE(productId, sellerId, "Phone", "desc", 10.5, now, now), event);
+        assertEquals(new Product.UPDATE(productId, sellerId, "Phone", "desc", 10.5, now, now, "ACTIVE"), event);
     }
 
     @Test

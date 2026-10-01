@@ -4,6 +4,7 @@ import com.ecom.product.adapter.in.web.dto.request.SetProductActiveRequest;
 import com.ecom.product.adapter.in.web.dto.response.ProductResponse;
 import com.ecom.product.adapter.in.web.mapper.ProductWebMapper;
 import com.ecom.product.adapter.in.web.security.SecurityConfig;
+import com.ecom.product.domain.enums.ProductStatus;
 import com.ecom.product.domain.exception.ProductNotFoundException;
 import com.ecom.product.domain.exception.ProductNotOwnedException;
 import com.ecom.product.port.in.usecase.product.CreateProductUseCase;
@@ -63,7 +64,7 @@ class ProductActiveControllerTest {
     private ProductWebMapper productWebMapper;
 
     @Test
-    void returns200AndUpdatedActiveStatusWhenSuccessful() throws Exception {
+    void returns200AndUpdatedStatusWhenSuccessful() throws Exception {
         // Setup identifiers for the test
         UUID productId = UUID.randomUUID();
         UUID sellerId = UUID.randomUUID();
@@ -75,13 +76,13 @@ class ProductActiveControllerTest {
         // Setup the result from the use case
         ProductResult result = new ProductResult(
                 productId, sellerId, "Test Product", "Test Description", 10.0,
-                LocalDateTime.now(), LocalDateTime.now(), false
+                LocalDateTime.now(), LocalDateTime.now(), ProductStatus.INACTIVE
         );
         
         // Setup the mapped response
         ProductResponse response = new ProductResponse(
                 productId, sellerId, "Test Product", "Test Description", 10.0,
-                LocalDateTime.now(), LocalDateTime.now(), false
+                LocalDateTime.now(), LocalDateTime.now(), "INACTIVE"
         );
         
         // Mock the mapper to convert the request to a command
@@ -101,8 +102,8 @@ class ProductActiveControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 // Verify the response is 200 OK
                 .andExpect(status().isOk())
-                // Verify the active status matches the use case result
-                .andExpect(jsonPath("$.active").value(false));
+                // Verify the status matches the use case result
+                .andExpect(jsonPath("$.status").value("INACTIVE"));
                 
         // Verify the use case was called with the correct command containing the seller, product, and active flag
         verify(setProductActiveUseCase).execute(command);

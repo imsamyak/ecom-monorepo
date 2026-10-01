@@ -36,3 +36,12 @@
 - Why: owner asked for present-tense upper-case action names; the action string in the outbox payload changes accordingly
 - Tests: cd service; mvn test -> all pass
 - Review: pending
+
+## 2026-10-01 T-003.2 tests - ProductStatus enum replaces active
+- By: gemini (agy)
+- Changed: ProductEventsTest
+- Why: update events to carry status instead of active boolean
+- Depends on: T-002.1, T-003.1
+- Rollback: git revert the commits found by git log --grep T-003.2 (newest first) and also revert T-003.3 which depends on it
+- Tests: written first, red on purpose
+- Review: pending

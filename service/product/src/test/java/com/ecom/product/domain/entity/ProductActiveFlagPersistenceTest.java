@@ -1,5 +1,6 @@
 package com.ecom.product.domain.entity;
 
+import com.ecom.product.domain.enums.ProductStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -7,8 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // Runs against the real JPA mapping and an in-memory H2 database
 @DataJpaTest(properties = "spring.datasource.url=jdbc:h2:mem:productactiveflag;DB_CLOSE_DELAY=-1")
@@ -18,8 +18,8 @@ class ProductActiveFlagPersistenceTest {
     private TestEntityManager em;
 
     @Test
-    void aProductSavedByDefaultIsActiveInTheDatabase() {
-        // Create a new product without explicitly setting the active flag
+    void aProductSavedByDefaultIsInactiveInTheDatabase() {
+        // Create a new product without explicitly setting the status
         Product product = Product.builder()
                 .sellerId(UUID.randomUUID())
                 .title("Shoe")
@@ -33,12 +33,19 @@ class ProductActiveFlagPersistenceTest {
         // Reload the product from the database
         Product reloaded = em.find(Product.class, saved.getId());
 
-        // The reloaded product should be active by default
-        assertTrue(reloaded.isActive());
+        // The reloaded product should be inactive by default
+        assertEquals(ProductStatus.INACTIVE, reloaded.getStatus());
+
+        // Read the native status column directly to verify it holds the text INACTIVE
+        String dbStatus = (String) em.getEntityManager().createNativeQuery(
+                "SELECT status FROM product WHERE id = :id")
+                .setParameter("id", saved.getId())
+                .getSingleResult();
+        assertEquals("INACTIVE", dbStatus);
     }
 
     @Test
-    void theActiveFlagSurvivesSaveAndReload() {
+    void theStatusSurvivesSaveAndReload() {
         // Create a product
         Product product = Product.builder()
                 .sellerId(UUID.randomUUID())
@@ -46,8 +53,8 @@ class ProductActiveFlagPersistenceTest {
                 .price(10.0)
                 .build();
                 
-        // Deactivate the product so it is inactive
-        product.deactivate();
+        // Activate the product so it is active
+        product.activate();
 
         // Save the product to the database and clear the session
         Product saved = em.persistAndFlush(product);
@@ -56,12 +63,19 @@ class ProductActiveFlagPersistenceTest {
         // Reload the product from the database
         Product reloaded = em.find(Product.class, saved.getId());
 
-        // The reloaded product should still be inactive
-        assertFalse(reloaded.isActive());
+        // The reloaded product should still be active
+        assertEquals(ProductStatus.ACTIVE, reloaded.getStatus());
+
+        // Read the native status column directly to verify it holds the text ACTIVE
+        String dbStatus = (String) em.getEntityManager().createNativeQuery(
+                "SELECT status FROM product WHERE id = :id")
+                .setParameter("id", saved.getId())
+                .getSingleResult();
+        assertEquals("ACTIVE", dbStatus);
     }
 
     @Test
-    void reactivatingASavedInactiveProductIsPersisted() {
+    void deactivatingASavedActiveProductIsPersisted() {
         // Create a product
         Product product = Product.builder()
                 .sellerId(UUID.randomUUID())
@@ -69,18 +83,18 @@ class ProductActiveFlagPersistenceTest {
                 .price(10.0)
                 .build();
 
-        // Deactivate the product so it is initially inactive
-        product.deactivate();
+        // Activate the product so it is initially active
+        product.activate();
 
-        // Save the inactive product to the database and clear the session
+        // Save the active product to the database and clear the session
         Product saved = em.persistAndFlush(product);
         em.clear();
 
         // Reload the product from the database
         Product reloaded = em.find(Product.class, saved.getId());
 
-        // Activate the reloaded product
-        reloaded.activate();
+        // Deactivate the reloaded product
+        reloaded.deactivate();
 
         // Flush the updates to the database and clear the session
         em.flush();
@@ -89,7 +103,7 @@ class ProductActiveFlagPersistenceTest {
         // Reload the product again from the database
         Product reloadedAgain = em.find(Product.class, saved.getId());
 
-        // The reloaded product should now be active
-        assertTrue(reloadedAgain.isActive());
+        // The reloaded product should now be inactive
+        assertEquals(ProductStatus.INACTIVE, reloadedAgain.getStatus());
     }
 }

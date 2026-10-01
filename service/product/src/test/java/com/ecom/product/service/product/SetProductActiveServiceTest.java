@@ -1,6 +1,7 @@
 package com.ecom.product.service.product;
 
 import com.ecom.product.domain.entity.Product;
+import com.ecom.product.domain.enums.ProductStatus;
 import com.ecom.product.domain.exception.ProductNotFoundException;
 import com.ecom.product.domain.exception.ProductNotOwnedException;
 import com.ecom.product.port.in.usecase.product.dto.command.SetProductActiveCommand;
@@ -86,11 +87,11 @@ class SetProductActiveServiceTest {
         // Create an active product
         UUID productId = UUID.randomUUID();
         UUID sellerId = UUID.randomUUID();
-        Product product = Product.builder().id(productId).sellerId(sellerId).active(true).build();
+        Product product = Product.builder().id(productId).sellerId(sellerId).status(ProductStatus.ACTIVE).build();
         SetProductActiveCommand command = new SetProductActiveCommand(productId, sellerId, false);
 
         // Prepare the mocked returned result
-        ProductResult mockResult = ProductResult.builder().id(productId).active(false).build();
+        ProductResult mockResult = ProductResult.builder().id(productId).status(ProductStatus.INACTIVE).build();
 
         // Simulate finding the product, saving it, and mapping the result
         when(loadProductPort.loadProduct(productId)).thenReturn(Optional.of(product));
@@ -105,7 +106,7 @@ class SetProductActiveServiceTest {
         verify(saveProductPort).saveProduct(productCaptor.capture());
 
         // Verify that the product passed to the save port is marked as inactive
-        assertThat(productCaptor.getValue().isActive()).isFalse();
+        assertThat(productCaptor.getValue().getStatus()).isEqualTo(ProductStatus.INACTIVE);
 
         // Verify that the returned result is exactly the mapped mock result
         assertThat(result).isSameAs(mockResult);
@@ -116,11 +117,11 @@ class SetProductActiveServiceTest {
         // Create an inactive product
         UUID productId = UUID.randomUUID();
         UUID sellerId = UUID.randomUUID();
-        Product product = Product.builder().id(productId).sellerId(sellerId).active(false).build();
+        Product product = Product.builder().id(productId).sellerId(sellerId).status(ProductStatus.INACTIVE).build();
         SetProductActiveCommand command = new SetProductActiveCommand(productId, sellerId, true);
 
         // Prepare the mocked returned result
-        ProductResult mockResult = ProductResult.builder().id(productId).active(true).build();
+        ProductResult mockResult = ProductResult.builder().id(productId).status(ProductStatus.ACTIVE).build();
 
         // Simulate finding the product, saving it, and mapping the result
         when(loadProductPort.loadProduct(productId)).thenReturn(Optional.of(product));
@@ -135,38 +136,39 @@ class SetProductActiveServiceTest {
         verify(saveProductPort).saveProduct(productCaptor.capture());
 
         // Verify that the product passed to the save port is marked as active
-        assertThat(productCaptor.getValue().isActive()).isTrue();
+        assertThat(productCaptor.getValue().getStatus()).isEqualTo(ProductStatus.ACTIVE);
 
         // Verify that the returned result is exactly the mapped mock result
         assertThat(result).isSameAs(mockResult);
     }
 
     @Test
-    void productMapperMapsActiveFlagToResult() {
+    void productMapperMapsActiveStatusToResult() {
         // Obtain a real instance of the mapper
         ProductMapper realMapper = Mappers.getMapper(ProductMapper.class);
 
-        // Create a domain product with the active flag set to true
-        Product product = Product.builder().sellerId(UUID.randomUUID()).active(true).build();
+        // Create a domain product with the status set to ACTIVE
+        Product product = Product.builder().sellerId(UUID.randomUUID()).status(ProductStatus.ACTIVE).build();
 
         // Map the product to a result DTO
         ProductResult result = realMapper.toResult(product);
 
-        // Verify that the active flag is successfully mapped to the result
-        assertThat(result.active()).isTrue();
+        // Verify that the active status is successfully mapped to the result
+        assertThat(result.status()).isEqualTo(ProductStatus.ACTIVE);
     }
+
     @Test
     void productMapperMapsAnInactiveProductToAnInactiveResult() {
         // Obtain a real instance of the mapper
         ProductMapper realMapper = Mappers.getMapper(ProductMapper.class);
 
-        // Create a domain product with the active flag set to false
-        Product product = Product.builder().sellerId(UUID.randomUUID()).active(false).build();
+        // Create a domain product with the status set to INACTIVE
+        Product product = Product.builder().sellerId(UUID.randomUUID()).status(ProductStatus.INACTIVE).build();
 
         // Map the product to a result DTO
         ProductResult result = realMapper.toResult(product);
 
-        // Verify that the inactive flag is successfully mapped to the result
-        assertThat(result.active()).isFalse();
+        // Verify that the inactive status is successfully mapped to the result
+        assertThat(result.status()).isEqualTo(ProductStatus.INACTIVE);
     }
 }

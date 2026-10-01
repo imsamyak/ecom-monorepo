@@ -92,10 +92,11 @@ class ProductEventsOutboxIntegrationTest {
         assertEquals(Set.of("aggregate", "action", "data"), keys(json));
         assertEquals("Product", json.get("aggregate").asText());
         assertEquals("CREATE", json.get("action").asText());
-        assertEquals(Set.of("productId", "sellerId", "title", "description", "price", "createdAt", "updatedAt"),
+        assertEquals(Set.of("productId", "sellerId", "title", "description", "price", "createdAt", "updatedAt", "status"),
                 keys(json.get("data")));
         assertEquals(result.id().toString(), json.get("data").get("productId").asText());
         assertEquals("Phone", json.get("data").get("title").asText());
+        assertEquals("INACTIVE", json.get("data").get("status").asText());
     }
 
     @Test
@@ -110,8 +111,12 @@ class ProductEventsOutboxIntegrationTest {
         assertEquals(product.id().toString(), row.getAggregateId());
         JsonNode json = payload(row);
         assertEquals("UPDATE", json.get("action").asText());
+        assertEquals(Set.of("productId", "sellerId", "title", "description", "price", "createdAt", "updatedAt", "status"),
+                keys(json.get("data")));
         assertEquals("Phone 2", json.get("data").get("title").asText());
         assertEquals(20.0, json.get("data").get("price").asDouble());
+        // It should carry the INACTIVE status as the product hasn't been activated
+        assertEquals("INACTIVE", json.get("data").get("status").asText());
     }
 
     @Test

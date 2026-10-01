@@ -125,3 +125,12 @@
 - Why: fix stale event names in comments
 - Tests: cd service; mvn test -> all pass (product 62), comment and message text only
 - Review: pending
+
+## 2026-10-01 T-003.2 tests - ProductStatus enum replaces active
+- By: gemini (agy)
+- Changed: ProductActiveFlagTest, ProductActiveFlagPersistenceTest, SetProductActiveServiceTest, ProductActiveControllerTest, UseCaseEventsTest, ProductEventsOutboxIntegrationTest
+- Why: replace active boolean with ProductStatus enum and verify new default is INACTIVE
+- Depends on: T-002.1, T-003.1
+- Rollback: git revert the commits found by git log --grep T-003.2 (newest first) and also revert T-003.3 which depends on it
+- Tests: written first, red on purpose. Existing tests changed on purpose to replace active boolean with status enum and check INACTIVE as default.
+- Review: pending

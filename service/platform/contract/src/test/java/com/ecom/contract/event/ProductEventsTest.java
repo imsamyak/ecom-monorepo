@@ -20,11 +20,11 @@ class ProductEventsTest {
     private final LocalDateTime now = LocalDateTime.of(2026, 1, 1, 12, 0);
 
     private Product.CREATE created() {
-        return new Product.CREATE(productId, sellerId, "Phone", "desc", 10.5, now, now);
+        return new Product.CREATE(productId, sellerId, "Phone", "desc", 10.5, now, now, "INACTIVE");
     }
 
     private Product.UPDATE updated() {
-        return new Product.UPDATE(productId, sellerId, "Phone 2", "desc 2", 11.5, now, now);
+        return new Product.UPDATE(productId, sellerId, "Phone 2", "desc 2", 11.5, now, now, "ACTIVE");
     }
 
     private Product.DELETE deleted() {
@@ -77,7 +77,9 @@ class ProductEventsTest {
         assertEquals(10.5, c.price());
         assertEquals(now, c.createdAt());
         assertEquals(now, c.updatedAt());
+        assertEquals("INACTIVE", c.status());
         assertEquals("Phone 2", updated().title());
+        assertEquals("ACTIVE", updated().status());
     }
 
     @Test

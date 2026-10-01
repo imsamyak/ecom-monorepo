@@ -1,43 +1,27 @@
 package com.ecom.product.domain.entity;
 
+import com.ecom.product.domain.enums.ProductStatus;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProductActiveFlagTest {
 
     @Test
-    void aNewProductIsActiveByDefault() {
-        // Create a new product without explicitly setting the active flag
+    void aNewProductIsInactiveByDefault() {
+        // Create a new product without explicitly setting the status
         Product product = Product.builder()
                 .sellerId(UUID.randomUUID())
                 .title("Shoe")
                 .price(10.0)
                 .build();
                 
-        // The product should be active
-        assertTrue(product.isActive());
+        // The product should be inactive by default
+        assertEquals(ProductStatus.INACTIVE, product.getStatus());
     }
     
     @Test
-    void deactivateMakesTheProductInactive() {
-        // Create an initially active product
-        Product product = Product.builder()
-                .sellerId(UUID.randomUUID())
-                .title("Shoe")
-                .price(10.0)
-                .build();
-                
-        // Deactivate the product
-        product.deactivate();
-        
-        // The product should now be inactive
-        assertFalse(product.isActive());
-    }
-    
-    @Test
-    void activateMakesAnInactiveProductActiveAgain() {
+    void activateMakesAnInactiveProductActive() {
         // Create a product
         Product product = Product.builder()
                 .sellerId(UUID.randomUUID())
@@ -45,13 +29,29 @@ class ProductActiveFlagTest {
                 .price(10.0)
                 .build();
                 
-        // Deactivate the product to make it inactive
-        product.deactivate();
-        
         // Activate the product
         product.activate();
         
-        // The product should be active again
-        assertTrue(product.isActive());
+        // The product should now be active
+        assertEquals(ProductStatus.ACTIVE, product.getStatus());
+    }
+    
+    @Test
+    void deactivateMakesAnActiveProductInactiveAgain() {
+        // Create a product
+        Product product = Product.builder()
+                .sellerId(UUID.randomUUID())
+                .title("Shoe")
+                .price(10.0)
+                .build();
+                
+        // Activate the product to make it active
+        product.activate();
+        
+        // Deactivate the product
+        product.deactivate();
+        
+        // The product should be inactive again
+        assertEquals(ProductStatus.INACTIVE, product.getStatus());
     }
 }
